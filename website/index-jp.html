@@ -872,6 +872,37 @@
         document.querySelectorAll('.security-card, .step-card, .device-card, .requirement-item').forEach(el => {
             observer.observe(el);
         });
+        
+        // Add live node counter
+        const script = document.createElement('script');
+        script.src = 'js/network-counter.js';
+        document.head.appendChild(script);
+        
+        // Add network stats link to navigation
+        window.addEventListener('load', () => {
+            const nav = document.querySelector('nav');
+            if (nav && !document.querySelector('.network-link')) {
+                const networkLink = document.createElement('a');
+                networkLink.href = 'network.html';
+                networkLink.className = 'network-link';
+                networkLink.style.cssText = 'color: #4ade80; margin-left: 20px; font-weight: 500;';
+                networkLink.innerHTML = '🌐 <span id="liveNodeCount">0</span> ノード稼働中';
+                
+                // Insert before the last nav item
+                const lastNavItem = nav.querySelector('a:last-child');
+                if (lastNavItem) {
+                    nav.insertBefore(networkLink, lastNavItem);
+                }
+                
+                // Update counter
+                if (window.networkCounter) {
+                    window.networkCounter.onUpdate = (data) => {
+                        const el = document.getElementById('liveNodeCount');
+                        if (el) el.textContent = data.nodeCount.toLocaleString();
+                    };
+                }
+            }
+        });
     </script>
 </body>
 </html>

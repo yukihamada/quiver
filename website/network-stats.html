@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QUIVer Network Statistics - リアルタイムノード数</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', sans-serif;
+            background: linear-gradient(135deg, #0071e3 0%, #5e5ce6 100%);
+            color: white;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .container {
+            text-align: center;
+            padding: 40px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 30px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+            max-width: 600px;
+            width: 90%;
+        }
+        
+        h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+        
+        .subtitle {
+            font-size: 1.2em;
+            opacity: 0.9;
+            margin-bottom: 40px;
+        }
+        
+        .stats-container {
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+            margin: 40px 0;
+        }
+        
+        .stat-box {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 30px;
+            border-radius: 20px;
+            transition: transform 0.3s;
+        }
+        
+        .stat-box:hover {
+            transform: translateY(-5px);
+        }
+        
+        .node-count {
+            font-size: 5em;
+            font-weight: 700;
+            margin: 20px 0;
+            text-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        
+        .label {
+            font-size: 1.3em;
+            opacity: 0.9;
+            margin-bottom: 10px;
+        }
+        
+        .connection-status {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 20px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+            font-size: 0.9em;
+        }
+        
+        .status-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #ff3b30;
+            animation: blink 2s infinite;
+        }
+        
+        .status-dot.connected {
+            background: #34c759;
+            animation: none;
+        }
+        
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+        
+        .last-update {
+            font-size: 0.9em;
+            opacity: 0.7;
+            margin-top: 20px;
+        }
+        
+        .growth-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            color: #34c759;
+            font-size: 1.1em;
+            margin-top: 10px;
+        }
+        
+        .growth-indicator.negative {
+            color: #ff3b30;
+        }
+        
+        .loading {
+            font-size: 1.5em;
+            animation: fade 1.5s infinite;
+        }
+        
+        @keyframes fade {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 1; }
+        }
+        
+        .error-message {
+            background: rgba(255, 59, 48, 0.2);
+            padding: 20px;
+            border-radius: 15px;
+            margin-top: 20px;
+        }
+        
+        .tech-details {
+            margin-top: 40px;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            font-size: 0.9em;
+            opacity: 0.8;
+        }
+        
+        .tech-details h3 {
+            margin-bottom: 10px;
+        }
+        
+        @media (max-width: 600px) {
+            .node-count {
+                font-size: 3em;
+            }
+            
+            h1 {
+                font-size: 2em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>QUIVer Network</h1>
+        <p class="subtitle">リアルタイムネットワーク統計</p>
+        
+        <div class="connection-status">
+            <span class="status-dot" id="statusDot"></span>
+            <span id="connectionText">接続中...</span>
+        </div>
+        
+        <div class="stats-container">
+            <div class="stat-box">
+                <div class="label">現在のノード数</div>
+                <div class="node-count" id="nodeCount">
+                    <span class="loading">計測中...</span>
+                </div>
+                <div class="growth-indicator" id="growthIndicator" style="display: none;">
+                    <span id="growthIcon">↑</span>
+                    <span id="growthText">0</span>
+                </div>
+            </div>
+            
+            <div class="last-update" id="lastUpdate">
+                データ取得中...
+            </div>
+        </div>
+        
+        <div class="tech-details">
+            <h3>技術詳細</h3>
+            <p>WebTransport (HTTP/3) を使用してP2Pネットワークに直接接続</p>
+            <p>HyperLogLog++アルゴリズムによる効率的なノード数推定</p>
+            <p id="techInfo">ゲートウェイ: 接続待機中</p>
+        </div>
+        
+        <div id="errorContainer"></div>
+    </div>
+    
+    <script src="js/quiver-client.js"></script>
+    <script>
+        // Configuration
+        const GATEWAY_URL = window.location.hostname === 'localhost' 
+            ? 'https://localhost:4433'
+            : 'https://gateway.quiver.network:4433';
+        
+        // State
+        let client = null;
+        let previousNodeCount = 0;
+        let updateCount = 0;
+        
+        // UI Elements
+        const nodeCountEl = document.getElementById('nodeCount');
+        const statusDotEl = document.getElementById('statusDot');
+        const connectionTextEl = document.getElementById('connectionText');
+        const lastUpdateEl = document.getElementById('lastUpdate');
+        const growthIndicatorEl = document.getElementById('growthIndicator');
+        const growthIconEl = document.getElementById('growthIcon');
+        const growthTextEl = document.getElementById('growthText');
+        const techInfoEl = document.getElementById('techInfo');
+        const errorContainerEl = document.getElementById('errorContainer');
+        
+        // Initialize client
+        function initClient() {
+            try {
+                client = getQUIVerClient(GATEWAY_URL);
+                
+                // Set up callbacks
+                client.onConnectionChange = (connected) => {
+                    updateConnectionStatus(connected);
+                };
+                
+                client.onStatsUpdate = (stats) => {
+                    updateNodeCount(stats);
+                };
+                
+                // Update tech info
+                techInfoEl.textContent = `ゲートウェイ: ${client.gatewayUrl}`;
+                
+            } catch (error) {
+                console.error('Failed to initialize client:', error);
+                showError('ネットワークへの接続に失敗しました');
+            }
+        }
+        
+        // Update connection status
+        function updateConnectionStatus(connected) {
+            if (connected) {
+                statusDotEl.classList.add('connected');
+                connectionTextEl.textContent = 'P2Pネットワーク接続済み';
+                errorContainerEl.innerHTML = '';
+            } else {
+                statusDotEl.classList.remove('connected');
+                connectionTextEl.textContent = '接続を試行中...';
+            }
+        }
+        
+        // Update node count display
+        function updateNodeCount(stats) {
+            const nodeCount = stats.nodeCount || 0;
+            
+            // Animate number change
+            animateNumber(previousNodeCount, nodeCount, (value) => {
+                nodeCountEl.innerHTML = `<span style="font-variant-numeric: tabular-nums;">${value.toLocaleString()}</span>`;
+            });
+            
+            // Show growth indicator
+            if (updateCount > 0 && nodeCount !== previousNodeCount) {
+                const growth = nodeCount - previousNodeCount;
+                growthIndicatorEl.style.display = 'inline-flex';
+                
+                if (growth > 0) {
+                    growthIndicatorEl.classList.remove('negative');
+                    growthIconEl.textContent = '↑';
+                    growthTextEl.textContent = `+${growth.toLocaleString()}`;
+                } else {
+                    growthIndicatorEl.classList.add('negative');
+                    growthIconEl.textContent = '↓';
+                    growthTextEl.textContent = growth.toLocaleString();
+                }
+                
+                // Hide after 3 seconds
+                setTimeout(() => {
+                    growthIndicatorEl.style.display = 'none';
+                }, 3000);
+            }
+            
+            // Update last update time
+            const now = new Date();
+            lastUpdateEl.textContent = `最終更新: ${now.toLocaleTimeString('ja-JP')}`;
+            
+            previousNodeCount = nodeCount;
+            updateCount++;
+        }
+        
+        // Animate number changes
+        function animateNumber(start, end, callback) {
+            const duration = 1000;
+            const startTime = Date.now();
+            
+            function update() {
+                const elapsed = Date.now() - startTime;
+                const progress = Math.min(elapsed / duration, 1);
+                
+                // Easing function
+                const eased = 1 - Math.pow(1 - progress, 3);
+                
+                const current = Math.floor(start + (end - start) * eased);
+                callback(current);
+                
+                if (progress < 1) {
+                    requestAnimationFrame(update);
+                }
+            }
+            
+            update();
+        }
+        
+        // Show error message
+        function showError(message) {
+            errorContainerEl.innerHTML = `
+                <div class="error-message">
+                    <strong>エラー:</strong> ${message}
+                </div>
+            `;
+        }
+        
+        // Fallback for browsers without WebTransport
+        async function checkWebTransportSupport() {
+            if (!window.WebTransport) {
+                console.log('WebTransport not supported, using fallback');
+                // The client will automatically fall back to WebSocket
+            }
+        }
+        
+        // Initialize on load
+        window.addEventListener('load', async () => {
+            await checkWebTransportSupport();
+            initClient();
+        });
+        
+        // Clean up on unload
+        window.addEventListener('beforeunload', () => {
+            if (client) {
+                client.destroy();
+            }
+        });
+    </script>
+</body>
+</html>
