@@ -87,8 +87,16 @@ install_quiver() {
     echo "QUIVerをビルド中..."
     make build
     
+    # ブートストラップもビルド
+    go build -o bin/bootstrap bootstrap/main.go
+    
     # バイナリをコピー
-    cp -r bin/* "$INSTALL_DIR/"
+    if [ -d "bin" ]; then
+        cp bin/* "$INSTALL_DIR/" 2>/dev/null || true
+    else
+        echo "エラー: ビルドに失敗しました"
+        exit 1
+    fi
     
     # 設定ファイルを作成
     mkdir -p "$HOME/.config/quiver"
