@@ -3,28 +3,24 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Go Version](https://img.shields.io/badge/Go-1.23+-blue.svg)](https://golang.org/)
 [![Platform](https://img.shields.io/badge/Platform-macOS-lightgrey.svg)](https://www.apple.com/macos/)
+[![Download](https://img.shields.io/badge/ダウンロード-v1.1.0-brightgreen.svg)](https://github.com/yukihamada/quiver/releases/download/v1.1.0/QUIVerProvider-1.0.0.dmg)
 
 <p align="center">
   <img src="https://github.com/yukihamada/quiver/assets/123456789/demo.gif" alt="QUIVer Demo" width="600">
 </p>
 
-## 🚀 3分で始める
+## 🚀 2分で始める
 
 ### 方法1: DMGインストーラー（推奨）
 
-1. **ダウンロード**
-   ```
-   https://github.com/yukihamada/quiver/releases/latest
-   ```
-   から `QUIVerProvider-1.0.0.dmg` をダウンロード
+1. **[QUIVer Provider DMGをダウンロード](https://github.com/yukihamada/quiver/releases/download/v1.1.0/QUIVerProvider-1.0.0.dmg)**
 
 2. **インストール**
    - DMGを開く
-   - QUIVer Provider を Applications にドラッグ
+   - 「インストール.command」をダブルクリック
+   - 自動的にすべてがセットアップされます！
 
-3. **起動**
-   - Applications から QUIVer Provider をダブルクリック
-   - 初回起動時に自動セットアップ
+技術的な知識は不要です。ダウンロードして実行するだけ。
 
 ### 方法2: コマンドライン
 

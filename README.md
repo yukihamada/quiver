@@ -3,10 +3,19 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Go Version](https://img.shields.io/badge/Go-1.23+-blue.svg)](https://golang.org/)
 [![Platform](https://img.shields.io/badge/Platform-macOS-lightgrey.svg)](https://www.apple.com/macos/)
+[![Download](https://img.shields.io/badge/Download-v1.1.0-brightgreen.svg)](https://github.com/yukihamada/quiver/releases/download/v1.1.0/QUIVerProvider-1.0.0.dmg)
 
 [日本語版 →](README_JP.md)
 
 Turn your idle Mac into a passive income machine. QUIVer Provider lets you earn cryptocurrency by sharing your Mac's computing power for AI tasks.
+
+## 🚀 Quick Install (Mac)
+
+1. **[Download QUIVer Provider DMG](https://github.com/yukihamada/quiver/releases/download/v1.1.0/QUIVerProvider-1.0.0.dmg)**
+2. Open the DMG and double-click "インストール.command"
+3. Everything will be installed automatically!
+
+No technical knowledge required. Start earning in 2 minutes.
 
 ## Features
 
