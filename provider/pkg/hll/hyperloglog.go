@@ -1,7 +1,6 @@
 package hll
 
 import (
-    "encoding/binary"
     "hash/fnv"
     "math"
     "sync"

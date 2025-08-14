@@ -5,6 +5,7 @@ import (
 	"crypto/rand"
 	"encoding/json"
 	"fmt"
+	"time"
 
 	"github.com/libp2p/go-libp2p"
 	dht "github.com/libp2p/go-libp2p-kad-dht"
@@ -92,8 +93,9 @@ func NewClient(ctx context.Context, listenAddr string, bootstrapPeers []string) 
 }
 
 func (c *Client) FindProviders() ([]peer.AddrInfo, error) {
+	// First try DHT routing table
 	peers := c.dht.RoutingTable().ListPeers()
-
+	
 	var providers []peer.AddrInfo
 	for _, p := range peers {
 		if p != c.host.ID() {
@@ -103,6 +105,54 @@ func (c *Client) FindProviders() ([]peer.AddrInfo, error) {
 					ID:    p,
 					Addrs: addrs,
 				})
+			}
+		}
+	}
+	
+	// If no providers found, try to find via DHT topic
+	if len(providers) == 0 {
+		// Try finding peers that support our protocol
+		ctx, cancel := context.WithTimeout(c.ctx, 5*time.Second)
+		defer cancel()
+		
+		// Get all connected peers
+		for _, p := range c.host.Network().Peers() {
+			if p != c.host.ID() {
+				// Check if peer supports our protocol
+				protos, err := c.host.Peerstore().GetProtocols(p)
+				if err == nil {
+					for _, proto := range protos {
+						if proto == protocolID {
+							addrs := c.host.Peerstore().Addrs(p)
+							if len(addrs) > 0 {
+								providers = append(providers, peer.AddrInfo{
+									ID:    p,
+									Addrs: addrs,
+								})
+								break
+							}
+						}
+					}
+				}
+			}
+		}
+		
+		// As last resort, check if any peer responds to our protocol
+		if len(providers) == 0 {
+			for _, p := range c.host.Network().Peers() {
+				if p != c.host.ID() {
+					stream, err := c.host.NewStream(ctx, p, protocol.ID(protocolID))
+					if err == nil {
+						stream.Close()
+						addrs := c.host.Peerstore().Addrs(p)
+						if len(addrs) > 0 {
+							providers = append(providers, peer.AddrInfo{
+								ID:    p,
+								Addrs: addrs,
+							})
+						}
+					}
+				}
 			}
 		}
 	}

@@ -114,7 +114,7 @@ func (bg *BrowserGateway) Start(addr string) error {
     http.HandleFunc("/webtransport", bg.handleWebTransport)
     
     log.Printf("Starting browser gateway on %s", addr)
-    return bg.server.ListenAndServe(addr)
+    return bg.server.ListenAndServe()
 }
 
 // handleWebTransport handles new WebTransport connections

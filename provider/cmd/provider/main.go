@@ -66,8 +66,12 @@ func main() {
 			})
 		})
 		mux.Handle("/metrics", promhttp.Handler())
-		log.Println("Health check and metrics endpoints started on :8090")
-		if err := http.ListenAndServe(":8090", mux); err != nil {
+		port := os.Getenv("PROVIDER_METRICS_PORT")
+		if port == "" {
+			port = "8090"
+		}
+		log.Printf("Health check and metrics endpoints started on :%s\n", port)
+		if err := http.ListenAndServe(":"+port, mux); err != nil {
 			log.Printf("Health/metrics server failed: %v", err)
 		}
 	}()
