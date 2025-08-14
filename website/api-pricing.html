@@ -1,0 +1,838 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QUIVer API - 世界最安のAI API | P2P分散処理で実現</title>
+    <meta name="description" content="P2P余剰計算リソースを活用し、GPT-5の1/25、Claude 4の1/60の価格でAI APIを提供。OpenAI互換、セキュア、高速。">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #0071e3;
+            --primary-dark: #0077ed;
+            --secondary: #5e5ce6;
+            --success: #34c759;
+            --danger: #ff3b30;
+            --warning: #ff9500;
+            --dark: #1a1a1a;
+            --gray: #666;
+            --light-gray: #f5f5f7;
+            --white: #ffffff;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Helvetica Neue', 'Hiragino Sans', sans-serif;
+            line-height: 1.6;
+            color: var(--dark);
+            background: var(--white);
+        }
+
+        /* ヘッダー */
+        header {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid #e5e5e7;
+            z-index: 1000;
+        }
+
+        nav {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            height: 64px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: 600;
+            color: var(--primary);
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 30px;
+            align-items: center;
+        }
+
+        .nav-links a {
+            color: var(--dark);
+            text-decoration: none;
+            font-size: 14px;
+            transition: color 0.3s;
+        }
+
+        .nav-links a:hover {
+            color: var(--primary);
+        }
+
+        .get-started-btn {
+            background: var(--primary);
+            color: white;
+            padding: 8px 20px;
+            border-radius: 20px;
+            text-decoration: none;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+
+        .get-started-btn:hover {
+            background: var(--primary-dark);
+            transform: translateY(-1px);
+        }
+
+        /* ヒーロー */
+        .hero {
+            padding: 120px 20px 80px;
+            text-align: center;
+            background: linear-gradient(135deg, #f5f5f7 0%, #e8f3ff 100%);
+        }
+
+        .hero h1 {
+            font-size: clamp(36px, 6vw, 64px);
+            font-weight: 700;
+            line-height: 1.1;
+            margin-bottom: 24px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero-subtitle {
+            font-size: clamp(20px, 3vw, 28px);
+            color: var(--gray);
+            margin-bottom: 40px;
+            font-weight: 400;
+        }
+
+        .price-highlight {
+            display: inline-flex;
+            align-items: center;
+            gap: 20px;
+            background: white;
+            padding: 20px 40px;
+            border-radius: 50px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+            margin-bottom: 40px;
+        }
+
+        .price-item {
+            text-align: center;
+        }
+
+        .price-value {
+            font-size: 32px;
+            font-weight: 700;
+            color: var(--success);
+        }
+
+        .price-label {
+            font-size: 14px;
+            color: var(--gray);
+        }
+
+        /* 価格比較 */
+        .pricing-section {
+            padding: 80px 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .section-title {
+            font-size: 40px;
+            font-weight: 600;
+            text-align: center;
+            margin-bottom: 60px;
+        }
+
+        .comparison-table {
+            background: white;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.05);
+        }
+
+        .comparison-header {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1fr;
+            background: var(--light-gray);
+            padding: 20px;
+            font-weight: 600;
+        }
+
+        .comparison-row {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1fr;
+            padding: 20px;
+            border-bottom: 1px solid #e5e5e7;
+            align-items: center;
+        }
+
+        .comparison-row:last-child {
+            border-bottom: none;
+        }
+
+        .provider-name {
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .badge {
+            background: var(--success);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .price {
+            text-align: center;
+            font-weight: 500;
+        }
+
+        .price.lowest {
+            color: var(--success);
+            font-weight: 700;
+        }
+
+        .price.high {
+            color: var(--danger);
+        }
+
+        /* モデル一覧 */
+        .models-section {
+            background: var(--light-gray);
+            padding: 80px 20px;
+        }
+
+        .models-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .model-card {
+            background: white;
+            padding: 30px;
+            border-radius: 16px;
+            text-align: center;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .model-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+
+        .model-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            font-size: 24px;
+            color: white;
+        }
+
+        .model-name {
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        .model-specs {
+            color: var(--gray);
+            font-size: 14px;
+            margin-bottom: 20px;
+        }
+
+        .model-pricing {
+            border-top: 1px solid #e5e5e7;
+            padding-top: 20px;
+        }
+
+        .token-price {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+
+        /* セキュリティ */
+        .security-section {
+            padding: 80px 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .security-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+            margin-top: 60px;
+        }
+
+        .security-item {
+            text-align: center;
+        }
+
+        .security-icon {
+            width: 80px;
+            height: 80px;
+            background: #e8f3ff;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            font-size: 32px;
+        }
+
+        .security-title {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        .security-desc {
+            color: var(--gray);
+            font-size: 14px;
+        }
+
+        /* 料金計算機 */
+        .calculator-section {
+            background: var(--light-gray);
+            padding: 80px 20px;
+        }
+
+        .calculator {
+            max-width: 600px;
+            margin: 0 auto;
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.05);
+        }
+
+        .input-group {
+            margin-bottom: 30px;
+        }
+
+        .input-label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        .input-field {
+            width: 100%;
+            padding: 12px 20px;
+            border: 1px solid #e5e5e7;
+            border-radius: 12px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+
+        .input-field:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        .select-field {
+            width: 100%;
+            padding: 12px 20px;
+            border: 1px solid #e5e5e7;
+            border-radius: 12px;
+            font-size: 16px;
+            background: white;
+            cursor: pointer;
+        }
+
+        .result-box {
+            background: #e8f3ff;
+            padding: 30px;
+            border-radius: 16px;
+            text-align: center;
+        }
+
+        .result-label {
+            font-size: 18px;
+            color: var(--gray);
+            margin-bottom: 10px;
+        }
+
+        .result-value {
+            font-size: 48px;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .comparison-result {
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(0,113,227,0.2);
+        }
+
+        .savings {
+            color: var(--success);
+            font-weight: 600;
+        }
+
+        /* CTA */
+        .cta-section {
+            padding: 80px 20px;
+            text-align: center;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: white;
+        }
+
+        .cta-title {
+            font-size: 40px;
+            font-weight: 600;
+            margin-bottom: 20px;
+        }
+
+        .cta-subtitle {
+            font-size: 20px;
+            margin-bottom: 40px;
+            opacity: 0.9;
+        }
+
+        .cta-buttons {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .cta-btn {
+            padding: 16px 32px;
+            border-radius: 30px;
+            text-decoration: none;
+            font-size: 18px;
+            font-weight: 500;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .cta-primary {
+            background: white;
+            color: var(--primary);
+        }
+
+        .cta-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        .cta-secondary {
+            background: transparent;
+            color: white;
+            border: 2px solid white;
+        }
+
+        .cta-secondary:hover {
+            background: white;
+            color: var(--primary);
+        }
+
+        /* レスポンシブ */
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+
+            .comparison-header,
+            .comparison-row {
+                grid-template-columns: 1fr;
+                gap: 10px;
+                text-align: center;
+            }
+
+            .price-highlight {
+                flex-direction: column;
+                padding: 20px;
+            }
+
+            .models-grid,
+            .security-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- ヘッダー -->
+    <header>
+        <nav>
+            <div class="logo">QUIVer API</div>
+            <div class="nav-links">
+                <a href="#pricing">料金</a>
+                <a href="#models">モデル</a>
+                <a href="#security">セキュリティ</a>
+                <a href="#calculator">料金計算</a>
+                <a href="https://yukihamada.github.io/quiver/index-jp.html">プロバイダーになる</a>
+                <a href="#" class="get-started-btn">APIキーを取得</a>
+            </div>
+        </nav>
+    </header>
+
+    <!-- ヒーロー -->
+    <section class="hero">
+        <h1>世界最安のAI API</h1>
+        <p class="hero-subtitle">P2P分散処理により、大手の1/25〜1/300の価格を実現</p>
+        
+        <div class="price-highlight">
+            <div class="price-item">
+                <div class="price-value">$0.05</div>
+                <div class="price-label">/ 100万トークン（入力）</div>
+            </div>
+            <div class="price-item">
+                <div class="price-value">最大96%</div>
+                <div class="price-label">コスト削減</div>
+            </div>
+        </div>
+
+        <div class="cta-buttons">
+            <a href="#" class="cta-btn cta-primary">
+                今すぐ始める
+                <span>→</span>
+            </a>
+            <a href="#pricing" class="cta-btn cta-secondary">料金を見る</a>
+        </div>
+    </section>
+
+    <!-- 価格比較 -->
+    <section class="pricing-section" id="pricing">
+        <h2 class="section-title">圧倒的な価格優位性</h2>
+        
+        <div class="comparison-table">
+            <div class="comparison-header">
+                <div>プロバイダー</div>
+                <div>入力価格</div>
+                <div>出力価格</div>
+                <div>QUIVer比</div>
+            </div>
+            
+            <div class="comparison-row">
+                <div class="provider-name">
+                    QUIVer API
+                    <span class="badge">最安</span>
+                </div>
+                <div class="price lowest">$0.05</div>
+                <div class="price lowest">$0.20</div>
+                <div class="price">-</div>
+            </div>
+            
+            <div class="comparison-row">
+                <div class="provider-name">GPT-5 (OpenAI)</div>
+                <div class="price">$1.25</div>
+                <div class="price">$10.00</div>
+                <div class="price high">25倍</div>
+            </div>
+            
+            <div class="comparison-row">
+                <div class="provider-name">GPT-4.1 (OpenAI)</div>
+                <div class="price">$2.00</div>
+                <div class="price">$8.00</div>
+                <div class="price high">40倍</div>
+            </div>
+            
+            <div class="comparison-row">
+                <div class="provider-name">Claude 4 (Anthropic)</div>
+                <div class="price">$3.00〜15.00</div>
+                <div class="price">$15.00〜75.00</div>
+                <div class="price high">60〜300倍</div>
+            </div>
+            
+            <div class="comparison-row">
+                <div class="provider-name">Gemini 2.5 Flash</div>
+                <div class="price">$0.075</div>
+                <div class="price">$0.30</div>
+                <div class="price">1.5倍</div>
+            </div>
+        </div>
+        
+        <p style="text-align: center; margin-top: 30px; color: var(--gray);">
+            ※ 2025年8月14日時点の価格（100万トークンあたり）
+        </p>
+    </section>
+
+    <!-- 利用可能モデル -->
+    <section class="models-section" id="models">
+        <div style="max-width: 1200px; margin: 0 auto; padding: 0 20px;">
+            <h2 class="section-title">利用可能なモデル</h2>
+            
+            <div class="models-grid">
+                <div class="model-card">
+                    <div class="model-icon">🦙</div>
+                    <h3 class="model-name">Llama 3.2</h3>
+                    <p class="model-specs">3B / 8B パラメータ<br>Meta最新オープンソース</p>
+                    <div class="model-pricing">
+                        <div class="token-price">
+                            <span>入力:</span>
+                            <strong>$0.05〜0.10</strong>
+                        </div>
+                        <div class="token-price">
+                            <span>出力:</span>
+                            <strong>$0.20〜0.40</strong>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="model-card">
+                    <div class="model-icon">🌬️</div>
+                    <h3 class="model-name">Mistral 7B</h3>
+                    <p class="model-specs">7B パラメータ<br>高速・高品質</p>
+                    <div class="model-pricing">
+                        <div class="token-price">
+                            <span>入力:</span>
+                            <strong>$0.08</strong>
+                        </div>
+                        <div class="token-price">
+                            <span>出力:</span>
+                            <strong>$0.30</strong>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="model-card">
+                    <div class="model-icon">🤖</div>
+                    <h3 class="model-name">GPT-J 6B</h3>
+                    <p class="model-specs">6B パラメータ<br>OpenAI互換</p>
+                    <div class="model-pricing">
+                        <div class="token-price">
+                            <span>入力:</span>
+                            <strong>$0.06</strong>
+                        </div>
+                        <div class="token-price">
+                            <span>出力:</span>
+                            <strong>$0.25</strong>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="model-card">
+                    <div class="model-icon">🌸</div>
+                    <h3 class="model-name">BLOOM 7B</h3>
+                    <p class="model-specs">7B パラメータ<br>多言語対応</p>
+                    <div class="model-pricing">
+                        <div class="token-price">
+                            <span>入力:</span>
+                            <strong>$0.07</strong>
+                        </div>
+                        <div class="token-price">
+                            <span>出力:</span>
+                            <strong>$0.28</strong>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="model-card">
+                    <div class="model-icon">🦜</div>
+                    <h3 class="model-name">Falcon 7B</h3>
+                    <p class="model-specs">7B パラメータ<br>商用利用可</p>
+                    <div class="model-pricing">
+                        <div class="token-price">
+                            <span>入力:</span>
+                            <strong>$0.07</strong>
+                        </div>
+                        <div class="token-price">
+                            <span>出力:</span>
+                            <strong>$0.28</strong>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="model-card">
+                    <div class="model-icon">✨</div>
+                    <h3 class="model-name">その他</h3>
+                    <p class="model-specs">カスタムモデル<br>リクエスト対応</p>
+                    <div class="model-pricing">
+                        <div class="token-price">
+                            <span>入力:</span>
+                            <strong>要相談</strong>
+                        </div>
+                        <div class="token-price">
+                            <span>出力:</span>
+                            <strong>要相談</strong>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- セキュリティ -->
+    <section class="security-section" id="security">
+        <h2 class="section-title">エンタープライズグレードのセキュリティ</h2>
+        
+        <div class="security-grid">
+            <div class="security-item">
+                <div class="security-icon">🔐</div>
+                <h3 class="security-title">エンドツーエンド暗号化</h3>
+                <p class="security-desc">QUIC/TLS 1.3による最新の暗号化技術で通信を保護</p>
+            </div>
+            
+            <div class="security-item">
+                <div class="security-icon">🛡️</div>
+                <h3 class="security-title">ゼロ知識証明</h3>
+                <p class="security-desc">プライバシーを保護しながら計算の正当性を証明</p>
+            </div>
+            
+            <div class="security-item">
+                <div class="security-icon">🔑</div>
+                <h3 class="security-title">Ed25519署名</h3>
+                <p class="security-desc">全てのAPIリクエストを暗号学的に認証</p>
+            </div>
+            
+            <div class="security-item">
+                <div class="security-icon">🌐</div>
+                <h3 class="security-title">分散型アーキテクチャ</h3>
+                <p class="security-desc">単一障害点なし、高可用性を実現</p>
+            </div>
+            
+            <div class="security-item">
+                <div class="security-icon">📊</div>
+                <h3 class="security-title">ISO 27001準拠</h3>
+                <p class="security-desc">国際標準のセキュリティ管理を実施</p>
+            </div>
+            
+            <div class="security-item">
+                <div class="security-icon">🔍</div>
+                <h3 class="security-title">監査ログ</h3>
+                <p class="security-desc">全APIアクセスの完全な監査証跡</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- 料金計算機 -->
+    <section class="calculator-section" id="calculator">
+        <div style="max-width: 1200px; margin: 0 auto; padding: 0 20px;">
+            <h2 class="section-title">料金計算機</h2>
+            
+            <div class="calculator">
+                <div class="input-group">
+                    <label class="input-label">モデルを選択</label>
+                    <select class="select-field" id="model-select">
+                        <option value="0.05,0.20">Llama 3.2 (3B) - 最安</option>
+                        <option value="0.10,0.40">Llama 3.2 (8B)</option>
+                        <option value="0.08,0.30">Mistral 7B</option>
+                        <option value="0.06,0.25">GPT-J 6B</option>
+                        <option value="0.07,0.28">BLOOM 7B</option>
+                    </select>
+                </div>
+                
+                <div class="input-group">
+                    <label class="input-label">月間入力トークン数（百万）</label>
+                    <input type="number" class="input-field" id="input-tokens" value="10" min="0">
+                </div>
+                
+                <div class="input-group">
+                    <label class="input-label">月間出力トークン数（百万）</label>
+                    <input type="number" class="input-field" id="output-tokens" value="5" min="0">
+                </div>
+                
+                <div class="result-box">
+                    <div class="result-label">月額料金（QUIVer）</div>
+                    <div class="result-value" id="total-cost">$1.50</div>
+                    
+                    <div class="comparison-result">
+                        <p>GPT-5なら: <strong>$62.50</strong></p>
+                        <p class="savings">節約額: $61.00 (97.6%削減)</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA -->
+    <section class="cta-section">
+        <h2 class="cta-title">今すぐ始めましょう</h2>
+        <p class="cta-subtitle">無料トライアル $10分のクレジット付き</p>
+        
+        <div class="cta-buttons">
+            <a href="#" class="cta-btn cta-primary">
+                APIキーを取得
+                <span>→</span>
+            </a>
+            <a href="https://github.com/yukihamada/quiver" class="cta-btn cta-secondary">
+                ドキュメントを見る
+            </a>
+        </div>
+    </section>
+
+    <script>
+        // 料金計算機
+        function updateCalculator() {
+            const modelSelect = document.getElementById('model-select');
+            const inputTokens = parseFloat(document.getElementById('input-tokens').value) || 0;
+            const outputTokens = parseFloat(document.getElementById('output-tokens').value) || 0;
+            
+            const [inputPrice, outputPrice] = modelSelect.value.split(',').map(parseFloat);
+            
+            const totalCost = (inputTokens * inputPrice) + (outputTokens * outputPrice);
+            const gpt5Cost = (inputTokens * 1.25) + (outputTokens * 10);
+            const savings = gpt5Cost - totalCost;
+            const savingsPercent = ((savings / gpt5Cost) * 100).toFixed(1);
+            
+            document.getElementById('total-cost').textContent = `$${totalCost.toFixed(2)}`;
+            
+            const comparisonHtml = `
+                <p>GPT-5なら: <strong>$${gpt5Cost.toFixed(2)}</strong></p>
+                <p class="savings">節約額: $${savings.toFixed(2)} (${savingsPercent}%削減)</p>
+            `;
+            document.querySelector('.comparison-result').innerHTML = comparisonHtml;
+        }
+
+        // イベントリスナー
+        document.getElementById('model-select').addEventListener('change', updateCalculator);
+        document.getElementById('input-tokens').addEventListener('input', updateCalculator);
+        document.getElementById('output-tokens').addEventListener('input', updateCalculator);
+
+        // スムーススクロール
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // ヘッダーの影
+        window.addEventListener('scroll', () => {
+            const header = document.querySelector('header');
+            if (window.scrollY > 10) {
+                header.style.boxShadow = '0 2px 20px rgba(0,0,0,0.1)';
+            } else {
+                header.style.boxShadow = 'none';
+            }
+        });
+    </script>
+</body>
+</html>
