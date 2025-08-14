@@ -7,15 +7,17 @@ class NetworkCounter {
     constructor() {
         // WebSocket endpoints for real-time updates
         this.wsEndpoints = [
+            'ws://34.146.63.195:8087/ws', // GCP stats node
+            'ws://34.146.63.195/ws', // GCP stats node (nginx)
             'wss://stats.quiver.network/ws',
-            'ws://34.85.123.45:8087/ws', // Replace with actual GCP IP
             'ws://localhost:8087/ws'
         ];
         
         // HTTP API endpoints (fallback)
         this.endpoints = [
+            'http://34.146.63.195:8087/api/stats', // GCP stats node
+            'http://34.146.63.195/api/stats', // GCP stats node (nginx)
             'https://stats.quiver.network/api/stats',
-            'http://34.85.123.45:8087/api/stats', // Replace with actual GCP IP
             // GitHub Pages hosted JSON (immediate availability)
             'https://yukihamada.github.io/quiver/api/stats.json',
             '/api/stats.json' // Relative path for local testing

@@ -61,3 +61,9 @@ temp-keygen/
 
 # Hardhat node PID
 hardhat-node.pid
+# Terraform
+.terraform/
+*.tfstate
+*.tfstate.backup
+tfplan
+
