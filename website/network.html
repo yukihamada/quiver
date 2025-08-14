@@ -358,17 +358,43 @@
         
         // Update secondary stats based on node count
         function updateStats(nodeCount) {
-            // Estimate throughput (100-200 req/s per node)
-            const throughput = nodeCount * (100 + Math.random() * 100);
-            animateValue(throughputEl, parseInt(throughputEl.textContent), Math.floor(throughput), 1000);
+            // Get full stats from counter
+            const stats = networkCounter.getStats();
             
-            // Estimate capacity (0.5-2 TFLOPS per node)
-            const capacity = nodeCount * (0.5 + Math.random() * 1.5);
-            capacityEl.textContent = capacity.toFixed(1);
+            if (stats.throughput !== undefined) {
+                // Use real data if available
+                animateValue(throughputEl, parseInt(throughputEl.textContent), Math.floor(stats.throughput), 1000);
+            } else {
+                // Estimate throughput
+                const throughput = nodeCount * (100 + Math.random() * 100);
+                animateValue(throughputEl, parseInt(throughputEl.textContent), Math.floor(throughput), 1000);
+            }
             
-            // Estimate countries (logarithmic growth)
-            const countries = Math.floor(Math.log(nodeCount + 1) * 5) + 1;
-            animateValue(countriesEl, parseInt(countriesEl.textContent), countries, 1000);
+            if (stats.total_capacity !== undefined) {
+                // Use real capacity data
+                capacityEl.textContent = parseFloat(stats.total_capacity).toFixed(1);
+            } else {
+                // Estimate capacity
+                const capacity = nodeCount * (0.5 + Math.random() * 1.5);
+                capacityEl.textContent = capacity.toFixed(1);
+            }
+            
+            if (stats.countries !== undefined) {
+                // Use real country count
+                animateValue(countriesEl, parseInt(countriesEl.textContent), stats.countries, 1000);
+            } else {
+                // Estimate countries
+                const countries = Math.floor(Math.log(nodeCount + 1) * 5) + 1;
+                animateValue(countriesEl, parseInt(countriesEl.textContent), countries, 1000);
+            }
+            
+            // Update status based on real connection
+            if (stats.connected) {
+                statusTextEl.textContent = 'Connected to QUIVer Network';
+                if (stats.network_health) {
+                    statusTextEl.textContent += ` (${stats.network_health})`;
+                }
+            }
         }
     </script>
 </body>

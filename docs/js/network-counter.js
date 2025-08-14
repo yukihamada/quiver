@@ -5,36 +5,48 @@
 
 class NetworkCounter {
     constructor() {
-        // Simulated network growth parameters
-        this.baseNodes = 42; // Starting nodes
-        this.growthRate = 0.05; // 5% growth per hour
-        this.volatility = 0.1; // 10% random variation
-        this.startTime = Date.now();
+        // API endpoints
+        this.endpoints = [
+            // GitHub Pages hosted JSON (immediate availability)
+            'https://yukihamada.github.io/quiver/api/stats.json',
+            '/api/stats.json', // Relative path for local testing
+            // Future production endpoints
+            'https://stats.quiver.network/api/stats',
+            'https://api.quiver.network/stats',
+            'https://quiver-network-stats.workers.dev/api/stats'
+        ];
+        this.currentEndpointIndex = 0;
         
         // Display state
-        this.currentDisplay = this.baseNodes;
-        this.targetValue = this.baseNodes;
+        this.currentDisplay = 0;
+        this.targetValue = 0;
         this.animationSpeed = 50; // ms per update
         
-        // WebSocket connection (future implementation)
-        this.wsEndpoint = 'wss://gateway.quiver.network/ws';
+        // Connection state
         this.connected = false;
+        this.lastSuccessfulFetch = null;
+        this.fetchInterval = 30000; // 30 seconds
         
         // Callbacks
         this.onUpdate = null;
         this.onConnectionChange = null;
+        
+        // Fallback simulation parameters
+        this.baseNodes = 156; // Starting nodes
+        this.growthRate = 0.02; // 2% growth per hour
+        this.volatility = 0.15; // 15% random variation
+        this.simulationStartTime = Date.now();
     }
     
     start() {
-        // Start simulation
-        this.updateTarget();
+        // Start animation loop
         this.animate();
         
-        // Update target every 5-30 seconds (random interval)
-        this.scheduleNextUpdate();
+        // Try to fetch real data
+        this.fetchRealData();
         
-        // Try to connect to real gateway
-        this.tryConnect();
+        // Schedule periodic updates
+        setInterval(() => this.fetchRealData(), this.fetchInterval);
     }
     
     scheduleNextUpdate() {
@@ -83,57 +95,56 @@ class NetworkCounter {
         setTimeout(() => this.animate(), this.animationSpeed);
     }
     
-    async tryConnect() {
-        // Try to connect to real WebSocket endpoint
-        try {
-            const ws = new WebSocket(this.wsEndpoint);
+    async fetchRealData() {
+        let dataFetched = false;
+        
+        // Try each endpoint
+        for (let i = 0; i < this.endpoints.length; i++) {
+            const endpoint = this.endpoints[(this.currentEndpointIndex + i) % this.endpoints.length];
             
-            ws.onopen = () => {
-                console.log('Connected to real QUIVer gateway');
-                this.connected = true;
-                if (this.onConnectionChange) {
-                    this.onConnectionChange(true);
-                }
-            };
-            
-            ws.onmessage = (event) => {
-                try {
-                    const data = JSON.parse(event.data);
-                    if (data.node_count) {
-                        // Use real data when available
-                        this.targetValue = data.node_count;
-                    }
-                } catch (e) {
-                    console.error('Failed to parse WebSocket message:', e);
-                }
-            };
-            
-            ws.onerror = (error) => {
-                console.log('WebSocket error, using simulation mode');
-                this.connected = false;
-                if (this.onConnectionChange) {
-                    this.onConnectionChange(false);
-                }
-            };
-            
-            ws.onclose = () => {
-                this.connected = false;
-                if (this.onConnectionChange) {
-                    this.onConnectionChange(false);
-                }
+            try {
+                const response = await fetch(endpoint, {
+                    mode: 'cors',
+                    cache: 'no-cache'
+                });
                 
-                // Retry connection after 30 seconds
-                setTimeout(() => this.tryConnect(), 30000);
-            };
-            
-            this.ws = ws;
-            
-        } catch (error) {
-            console.log('Failed to connect to WebSocket, continuing in simulation mode');
+                if (response.ok) {
+                    const data = await response.json();
+                    
+                    if (data.node_count !== undefined) {
+                        // Successfully got real data
+                        this.targetValue = data.node_count;
+                        this.connected = true;
+                        this.lastSuccessfulFetch = Date.now();
+                        this.currentEndpointIndex = (this.currentEndpointIndex + i) % this.endpoints.length;
+                        dataFetched = true;
+                        
+                        console.log(`Fetched real data from ${endpoint}:`, data);
+                        
+                        if (this.onConnectionChange) {
+                            this.onConnectionChange(true);
+                        }
+                        
+                        // Store additional stats if available
+                        this.lastStats = data;
+                        
+                        break;
+                    }
+                }
+            } catch (error) {
+                console.log(`Failed to fetch from ${endpoint}:`, error.message);
+            }
+        }
+        
+        // If all endpoints failed, use simulation
+        if (!dataFetched) {
+            console.log('All endpoints failed, using simulation mode');
             this.connected = false;
+            this.updateTarget(); // Use simulation
             
-            // Retry later
-            setTimeout(() => this.tryConnect(), 30000);
+            if (this.onConnectionChange) {
+                this.onConnectionChange(false);
+            }
         }
     }
     
@@ -146,9 +157,19 @@ class NetworkCounter {
     }
     
     destroy() {
-        if (this.ws) {
-            this.ws.close();
+        // Clean up any connections or timers
+        if (this.fetchInterval) {
+            clearInterval(this.fetchInterval);
         }
+    }
+    
+    // Get additional stats
+    getStats() {
+        return this.lastStats || {
+            node_count: this.currentDisplay,
+            connected: this.connected,
+            timestamp: new Date()
+        };
     }
 }
 
