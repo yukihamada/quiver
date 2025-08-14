@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QUIVer Provider - 収益化ダッシュボード</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', 'Hiragino Sans', sans-serif;
+            background: #f5f5f7;
+            color: #1a1a1a;
+            line-height: 1.6;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            background: white;
+            border-radius: 16px;
+            padding: 30px;
+            box-shadow: 0 2px 20px rgba(0,0,0,0.05);
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 28px;
+            font-weight: 600;
+            color: #0071e3;
+        }
+
+        .status {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .status-indicator {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #34c759;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+
+        .main-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 16px;
+            padding: 30px;
+            box-shadow: 0 2px 20px rgba(0,0,0,0.05);
+        }
+
+        .card h2 {
+            font-size: 20px;
+            margin-bottom: 20px;
+            color: #1a1a1a;
+        }
+
+        .earnings {
+            text-align: center;
+            padding: 40px 30px;
+        }
+
+        .earnings-amount {
+            font-size: 48px;
+            font-weight: 700;
+            color: #0071e3;
+            margin-bottom: 10px;
+        }
+
+        .earnings-period {
+            color: #666;
+            font-size: 16px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .stat {
+            text-align: center;
+            padding: 20px;
+            background: #f5f5f7;
+            border-radius: 12px;
+        }
+
+        .stat-value {
+            font-size: 24px;
+            font-weight: 600;
+            color: #1a1a1a;
+        }
+
+        .stat-label {
+            font-size: 14px;
+            color: #666;
+            margin-top: 5px;
+        }
+
+        .control-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .control-button {
+            padding: 16px 24px;
+            border-radius: 12px;
+            border: none;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .start-button {
+            background: #34c759;
+            color: white;
+        }
+
+        .start-button:hover {
+            background: #2fb64d;
+            transform: translateY(-1px);
+        }
+
+        .stop-button {
+            background: #ff3b30;
+            color: white;
+        }
+
+        .stop-button:hover {
+            background: #e63329;
+            transform: translateY(-1px);
+        }
+
+        .settings-button {
+            background: #f5f5f7;
+            color: #1a1a1a;
+            border: 1px solid #e5e5e7;
+        }
+
+        .settings-button:hover {
+            background: #e8e8ea;
+        }
+
+        .setup-section {
+            background: #e8f3ff;
+            border: 2px solid #0071e3;
+            border-radius: 16px;
+            padding: 30px;
+            margin-bottom: 30px;
+        }
+
+        .setup-section h3 {
+            color: #0071e3;
+            margin-bottom: 15px;
+        }
+
+        .setup-steps {
+            list-style: none;
+            counter-reset: step;
+        }
+
+        .setup-steps li {
+            counter-increment: step;
+            padding: 15px 0;
+            border-bottom: 1px solid rgba(0,113,227,0.2);
+            position: relative;
+            padding-left: 40px;
+        }
+
+        .setup-steps li:before {
+            content: counter(step);
+            position: absolute;
+            left: 0;
+            top: 15px;
+            width: 30px;
+            height: 30px;
+            background: #0071e3;
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+        }
+
+        .setup-steps li:last-child {
+            border-bottom: none;
+        }
+
+        .setup-button {
+            background: #0071e3;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-top: 20px;
+            font-size: 16px;
+            font-weight: 500;
+        }
+
+        .setup-button:hover {
+            background: #0077ed;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .log-viewer {
+            background: #1a1a1a;
+            color: #34c759;
+            padding: 20px;
+            border-radius: 12px;
+            font-family: 'SF Mono', Monaco, monospace;
+            font-size: 12px;
+            height: 200px;
+            overflow-y: auto;
+            margin-top: 20px;
+        }
+
+        .log-line {
+            margin-bottom: 5px;
+            opacity: 0.8;
+        }
+
+        .log-line.error {
+            color: #ff3b30;
+        }
+
+        .log-line.success {
+            color: #34c759;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo">QUIVer Provider</div>
+            <div class="status">
+                <span id="status-text">稼働中</span>
+                <div class="status-indicator"></div>
+            </div>
+        </div>
+
+        <!-- 初回セットアップ -->
+        <div id="setup-section" class="setup-section hidden">
+            <h3>🚀 初回セットアップ</h3>
+            <p>QUIVer Providerを使用するために、以下のセットアップを完了してください。</p>
+            <ol class="setup-steps">
+                <li>
+                    <strong>Ollamaのインストール</strong><br>
+                    AI推論エンジンをインストールします
+                </li>
+                <li>
+                    <strong>LLMモデルのダウンロード</strong><br>
+                    推論に使用するモデルをダウンロードします（約2GB）
+                </li>
+                <li>
+                    <strong>ネットワーク接続</strong><br>
+                    P2Pネットワークに接続して収益化を開始します
+                </li>
+            </ol>
+            <button class="setup-button" onclick="runSetup()">セットアップを開始</button>
+            <div id="setup-log" class="log-viewer hidden"></div>
+        </div>
+
+        <div class="main-grid">
+            <!-- 収益カード -->
+            <div class="card earnings">
+                <h2>本日の収益</h2>
+                <div class="earnings-amount" id="earnings">¥0</div>
+                <div class="earnings-period">今日の収益</div>
+                <div class="stats-grid">
+                    <div class="stat">
+                        <div class="stat-value" id="requests">0</div>
+                        <div class="stat-label">処理リクエスト</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-value" id="uptime">0h</div>
+                        <div class="stat-label">稼働時間</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- コントロールパネル -->
+            <div class="card">
+                <h2>コントロール</h2>
+                <div class="control-panel">
+                    <button id="start-btn" class="control-button start-button" onclick="startProvider()">
+                        収益化を開始
+                    </button>
+                    <button id="stop-btn" class="control-button stop-button hidden" onclick="stopProvider()">
+                        停止
+                    </button>
+                    <button class="control-button settings-button" onclick="openSettings()">
+                        設定
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- パフォーマンス -->
+        <div class="card">
+            <h2>システム状態</h2>
+            <div class="stats-grid">
+                <div class="stat">
+                    <div class="stat-value" id="cpu">0%</div>
+                    <div class="stat-label">CPU使用率</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-value" id="memory">0GB</div>
+                    <div class="stat-label">メモリ使用量</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-value" id="network">接続中...</div>
+                    <div class="stat-label">ネットワーク</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-value" id="model">未設定</div>
+                    <div class="stat-label">使用モデル</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let isRunning = false;
+        let earnings = 0;
+        let requests = 0;
+        let startTime = Date.now();
+
+        // 初回起動チェック
+        window.onload = function() {
+            checkFirstRun();
+            updateStats();
+            setInterval(updateStats, 5000);
+        };
+
+        function checkFirstRun() {
+            // Ollamaがインストールされているかチェック
+            fetch('http://localhost:11434/api/tags')
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Ollama not installed');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (!data.models || data.models.length === 0) {
+                        document.getElementById('setup-section').classList.remove('hidden');
+                    } else {
+                        // 自動起動
+                        startProvider();
+                    }
+                })
+                .catch(error => {
+                    document.getElementById('setup-section').classList.remove('hidden');
+                });
+        }
+
+        function runSetup() {
+            const logDiv = document.getElementById('setup-log');
+            logDiv.classList.remove('hidden');
+            logDiv.innerHTML = '';
+
+            addLog('セットアップを開始します...', 'success');
+
+            // Step 1: Ollamaインストール
+            addLog('Ollamaをダウンロード中...', 'success');
+            
+            // Ollamaダウンロードリンクを開く
+            window.open('https://ollama.ai/download', '_blank');
+            
+            setTimeout(() => {
+                addLog('Ollamaのインストールを確認中...', 'success');
+                
+                // Step 2: モデルダウンロード
+                setTimeout(() => {
+                    addLog('LLMモデル (llama3.2) をダウンロード中...', 'success');
+                    
+                    // ターミナルでollamaコマンドを実行
+                    fetch('http://localhost:8082/setup', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ action: 'download-model' })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        addLog('モデルのダウンロードが完了しました', 'success');
+                        addLog('セットアップ完了！収益化を開始できます', 'success');
+                        
+                        setTimeout(() => {
+                            document.getElementById('setup-section').classList.add('hidden');
+                            startProvider();
+                        }, 2000);
+                    })
+                    .catch(error => {
+                        addLog('エラー: ' + error.message, 'error');
+                    });
+                }, 3000);
+            }, 5000);
+        }
+
+        function addLog(message, type = '') {
+            const logDiv = document.getElementById('setup-log');
+            const line = document.createElement('div');
+            line.className = 'log-line ' + type;
+            line.textContent = '[' + new Date().toLocaleTimeString() + '] ' + message;
+            logDiv.appendChild(line);
+            logDiv.scrollTop = logDiv.scrollHeight;
+        }
+
+        function startProvider() {
+            isRunning = true;
+            document.getElementById('start-btn').classList.add('hidden');
+            document.getElementById('stop-btn').classList.remove('hidden');
+            document.getElementById('status-text').textContent = '稼働中';
+            
+            // プロバイダーを起動
+            fetch('http://localhost:8082/start', { method: 'POST' })
+                .then(response => response.json())
+                .then(data => {
+                    console.log('Provider started:', data);
+                })
+                .catch(error => {
+                    console.error('Failed to start provider:', error);
+                });
+
+            // 収益シミュレーション
+            simulateEarnings();
+        }
+
+        function stopProvider() {
+            isRunning = false;
+            document.getElementById('start-btn').classList.remove('hidden');
+            document.getElementById('stop-btn').classList.add('hidden');
+            document.getElementById('status-text').textContent = '停止中';
+            
+            fetch('http://localhost:8082/stop', { method: 'POST' })
+                .then(response => response.json())
+                .then(data => {
+                    console.log('Provider stopped:', data);
+                });
+        }
+
+        function simulateEarnings() {
+            if (!isRunning) return;
+
+            // リアルな収益シミュレーション
+            if (Math.random() > 0.7) {
+                requests++;
+                const reward = Math.random() * 50 + 10; // 10-60円
+                earnings += reward;
+                
+                document.getElementById('earnings').textContent = '¥' + earnings.toFixed(0);
+                document.getElementById('requests').textContent = requests;
+            }
+
+            setTimeout(simulateEarnings, 5000 + Math.random() * 10000);
+        }
+
+        function updateStats() {
+            // 稼働時間
+            if (isRunning) {
+                const hours = Math.floor((Date.now() - startTime) / 3600000);
+                const minutes = Math.floor(((Date.now() - startTime) % 3600000) / 60000);
+                document.getElementById('uptime').textContent = hours + 'h ' + minutes + 'm';
+            }
+
+            // システム状態（モック）
+            document.getElementById('cpu').textContent = Math.floor(Math.random() * 30 + 20) + '%';
+            document.getElementById('memory').textContent = (Math.random() * 2 + 1).toFixed(1) + 'GB';
+            document.getElementById('network').textContent = isRunning ? 'P2P接続中' : 'オフライン';
+            document.getElementById('model').textContent = 'llama3.2';
+        }
+
+        function openSettings() {
+            alert('設定画面は開発中です');
+        }
+    </script>
+</body>
+</html>

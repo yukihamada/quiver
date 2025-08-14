@@ -45,6 +45,12 @@ chmod +x "$RELEASE_DIR/bootstrap/start.sh"
 APP_DIR="$RELEASE_DIR/QUIVerProvider.app"
 cp -r QUIVerProvider.app "$APP_DIR"
 
+# Copy GUI launcher
+cp gui/QUIVerLauncher.html "$APP_DIR/Contents/Resources/"
+
+# Copy setup script
+cp scripts/setup-mac-app.sh "$RELEASE_DIR/"
+
 # Remove unnecessary files
 find "$RELEASE_DIR" -name "*.go" -delete
 find "$RELEASE_DIR" -name "*_test.go" -delete

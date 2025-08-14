@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QUIVer 収益計算機</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #fff;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0;
+        }
+
+        .calculator {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 500px;
+            width: 100%;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 10px;
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        input[type="range"] {
+            width: 100%;
+            height: 6px;
+            border-radius: 3px;
+            background: rgba(255, 255, 255, 0.3);
+            outline: none;
+            -webkit-appearance: none;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #fff;
+            cursor: pointer;
+        }
+
+        .value-display {
+            text-align: right;
+            font-size: 24px;
+            font-weight: bold;
+            margin-top: 5px;
+        }
+
+        select {
+            width: 100%;
+            padding: 10px;
+            border-radius: 10px;
+            border: none;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            font-size: 16px;
+        }
+
+        select option {
+            background: #333;
+        }
+
+        .results {
+            margin-top: 30px;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+        }
+
+        .result-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 15px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .result-row:last-child {
+            border-bottom: none;
+            font-size: 24px;
+            font-weight: bold;
+            color: #4ade80;
+        }
+
+        .info {
+            margin-top: 20px;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            font-size: 14px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="calculator">
+        <h1>🚀 QUIVer 収益計算機</h1>
+        
+        <div class="input-group">
+            <label>1日の稼働時間</label>
+            <input type="range" id="hours" min="1" max="24" value="8" oninput="calculate()">
+            <div class="value-display"><span id="hoursValue">8</span> 時間</div>
+        </div>
+
+        <div class="input-group">
+            <label>デバイスタイプ</label>
+            <select id="device" onchange="calculate()">
+                <option value="mac-mini">Mac Mini (M2)</option>
+                <option value="macbook-pro">MacBook Pro (M3)</option>
+                <option value="mac-studio">Mac Studio (M2 Ultra)</option>
+                <option value="pc-gpu">PC + GPU (RTX 4060)</option>
+                <option value="pc-high">PC + GPU (RTX 4090)</option>
+            </select>
+        </div>
+
+        <div class="input-group">
+            <label>ステーキングティア</label>
+            <select id="tier" onchange="calculate()">
+                <option value="none">なし (0%)</option>
+                <option value="bronze">Bronze - 1,000 QUIV (+5%)</option>
+                <option value="silver">Silver - 10,000 QUIV (+10%)</option>
+                <option value="gold">Gold - 100,000 QUIV (+20%)</option>
+                <option value="platinum">Platinum - 1,000,000 QUIV (+30%)</option>
+            </select>
+        </div>
+
+        <div class="results">
+            <div class="result-row">
+                <span>1時間あたりの処理数</span>
+                <span id="requestsPerHour">50</span>
+            </div>
+            <div class="result-row">
+                <span>基本報酬 (QUIV/日)</span>
+                <span id="baseReward">400</span>
+            </div>
+            <div class="result-row">
+                <span>ボーナス報酬</span>
+                <span id="bonusReward">40</span>
+            </div>
+            <div class="result-row">
+                <span>日収 (USD)</span>
+                <span id="dailyUSD">$44.00</span>
+            </div>
+            <div class="result-row">
+                <span>月収予想 (USD)</span>
+                <span id="monthlyUSD">$1,320</span>
+            </div>
+        </div>
+
+        <div class="info">
+            💡 実際の収益は、ネットワーク需要、モデルの種類、応答品質により変動します
+        </div>
+    </div>
+
+    <script>
+        function calculate() {
+            const hours = parseInt(document.getElementById('hours').value);
+            const device = document.getElementById('device').value;
+            const tier = document.getElementById('tier').value;
+            
+            document.getElementById('hoursValue').textContent = hours;
+            
+            // デバイスごとの処理能力（リクエスト/時間）
+            const deviceCapacity = {
+                'mac-mini': 50,
+                'macbook-pro': 70,
+                'mac-studio': 150,
+                'pc-gpu': 100,
+                'pc-high': 200
+            };
+            
+            // ティアボーナス
+            const tierBonus = {
+                'none': 0,
+                'bronze': 0.05,
+                'silver': 0.10,
+                'gold': 0.20,
+                'platinum': 0.30
+            };
+            
+            const requestsPerHour = deviceCapacity[device];
+            const totalRequests = requestsPerHour * hours;
+            const avgTokensPerRequest = 500;
+            const quivPerToken = 0.01;
+            
+            // 基本報酬計算
+            const baseReward = totalRequests * avgTokensPerRequest * quivPerToken;
+            
+            // ボーナス計算（ティア + 高速応答20%）
+            const bonus = baseReward * (tierBonus[tier] + 0.20);
+            
+            const totalQuiv = baseReward + bonus;
+            const quivToUSD = 0.10;
+            const dailyUSD = totalQuiv * quivToUSD;
+            const monthlyUSD = dailyUSD * 30;
+            
+            // 表示更新
+            document.getElementById('requestsPerHour').textContent = requestsPerHour;
+            document.getElementById('baseReward').textContent = baseReward.toFixed(0);
+            document.getElementById('bonusReward').textContent = bonus.toFixed(0);
+            document.getElementById('dailyUSD').textContent = '$' + dailyUSD.toFixed(2);
+            document.getElementById('monthlyUSD').textContent = '$' + monthlyUSD.toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+        }
+        
+        // 初期計算
+        calculate();
+    </script>
+</body>
+</html>

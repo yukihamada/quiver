@@ -1,0 +1,876 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QUIVer - あなたのMacが、もうひとりの収入源に</title>
+    <meta name="description" content="余っているMacの処理能力をAI計算に提供し、月数万円〜十数万円の報酬を受け取る。安心設計で簡単3ステップ。">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', 'Hiragino Kaku Gothic ProN', 'メイリオ', sans-serif;
+            line-height: 1.8;
+            color: #1a1a1a;
+            background: #ffffff;
+        }
+
+        /* ヘッダー */
+        header {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid #e5e5e7;
+            z-index: 1000;
+            transition: all 0.3s;
+        }
+
+        nav {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            height: 64px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: 600;
+            color: #0071e3;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 30px;
+            align-items: center;
+        }
+
+        .nav-links a {
+            color: #1a1a1a;
+            text-decoration: none;
+            font-size: 14px;
+            transition: color 0.3s;
+        }
+
+        .nav-links a:hover {
+            color: #0071e3;
+        }
+
+        .download-btn {
+            background: #0071e3;
+            color: white;
+            padding: 8px 20px;
+            border-radius: 20px;
+            text-decoration: none;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+
+        .download-btn:hover {
+            background: #0077ed;
+            transform: translateY(-1px);
+        }
+
+        /* ヒーロー */
+        .hero {
+            padding: 120px 20px 80px;
+            max-width: 1200px;
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        .hero h1 {
+            font-size: clamp(32px, 5vw, 56px);
+            font-weight: 600;
+            line-height: 1.2;
+            margin-bottom: 24px;
+            background: linear-gradient(135deg, #0071e3 0%, #5e5ce6 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero-subtitle {
+            font-size: clamp(18px, 2.5vw, 24px);
+            color: #666;
+            margin-bottom: 40px;
+            line-height: 1.6;
+        }
+
+        .revenue-highlight {
+            display: inline-block;
+            background: #f5f5f7;
+            padding: 12px 24px;
+            border-radius: 30px;
+            font-size: 16px;
+            color: #1a1a1a;
+            margin-bottom: 40px;
+        }
+
+        .revenue-highlight strong {
+            color: #0071e3;
+            font-weight: 600;
+        }
+
+        /* CTA */
+        .cta-section {
+            display: flex;
+            gap: 16px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .cta-primary {
+            background: #0071e3;
+            color: white;
+            padding: 16px 32px;
+            border-radius: 30px;
+            text-decoration: none;
+            font-size: 18px;
+            font-weight: 500;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s;
+        }
+
+        .cta-primary:hover {
+            background: #0077ed;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(0, 113, 227, 0.3);
+        }
+
+        .cta-secondary {
+            background: transparent;
+            color: #0071e3;
+            padding: 16px 32px;
+            border: 2px solid #0071e3;
+            border-radius: 30px;
+            text-decoration: none;
+            font-size: 18px;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+
+        .cta-secondary:hover {
+            background: #0071e3;
+            color: white;
+        }
+
+        /* セクション共通 */
+        .section {
+            padding: 80px 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .section-title {
+            font-size: clamp(28px, 4vw, 40px);
+            font-weight: 600;
+            text-align: center;
+            margin-bottom: 60px;
+            color: #1a1a1a;
+        }
+
+        /* 仕組み説明 */
+        .how-it-works {
+            background: #f5f5f7;
+        }
+
+        .explanation-card {
+            background: white;
+            padding: 60px;
+            border-radius: 20px;
+            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.05);
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .explanation-card h3 {
+            font-size: 24px;
+            margin-bottom: 20px;
+            color: #0071e3;
+        }
+
+        .explanation-card p {
+            color: #666;
+            line-height: 1.8;
+        }
+
+        /* 安心設計 */
+        .security-features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 30px;
+            margin-top: 60px;
+        }
+
+        .security-card {
+            background: white;
+            padding: 40px;
+            border-radius: 16px;
+            text-align: center;
+            border: 1px solid #e5e5e7;
+            transition: all 0.3s;
+        }
+
+        .security-card:hover {
+            border-color: #0071e3;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .security-icon {
+            width: 60px;
+            height: 60px;
+            background: #e8f3ff;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            font-size: 24px;
+        }
+
+        .security-card h4 {
+            font-size: 18px;
+            margin-bottom: 12px;
+            color: #1a1a1a;
+        }
+
+        .security-card p {
+            font-size: 14px;
+            color: #666;
+            line-height: 1.6;
+        }
+
+        /* ステップ */
+        .steps-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 40px;
+            margin-top: 60px;
+        }
+
+        .step-card {
+            text-align: center;
+            position: relative;
+        }
+
+        .step-number {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #0071e3 0%, #5e5ce6 100%);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+            font-weight: 600;
+            margin: 0 auto 24px;
+        }
+
+        .step-card h4 {
+            font-size: 20px;
+            margin-bottom: 16px;
+            color: #1a1a1a;
+        }
+
+        .step-card p {
+            color: #666;
+            font-size: 16px;
+        }
+
+        /* 収益例 */
+        .revenue-examples {
+            background: #f5f5f7;
+        }
+
+        .device-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 30px;
+            margin-top: 60px;
+        }
+
+        .device-card {
+            background: white;
+            border-radius: 16px;
+            overflow: hidden;
+            border: 1px solid #e5e5e7;
+            transition: all 0.3s;
+        }
+
+        .device-card:hover {
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+            transform: translateY(-4px);
+        }
+
+        .device-header {
+            background: linear-gradient(135deg, #0071e3 0%, #5e5ce6 100%);
+            color: white;
+            padding: 24px;
+            text-align: center;
+        }
+
+        .device-name {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .device-revenue {
+            font-size: 28px;
+            font-weight: 700;
+        }
+
+        .device-body {
+            padding: 24px;
+        }
+
+        .device-spec {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid #f5f5f7;
+        }
+
+        .device-spec:last-child {
+            border-bottom: none;
+        }
+
+        .spec-label {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .spec-value {
+            color: #1a1a1a;
+            font-weight: 500;
+            font-size: 14px;
+        }
+
+        /* 必要環境 */
+        .requirements {
+            background: white;
+        }
+
+        .requirements-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 40px;
+            max-width: 800px;
+            margin: 60px auto 0;
+        }
+
+        .requirement-item {
+            text-align: center;
+        }
+
+        .requirement-icon {
+            width: 60px;
+            height: 60px;
+            background: #f5f5f7;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 16px;
+            font-size: 24px;
+        }
+
+        .requirement-item h5 {
+            font-size: 16px;
+            margin-bottom: 8px;
+            color: #1a1a1a;
+        }
+
+        .requirement-item p {
+            font-size: 14px;
+            color: #666;
+        }
+
+        /* FAQ */
+        .faq {
+            background: #f5f5f7;
+        }
+
+        .faq-container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .faq-item {
+            background: white;
+            margin-bottom: 16px;
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid #e5e5e7;
+        }
+
+        .faq-question {
+            padding: 24px;
+            font-size: 18px;
+            font-weight: 500;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .faq-question:hover {
+            background: #f5f5f7;
+        }
+
+        .faq-arrow {
+            transition: transform 0.3s;
+        }
+
+        .faq-answer {
+            padding: 0 24px;
+            max-height: 0;
+            overflow: hidden;
+            transition: all 0.3s;
+        }
+
+        .faq-answer.active {
+            max-height: 300px;
+            padding: 0 24px 24px;
+        }
+
+        /* フッターCTA */
+        .footer-cta {
+            background: linear-gradient(135deg, #0071e3 0%, #5e5ce6 100%);
+            color: white;
+            text-align: center;
+            padding: 80px 20px;
+        }
+
+        .footer-cta h2 {
+            font-size: clamp(28px, 4vw, 40px);
+            margin-bottom: 20px;
+        }
+
+        .footer-cta p {
+            font-size: 20px;
+            margin-bottom: 40px;
+            opacity: 0.9;
+        }
+
+        /* フッター */
+        footer {
+            background: #1a1a1a;
+            color: #999;
+            padding: 40px 20px;
+            text-align: center;
+        }
+
+        .footer-links {
+            display: flex;
+            gap: 30px;
+            justify-content: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .footer-links a {
+            color: #999;
+            text-decoration: none;
+            font-size: 14px;
+            transition: color 0.3s;
+        }
+
+        .footer-links a:hover {
+            color: white;
+        }
+
+        .disclaimer {
+            font-size: 12px;
+            color: #666;
+            max-width: 800px;
+            margin: 20px auto 0;
+            line-height: 1.6;
+        }
+
+        /* レスポンシブ */
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+            
+            .hero {
+                padding: 100px 20px 60px;
+            }
+            
+            .explanation-card {
+                padding: 40px 30px;
+            }
+            
+            .device-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* アニメーション */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .animate {
+            animation: fadeInUp 0.8s ease-out;
+        }
+    </style>
+</head>
+<body>
+    <!-- ヘッダー -->
+    <header>
+        <nav>
+            <div class="logo">QUIVer</div>
+            <div class="nav-links">
+                <a href="#how">仕組み</a>
+                <a href="#security">安心設計</a>
+                <a href="#revenue">収益例</a>
+                <a href="#faq">FAQ</a>
+                <a href="#download" class="download-btn">無料ダウンロード</a>
+            </div>
+        </nav>
+    </header>
+
+    <!-- ヒーロー -->
+    <section class="hero">
+        <h1>あなたのMacが、<br>もうひとりの収入源に</h1>
+        <p class="hero-subtitle">
+            余っている処理能力をAI計算に提供し、<br>
+            稼働時間に応じて報酬を受け取ることができます。
+        </p>
+        <div class="revenue-highlight">
+            高性能モデルでは<strong>月数万円〜十数万円</strong>の事例もあります（当社集計データによる）
+        </div>
+        <div class="cta-section">
+            <a href="#download" class="cta-primary">
+                無料で始める
+                <span>→</span>
+            </a>
+            <a href="#revenue" class="cta-secondary">収益例を見る</a>
+        </div>
+    </section>
+
+    <!-- 仕組み -->
+    <section class="section how-it-works" id="how">
+        <h2 class="section-title">どうやって収益が発生するの？</h2>
+        <div class="explanation-card">
+            <h3>世界中のAI需要をみんなで支える</h3>
+            <p>
+                QUIVerは、企業や研究機関が必要とするAI推論やデータ処理を世界中の参加者のPCに分散して実行します。<br><br>
+                あなたのMacがその一部を担い、処理量に応じた報酬が自動的にウォレットに送られます。
+            </p>
+        </div>
+    </section>
+
+    <!-- 安心設計 -->
+    <section class="section" id="security">
+        <h2 class="section-title">安心して使える設計</h2>
+        <div class="security-features">
+            <div class="security-card">
+                <div class="security-icon">🔧</div>
+                <h4>スマート負荷調整</h4>
+                <p>CPU使用率を自動調整（最大70％）し、発熱やパフォーマンス低下を防止</p>
+            </div>
+            <div class="security-card">
+                <div class="security-icon">🔒</div>
+                <h4>軍事レベルの暗号化</h4>
+                <p>AES-256暗号化通信で外部からの不正アクセスを防ぐ</p>
+            </div>
+            <div class="security-card">
+                <div class="security-icon">✓</div>
+                <h4>第三者監査済み</h4>
+                <p>第三者セキュリティ監査を受けたクライアントアプリ</p>
+            </div>
+            <div class="security-card">
+                <div class="security-icon">⏹</div>
+                <h4>いつでも停止可能</h4>
+                <p>いつでもワンクリックで停止・アンインストール可能</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- 必要環境 -->
+    <section class="section requirements">
+        <h2 class="section-title">必要な環境</h2>
+        <div class="requirements-grid">
+            <div class="requirement-item">
+                <div class="requirement-icon">💻</div>
+                <h5>macOS 10.15 以降</h5>
+                <p>Catalina以上対応</p>
+            </div>
+            <div class="requirement-item">
+                <div class="requirement-icon">🧠</div>
+                <h5>メモリ 8GB 以上</h5>
+                <p>推奨16GB</p>
+            </div>
+            <div class="requirement-item">
+                <div class="requirement-icon">💾</div>
+                <h5>空き容量 20GB 以上</h5>
+                <p>SSD推奨</p>
+            </div>
+            <div class="requirement-item">
+                <div class="requirement-icon">🌐</div>
+                <h5>インターネット接続</h5>
+                <p>安定した回線</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- ステップ -->
+    <section class="section">
+        <h2 class="section-title">始め方は3ステップ</h2>
+        <div class="steps-container">
+            <div class="step-card">
+                <div class="step-number">1</div>
+                <h4>ダウンロード（無料）</h4>
+                <p>アプリをダウンロードして<br>Macにインストール</p>
+            </div>
+            <div class="step-card">
+                <div class="step-number">2</div>
+                <h4>起動</h4>
+                <p>自動で最適設定が適用されます<br>特別な設定は不要</p>
+            </div>
+            <div class="step-card">
+                <div class="step-number">3</div>
+                <h4>収益を確認</h4>
+                <p>ダッシュボードで<br>リアルタイムに報酬をチェック</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- 収益例 -->
+    <section class="section revenue-examples" id="revenue">
+        <h2 class="section-title">収益例（当社調べ）</h2>
+        <div class="device-grid">
+            <div class="device-card">
+                <div class="device-header">
+                    <div class="device-name">Mac mini（M2）</div>
+                    <div class="device-revenue">月5,000〜60,000円</div>
+                </div>
+                <div class="device-body">
+                    <div class="device-spec">
+                        <span class="spec-label">消費電力</span>
+                        <span class="spec-value">月額約1,000円</span>
+                    </div>
+                    <div class="device-spec">
+                        <span class="spec-label">稼働時間</span>
+                        <span class="spec-value">24時間推奨</span>
+                    </div>
+                    <div class="device-spec">
+                        <span class="spec-label">投資回収</span>
+                        <span class="spec-value">約3ヶ月</span>
+                    </div>
+                </div>
+            </div>
+            <div class="device-card">
+                <div class="device-header">
+                    <div class="device-name">MacBook Pro（M3 Pro/Max）</div>
+                    <div class="device-revenue">月10,000〜120,000円</div>
+                </div>
+                <div class="device-body">
+                    <div class="device-spec">
+                        <span class="spec-label">処理性能</span>
+                        <span class="spec-value">高速処理</span>
+                    </div>
+                    <div class="device-spec">
+                        <span class="spec-label">稼働時間</span>
+                        <span class="spec-value">8〜16時間</span>
+                    </div>
+                    <div class="device-spec">
+                        <span class="spec-label">特徴</span>
+                        <span class="spec-value">高収益率</span>
+                    </div>
+                </div>
+            </div>
+            <div class="device-card">
+                <div class="device-header">
+                    <div class="device-name">Mac Studio（M2 Ultra）</div>
+                    <div class="device-revenue">月20,000〜200,000円</div>
+                </div>
+                <div class="device-body">
+                    <div class="device-spec">
+                        <span class="spec-label">処理能力</span>
+                        <span class="spec-value">最高性能</span>
+                    </div>
+                    <div class="device-spec">
+                        <span class="spec-label">稼働時間</span>
+                        <span class="spec-value">24時間推奨</span>
+                    </div>
+                    <div class="device-spec">
+                        <span class="spec-label">ROI</span>
+                        <span class="spec-value">最短2ヶ月</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <p style="text-align: center; margin-top: 30px; color: #666; font-size: 14px;">
+            ※実際の収益は、稼働時間・マシンスペック・需要により変動します。
+        </p>
+    </section>
+
+    <!-- 受け取り方法 -->
+    <section class="section">
+        <h2 class="section-title">受け取り方法</h2>
+        <div class="explanation-card">
+            <p style="text-align: center; font-size: 18px; line-height: 1.8;">
+                報酬はQUIVトークンで毎日自動的に振り込まれます。<br>
+                提携取引所を通じて日本円に換金可能です。
+            </p>
+        </div>
+    </section>
+
+    <!-- FAQ -->
+    <section class="section faq" id="faq">
+        <h2 class="section-title">よくある質問</h2>
+        <div class="faq-container">
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFaq(this)">
+                    <span>本当に無料ですか？</span>
+                    <span class="faq-arrow">▼</span>
+                </div>
+                <div class="faq-answer">
+                    <p>はい、アプリのダウンロード・利用は完全無料です。初期費用や月額料金は一切かかりません。収益が発生した場合のみ、プラットフォーム手数料として5%をいただいています。</p>
+                </div>
+            </div>
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFaq(this)">
+                    <span>Macに負担はかかりませんか？</span>
+                    <span class="faq-arrow">▼</span>
+                </div>
+                <div class="faq-answer">
+                    <p>CPU使用率を最大70%に制限し、温度管理も自動で行うため、Macへの負担を最小限に抑えています。また、あなたが作業している間は自動的に処理を一時停止するスマート機能も搭載しています。</p>
+                </div>
+            </div>
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFaq(this)">
+                    <span>電気代はどのくらいかかりますか？</span>
+                    <span class="faq-arrow">▼</span>
+                </div>
+                <div class="faq-answer">
+                    <p>Mac miniの場合、24時間稼働でも月額約1,000円程度です。収益と比較すると十分にペイできる金額です。MacBook Proの場合は、使用時間に応じて変動しますが、一般的に収益の5-10%程度となります。</p>
+                </div>
+            </div>
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFaq(this)">
+                    <span>セキュリティは大丈夫ですか？</span>
+                    <span class="faq-arrow">▼</span>
+                </div>
+                <div class="faq-answer">
+                    <p>はい、万全のセキュリティ対策を実施しています。すべての通信はAES-256で暗号化され、あなたの個人データやファイルには一切アクセスしません。また、第三者機関によるセキュリティ監査も定期的に受けています。</p>
+                </div>
+            </div>
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFaq(this)">
+                    <span>いつでもやめられますか？</span>
+                    <span class="faq-arrow">▼</span>
+                </div>
+                <div class="faq-answer">
+                    <p>もちろんです。アプリ内のボタンひとつでいつでも停止できます。アンインストールも通常のアプリと同様に簡単に行え、システムに痕跡を残しません。</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- フッターCTA -->
+    <section class="footer-cta" id="download">
+        <h2>無料で始める</h2>
+        <p>クレジットカード不要</p>
+        <a href="https://github.com/yukihamada/quiver/releases/download/v1.0.0/QUIVerProvider-1.0.0.dmg" class="cta-primary" style="font-size: 20px; padding: 20px 40px;">
+            今すぐダウンロード
+            <span>→</span>
+        </a>
+        <p style="font-size: 16px; margin-top: 20px; opacity: 0.8;">
+            あなたのMacを、毎日のちょっとした収入源に変えてみませんか？
+        </p>
+    </section>
+
+    <!-- フッター -->
+    <footer>
+        <div class="footer-links">
+            <a href="/terms">利用規約</a>
+            <a href="/privacy">プライバシーポリシー</a>
+            <a href="/support">サポート</a>
+            <a href="/company">運営会社</a>
+        </div>
+        <div class="disclaimer">
+            ※ 収益例は当社が収集したデータに基づく参考値であり、実際の収益を保証するものではありません。<br>
+            ※ QUIVトークンの価値は市場により変動します。投資判断は自己責任でお願いします。
+        </div>
+        <p style="margin-top: 20px;">© 2024 QUIVer. All rights reserved.</p>
+    </footer>
+
+    <script>
+        // FAQ toggle
+        function toggleFaq(element) {
+            const answer = element.nextElementSibling;
+            const arrow = element.querySelector('.faq-arrow');
+            
+            answer.classList.toggle('active');
+            arrow.style.transform = answer.classList.contains('active') ? 'rotate(180deg)' : 'rotate(0)';
+        }
+
+        // Smooth scroll
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // Header shadow on scroll
+        window.addEventListener('scroll', () => {
+            const header = document.querySelector('header');
+            if (window.scrollY > 10) {
+                header.style.boxShadow = '0 2px 20px rgba(0,0,0,0.1)';
+            } else {
+                header.style.boxShadow = 'none';
+            }
+        });
+
+        // Animate on scroll
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -100px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('animate');
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.security-card, .step-card, .device-card, .requirement-item').forEach(el => {
+            observer.observe(el);
+        });
+    </script>
+</body>
+</html>
