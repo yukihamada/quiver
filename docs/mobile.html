@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>QUIVer - スマホで収益確認</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Hiragino Sans', sans-serif;
+            background: #f5f5f7;
+            color: #1d1d1f;
+            padding-bottom: env(safe-area-inset-bottom);
+        }
+
+        /* ヘッダー */
+        .header {
+            background: white;
+            padding: 20px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header h1 {
+            font-size: 24px;
+            font-weight: 600;
+            text-align: center;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* 収益カード */
+        .earnings-card {
+            background: white;
+            margin: 20px;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+        }
+
+        .earnings-label {
+            color: #86868b;
+            font-size: 14px;
+            margin-bottom: 10px;
+        }
+
+        .earnings-amount {
+            font-size: 48px;
+            font-weight: 700;
+            color: #1d1d1f;
+            line-height: 1;
+            margin-bottom: 5px;
+        }
+
+        .earnings-usd {
+            color: #86868b;
+            font-size: 18px;
+        }
+
+        /* クイックステータス */
+        .quick-stats {
+            display: flex;
+            gap: 15px;
+            margin: 0 20px;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            padding-bottom: 10px;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            min-width: 150px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        }
+
+        .stat-icon {
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+
+        .stat-value {
+            font-size: 24px;
+            font-weight: 600;
+            color: #1d1d1f;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: #86868b;
+            margin-top: 5px;
+        }
+
+        /* アクションボタン */
+        .actions {
+            margin: 20px;
+            display: flex;
+            gap: 10px;
+        }
+
+        .action-btn {
+            flex: 1;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            border-radius: 15px;
+            padding: 18px;
+            font-size: 16px;
+            font-weight: 600;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .action-btn::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.3);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+
+        .action-btn:active::before {
+            width: 300px;
+            height: 300px;
+        }
+
+        .action-btn.secondary {
+            background: white;
+            color: #667eea;
+            border: 2px solid #667eea;
+        }
+
+        /* デバイス状態 */
+        .devices {
+            margin: 20px;
+        }
+
+        .device-item {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        }
+
+        .device-info {
+            flex: 1;
+        }
+
+        .device-name {
+            font-weight: 600;
+            font-size: 16px;
+            margin-bottom: 5px;
+        }
+
+        .device-status {
+            font-size: 14px;
+            color: #86868b;
+        }
+
+        .status-indicator {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #34c759;
+            box-shadow: 0 0 10px rgba(52, 199, 89, 0.5);
+        }
+
+        .status-indicator.offline {
+            background: #ff3b30;
+            box-shadow: 0 0 10px rgba(255, 59, 48, 0.5);
+        }
+
+        /* グラフ */
+        .chart-container {
+            background: white;
+            margin: 20px;
+            border-radius: 20px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+        }
+
+        .chart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .chart-title {
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .chart-period {
+            color: #667eea;
+            font-size: 14px;
+        }
+
+        .mini-chart {
+            height: 150px;
+            display: flex;
+            align-items: flex-end;
+            gap: 5px;
+        }
+
+        .chart-bar {
+            flex: 1;
+            background: linear-gradient(to top, #667eea, #764ba2);
+            border-radius: 5px 5px 0 0;
+            position: relative;
+            min-height: 20px;
+        }
+
+        /* 通知設定 */
+        .settings-card {
+            background: white;
+            margin: 20px;
+            border-radius: 20px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+        }
+
+        .setting-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .setting-item:last-child {
+            border-bottom: none;
+        }
+
+        .toggle {
+            width: 51px;
+            height: 31px;
+            background: #e9e9eb;
+            border-radius: 31px;
+            position: relative;
+            transition: background 0.3s;
+        }
+
+        .toggle.active {
+            background: #34c759;
+        }
+
+        .toggle-slider {
+            width: 27px;
+            height: 27px;
+            background: white;
+            border-radius: 50%;
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            transition: left 0.3s;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .toggle.active .toggle-slider {
+            left: 22px;
+        }
+
+        /* ボトムメニュー */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            display: flex;
+            justify-content: space-around;
+            padding: 10px 0 calc(10px + env(safe-area-inset-bottom));
+            box-shadow: 0 -1px 3px rgba(0,0,0,0.1);
+        }
+
+        .nav-item {
+            flex: 1;
+            text-align: center;
+            padding: 5px;
+            color: #86868b;
+            text-decoration: none;
+            font-size: 10px;
+        }
+
+        .nav-item.active {
+            color: #667eea;
+        }
+
+        .nav-icon {
+            font-size: 24px;
+            margin-bottom: 3px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>QUIVer Provider</h1>
+    </div>
+
+    <div class="earnings-card">
+        <div class="earnings-label">本日の収益</div>
+        <div class="earnings-amount">¥4,287</div>
+        <div class="earnings-usd">≈ $28.58 USD</div>
+    </div>
+
+    <div class="quick-stats">
+        <div class="stat-card">
+            <div class="stat-icon">⚡</div>
+            <div class="stat-value">342</div>
+            <div class="stat-label">処理済み</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon">⏱️</div>
+            <div class="stat-value">3.2s</div>
+            <div class="stat-label">平均時間</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon">📈</div>
+            <div class="stat-value">99.1%</div>
+            <div class="stat-label">成功率</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon">💎</div>
+            <div class="stat-value">Silver</div>
+            <div class="stat-label">ステータス</div>
+        </div>
+    </div>
+
+    <div class="actions">
+        <button class="action-btn">報酬を請求</button>
+        <button class="action-btn secondary">詳細</button>
+    </div>
+
+    <div class="devices">
+        <h3 style="margin-bottom: 15px; font-size: 18px;">稼働中のデバイス</h3>
+        <div class="device-item">
+            <div class="device-info">
+                <div class="device-name">Mac mini (自宅)</div>
+                <div class="device-status">24時間稼働中 • 152 リクエスト/時</div>
+            </div>
+            <div class="status-indicator"></div>
+        </div>
+        <div class="device-item">
+            <div class="device-info">
+                <div class="device-name">MacBook Pro</div>
+                <div class="device-status">スリープ中</div>
+            </div>
+            <div class="status-indicator offline"></div>
+        </div>
+    </div>
+
+    <div class="chart-container">
+        <div class="chart-header">
+            <div class="chart-title">収益推移</div>
+            <div class="chart-period">過去7日間</div>
+        </div>
+        <div class="mini-chart">
+            <div class="chart-bar" style="height: 60%"></div>
+            <div class="chart-bar" style="height: 70%"></div>
+            <div class="chart-bar" style="height: 65%"></div>
+            <div class="chart-bar" style="height: 80%"></div>
+            <div class="chart-bar" style="height: 85%"></div>
+            <div class="chart-bar" style="height: 75%"></div>
+            <div class="chart-bar" style="height: 90%"></div>
+        </div>
+    </div>
+
+    <div class="settings-card">
+        <h3 style="margin-bottom: 15px; font-size: 18px;">通知設定</h3>
+        <div class="setting-item">
+            <span>収益通知</span>
+            <div class="toggle active" onclick="toggleSwitch(this)">
+                <div class="toggle-slider"></div>
+            </div>
+        </div>
+        <div class="setting-item">
+            <span>デバイス停止通知</span>
+            <div class="toggle active" onclick="toggleSwitch(this)">
+                <div class="toggle-slider"></div>
+            </div>
+        </div>
+        <div class="setting-item">
+            <span>日次レポート</span>
+            <div class="toggle" onclick="toggleSwitch(this)">
+                <div class="toggle-slider"></div>
+            </div>
+        </div>
+    </div>
+
+    <div style="height: 80px;"></div>
+
+    <nav class="bottom-nav">
+        <a href="#" class="nav-item active">
+            <div class="nav-icon">📊</div>
+            <div>ダッシュボード</div>
+        </a>
+        <a href="#" class="nav-item">
+            <div class="nav-icon">💰</div>
+            <div>収益</div>
+        </a>
+        <a href="#" class="nav-item">
+            <div class="nav-icon">🖥️</div>
+            <div>デバイス</div>
+        </a>
+        <a href="#" class="nav-item">
+            <div class="nav-icon">⚙️</div>
+            <div>設定</div>
+        </a>
+    </nav>
+
+    <script>
+        function toggleSwitch(element) {
+            element.classList.toggle('active');
+        }
+
+        // リアルタイム更新シミュレーション
+        setInterval(() => {
+            const amount = document.querySelector('.earnings-amount');
+            const current = parseInt(amount.textContent.replace(/[^0-9]/g, ''));
+            const increment = Math.floor(Math.random() * 50) + 10;
+            amount.textContent = '¥' + (current + increment).toLocaleString();
+        }, 5000);
+
+        // プルダウンリフレッシュ風の動作
+        let startY = 0;
+        let pulling = false;
+
+        document.addEventListener('touchstart', (e) => {
+            if (window.scrollY === 0) {
+                startY = e.touches[0].pageY;
+                pulling = true;
+            }
+        });
+
+        document.addEventListener('touchmove', (e) => {
+            if (pulling) {
+                const currentY = e.touches[0].pageY;
+                const diff = currentY - startY;
+                if (diff > 0 && diff < 150) {
+                    e.preventDefault();
+                    document.body.style.transform = `translateY(${diff * 0.5}px)`;
+                }
+            }
+        });
+
+        document.addEventListener('touchend', () => {
+            if (pulling) {
+                document.body.style.transform = '';
+                pulling = false;
+            }
+        });
+    </script>
+</body>
+</html>
