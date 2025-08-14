@@ -72,11 +72,11 @@ mkdir -p "$DMG_DIR"
 
 # Copy app and installer
 cp -R "QUIVerProvider.app" "$DMG_DIR/"
-cp -R "../installer/InstallQUIVer.app" "$DMG_DIR/" 2>/dev/null || echo "Installer app not found"
 cp "../installer/auto-install.command" "$DMG_DIR/インストール.command"
+cp "../installer/DMG_README.rtf" "$DMG_DIR/はじめにお読みください.rtf" 2>/dev/null || true
 
-# Create background and instructions
-cat > "$DMG_DIR/インストール方法.txt" << 'INSTRUCTIONS'
+# Create simple instructions
+cat > "$DMG_DIR/.background/instructions.txt" << 'INSTRUCTIONS'
 QUIVer Provider インストール方法
 ================================
 

@@ -1,13 +1,29 @@
 #!/bin/bash
 
 # QUIVer Provider Auto Installer
-# This script runs automatically when the DMG is opened
+# This script runs when user double-clicks it
 
+clear
 echo "=================================="
 echo "  QUIVer Provider インストーラー"
 echo "=================================="
 echo ""
-echo "自動インストールを開始します..."
+echo "これからQUIVer Providerをインストールします。"
+echo ""
+echo "インストール内容："
+echo "• QUIVer Provider アプリケーション"
+echo "• AI推論エンジン (Ollama)"
+echo "• AIモデル llama3.2 (約2GB)"
+echo ""
+read -p "インストールを開始しますか？ (y/n): " -n 1 -r
+echo
+if [[ ! $REPLY =~ ^[Yy]$ ]]; then
+    echo "インストールをキャンセルしました。"
+    exit 0
+fi
+
+echo ""
+echo "インストールを開始します..."
 echo ""
 
 # Get the directory where this script is located
