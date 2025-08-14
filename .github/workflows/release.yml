@@ -27,6 +27,7 @@ jobs:
       run: ./scripts/create-release.sh
     
     - name: Create Release
+      id: create_release
       uses: actions/create-release@v1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -70,8 +71,8 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: ./release/QUIVerProvider-*.dmg
-        asset_name: QUIVerProvider-${{ github.ref }}.dmg
+        asset_path: ./release/QUIVerProvider-1.0.0.dmg
+        asset_name: QUIVerProvider-1.0.0.dmg
         asset_content_type: application/x-apple-diskimage
     
     - name: Upload Archive
