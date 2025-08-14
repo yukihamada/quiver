@@ -32,9 +32,9 @@ class NetworkCounter {
         this.onConnectionChange = null;
         
         // Fallback simulation parameters
-        this.baseNodes = 156; // Starting nodes
-        this.growthRate = 0.02; // 2% growth per hour
-        this.volatility = 0.15; // 15% random variation
+        this.baseNodes = 3; // Starting nodes (realistic for early stage)
+        this.growthRate = 0.005; // 0.5% growth per hour
+        this.volatility = 0.1; // 10% random variation
         this.simulationStartTime = Date.now();
     }
     

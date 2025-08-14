@@ -1,17 +1,17 @@
 {
-  "node_count": 1247,
-  "online_nodes": 1156,
-  "countries": 23,
-  "total_capacity": 1496.4,
-  "throughput": 187050,
+  "node_count": 7,
+  "online_nodes": 6,
+  "countries": 2,
+  "total_capacity": 8.4,
+  "throughput": 1050,
   "last_update": "2025-08-14T12:30:00Z",
   "network_health": "excellent",
-  "growth_24h": "8.3%",
+  "growth_24h": "16.7%",
   "version": "1.0.0",
   "regions": {
-    "asia": 512,
-    "north_america": 389,
-    "europe": 267,
-    "other": 79
+    "asia": 5,
+    "north_america": 2,
+    "europe": 0,
+    "other": 0
   }
 }

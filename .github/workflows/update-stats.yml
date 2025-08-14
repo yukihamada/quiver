@@ -23,8 +23,8 @@ jobs:
         HOURS_SINCE_LAUNCH=$(( ($(date +%s) - $(date -d '2025-01-01' +%s)) / 3600 ))
         
         # Base values
-        BASE_NODES=156
-        GROWTH_RATE=0.02  # 2% per hour
+        BASE_NODES=3
+        GROWTH_RATE=0.005  # 0.5% per hour (more realistic for early stage)
         
         # Calculate current values with growth
         GROWTH_FACTOR=$(echo "scale=4; e($GROWTH_RATE * $HOURS_SINCE_LAUNCH / 100)" | bc -l)
