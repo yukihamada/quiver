@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QUIVer Network - リアルタイム統計</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Helvetica Neue', sans-serif;
+            background: #0a0a0a;
+            color: white;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+        
+        .logo {
+            font-size: 3em;
+            font-weight: 700;
+            background: linear-gradient(45deg, #0071e3, #5e5ce6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 10px;
+        }
+        
+        .status-bar {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            margin-top: 20px;
+        }
+        
+        .status-indicator {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #34c759;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.5; transform: scale(1.2); }
+            100% { opacity: 1; transform: scale(1); }
+        }
+        
+        .main-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-bottom: 50px;
+        }
+        
+        .stat-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 30px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+        
+        .stat-card:hover {
+            background: rgba(255, 255, 255, 0.08);
+            transform: translateY(-5px);
+        }
+        
+        .stat-value {
+            font-size: 3em;
+            font-weight: 300;
+            margin-bottom: 10px;
+            font-variant-numeric: tabular-nums;
+        }
+        
+        .stat-label {
+            font-size: 1.1em;
+            opacity: 0.7;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .node-list {
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+        }
+        
+        .node-list h2 {
+            margin-bottom: 20px;
+            font-size: 1.5em;
+        }
+        
+        .node-item {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 15px;
+            display: grid;
+            grid-template-columns: auto 1fr auto;
+            align-items: center;
+            gap: 20px;
+        }
+        
+        .node-type {
+            background: rgba(94, 92, 230, 0.3);
+            padding: 5px 15px;
+            border-radius: 15px;
+            font-size: 0.9em;
+            text-transform: uppercase;
+        }
+        
+        .node-id {
+            font-family: 'SF Mono', monospace;
+            font-size: 0.9em;
+            opacity: 0.7;
+            word-break: break-all;
+        }
+        
+        .node-status {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .performance-metrics {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 20px;
+            padding: 30px;
+        }
+        
+        .metric {
+            text-align: center;
+        }
+        
+        .metric-value {
+            font-size: 2em;
+            font-weight: 300;
+            margin-bottom: 5px;
+        }
+        
+        .metric-label {
+            font-size: 0.9em;
+            opacity: 0.7;
+        }
+        
+        .update-time {
+            text-align: center;
+            margin-top: 30px;
+            opacity: 0.5;
+            font-size: 0.9em;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1 class="logo">QUIVer Network</h1>
+            <div class="status-bar">
+                <div class="status-indicator"></div>
+                <span id="statusText">Connecting...</span>
+            </div>
+        </div>
+        
+        <div class="main-stats">
+            <div class="stat-card">
+                <div class="stat-value" id="nodeCount">0</div>
+                <div class="stat-label">Active Nodes</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="throughput">0</div>
+                <div class="stat-label">Tokens/Second</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="capacity">0</div>
+                <div class="stat-label">Total Capacity (TFLOPS)</div>
+            </div>
+        </div>
+        
+        <div class="node-list">
+            <h2>Active Nodes</h2>
+            <div id="nodeList"></div>
+        </div>
+        
+        <div class="performance-metrics">
+            <div class="metric">
+                <div class="metric-value" id="avgResponseTime">0</div>
+                <div class="metric-label">Avg Response Time (ms)</div>
+            </div>
+            <div class="metric">
+                <div class="metric-value" id="requestsPerMin">0</div>
+                <div class="metric-label">Requests/Minute</div>
+            </div>
+            <div class="metric">
+                <div class="metric-value" id="successRate">0</div>
+                <div class="metric-label">Success Rate (%)</div>
+            </div>
+            <div class="metric">
+                <div class="metric-value" id="networkHealth">-</div>
+                <div class="metric-label">Network Health</div>
+            </div>
+        </div>
+        
+        <div class="update-time" id="updateTime">Last updated: -</div>
+    </div>
+    
+    <script src="js/network-counter.js"></script>
+    <script>
+        // Elements
+        const nodeCountEl = document.getElementById('nodeCount');
+        const throughputEl = document.getElementById('throughput');
+        const capacityEl = document.getElementById('capacity');
+        const statusTextEl = document.getElementById('statusText');
+        const nodeListEl = document.getElementById('nodeList');
+        const avgResponseTimeEl = document.getElementById('avgResponseTime');
+        const requestsPerMinEl = document.getElementById('requestsPerMin');
+        const successRateEl = document.getElementById('successRate');
+        const networkHealthEl = document.getElementById('networkHealth');
+        const updateTimeEl = document.getElementById('updateTime');
+        
+        // Update stats callback
+        networkCounter.onStatsUpdate = (stats) => {
+            // Update main stats
+            animateValue(nodeCountEl, parseInt(nodeCountEl.textContent), stats.node_count || 0, 500);
+            
+            if (stats.performance) {
+                animateValue(throughputEl, parseInt(throughputEl.textContent), Math.floor(stats.performance.tokens_per_second || 0), 500);
+                animateValue(avgResponseTimeEl, parseInt(avgResponseTimeEl.textContent), Math.floor(stats.performance.average_response_time_ms || 0), 500);
+                animateValue(requestsPerMinEl, parseInt(requestsPerMinEl.textContent), stats.performance.requests_per_minute || 0, 500);
+                successRateEl.textContent = (stats.performance.success_rate || 0).toFixed(1);
+            }
+            
+            capacityEl.textContent = (stats.total_capacity || 0).toFixed(1);
+            networkHealthEl.textContent = stats.network_health || '-';
+            
+            // Update node list
+            if (stats.node_details) {
+                updateNodeList(stats.node_details);
+            }
+            
+            // Update time
+            updateTimeEl.textContent = `Last updated: ${new Date(stats.last_update).toLocaleString()}`;
+        };
+        
+        networkCounter.onConnectionChange = (connected) => {
+            statusTextEl.textContent = connected ? 'Connected to Network' : 'Connecting...';
+        };
+        
+        // Update node list display
+        function updateNodeList(nodeDetails) {
+            nodeListEl.innerHTML = '';
+            
+            Object.values(nodeDetails).forEach(node => {
+                const nodeEl = document.createElement('div');
+                nodeEl.className = 'node-item';
+                
+                const uptime = formatUptime(node.metrics?.uptime_seconds || 0);
+                
+                nodeEl.innerHTML = `
+                    <div class="node-type">${node.type}</div>
+                    <div>
+                        <div class="node-id">${node.peer_id}</div>
+                        <div style="font-size: 0.9em; opacity: 0.7; margin-top: 5px;">
+                            Uptime: ${uptime} | Location: ${node.location}
+                        </div>
+                    </div>
+                    <div class="node-status">
+                        <div style="width: 8px; height: 8px; background: #34c759; border-radius: 50%;"></div>
+                        <span>${node.status}</span>
+                    </div>
+                `;
+                
+                nodeListEl.appendChild(nodeEl);
+            });
+        }
+        
+        // Format uptime
+        function formatUptime(seconds) {
+            const hours = Math.floor(seconds / 3600);
+            const minutes = Math.floor((seconds % 3600) / 60);
+            return `${hours}h ${minutes}m`;
+        }
+        
+        // Animate value changes
+        function animateValue(element, start, end, duration) {
+            const startTime = Date.now();
+            
+            function update() {
+                const elapsed = Date.now() - startTime;
+                const progress = Math.min(elapsed / duration, 1);
+                
+                const eased = 1 - Math.pow(1 - progress, 3);
+                const current = Math.floor(start + (end - start) * eased);
+                
+                element.textContent = current.toLocaleString();
+                
+                if (progress < 1) {
+                    requestAnimationFrame(update);
+                }
+            }
+            
+            update();
+        }
+        
+        // Start the counter
+        networkCounter.start();
+    </script>
+</body>
+</html>

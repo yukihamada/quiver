@@ -1,26 +1,26 @@
 {
-  "node_count": 5,
-  "online_nodes": 5,
+  "node_count": 3,
+  "online_nodes": 3,
   "countries": 1,
-  "total_capacity": 6.0,
-  "throughput": 750,
-  "last_update": "2025-08-14T13:27:43Z",
+  "total_capacity": 3.6,
+  "throughput": 450,
+  "last_update": "2025-01-14T16:20:00Z",
   "network_health": "good",
-  "network_type": "production",
+  "network_type": "testnet",
   "growth_24h": "0%",
   "version": "1.0.0-dev",
   "nodes": {
     "bootstrap": 1,
-    "provider": 2,
+    "provider": 1,
     "gateway": 1,
-    "aggregator": 1
+    "aggregator": 0
   },
   "regions": {
-    "local": 5,
+    "local": 3,
     "asia": 0,
     "north_america": 0,
     "europe": 0,
     "other": 0
   },
-  "note": "Real-time network status"
+  "note": "Local test network - GCP deployment pending"
 }

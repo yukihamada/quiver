@@ -7,14 +7,15 @@ class NetworkCounter {
     constructor() {
         // WebSocket endpoints for real-time updates
         this.wsEndpoints = [
+            'ws://localhost:8087/ws', // Local stats server (priority)
             'ws://34.146.63.195:8087/ws', // GCP stats node
             'ws://34.146.63.195/ws', // GCP stats node (nginx)
-            'wss://stats.quiver.network/ws',
-            'ws://localhost:8087/ws'
+            'wss://stats.quiver.network/ws'
         ];
         
         // HTTP API endpoints (fallback)
         this.endpoints = [
+            'http://localhost:8087/api/stats', // Local stats server (priority)
             'http://34.146.63.195:8087/api/stats', // GCP stats node
             'http://34.146.63.195/api/stats', // GCP stats node (nginx)
             'https://stats.quiver.network/api/stats',
@@ -87,6 +88,11 @@ class NetworkCounter {
                             this.lastSuccessfulFetch = Date.now();
                             
                             console.log('Received real-time data:', data);
+                            
+                            // Update display with additional info
+                            if (this.onStatsUpdate) {
+                                this.onStatsUpdate(data);
+                            }
                         }
                     } catch (error) {
                         console.error('Failed to parse WebSocket message:', error);
