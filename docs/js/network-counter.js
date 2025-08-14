@@ -5,17 +5,24 @@
 
 class NetworkCounter {
     constructor() {
-        // API endpoints
+        // WebSocket endpoints for real-time updates
+        this.wsEndpoints = [
+            'wss://stats.quiver.network/ws',
+            'ws://34.85.123.45:8087/ws', // Replace with actual GCP IP
+            'ws://localhost:8087/ws'
+        ];
+        
+        // HTTP API endpoints (fallback)
         this.endpoints = [
+            'https://stats.quiver.network/api/stats',
+            'http://34.85.123.45:8087/api/stats', // Replace with actual GCP IP
             // GitHub Pages hosted JSON (immediate availability)
             'https://yukihamada.github.io/quiver/api/stats.json',
-            '/api/stats.json', // Relative path for local testing
-            // Future production endpoints
-            'https://stats.quiver.network/api/stats',
-            'https://api.quiver.network/stats',
-            'https://quiver-network-stats.workers.dev/api/stats'
+            '/api/stats.json' // Relative path for local testing
         ];
         this.currentEndpointIndex = 0;
+        this.ws = null;
+        this.wsConnected = false;
         
         // Display state
         this.currentDisplay = 0;
@@ -42,11 +49,73 @@ class NetworkCounter {
         // Start animation loop
         this.animate();
         
-        // Try to fetch real data
-        this.fetchRealData();
+        // Try WebSocket connection first
+        this.connectWebSocket();
         
-        // Schedule periodic updates
-        setInterval(() => this.fetchRealData(), this.fetchInterval);
+        // Fallback to HTTP polling if WebSocket fails
+        setTimeout(() => {
+            if (!this.wsConnected) {
+                this.fetchRealData();
+                setInterval(() => this.fetchRealData(), this.fetchInterval);
+            }
+        }, 3000);
+    }
+    
+    async connectWebSocket() {
+        for (const endpoint of this.wsEndpoints) {
+            try {
+                console.log(`Trying WebSocket connection to ${endpoint}`);
+                this.ws = new WebSocket(endpoint);
+                
+                this.ws.onopen = () => {
+                    console.log(`WebSocket connected to ${endpoint}`);
+                    this.wsConnected = true;
+                    this.connected = true;
+                    if (this.onConnectionChange) {
+                        this.onConnectionChange(true);
+                    }
+                };
+                
+                this.ws.onmessage = (event) => {
+                    try {
+                        const data = JSON.parse(event.data);
+                        if (data.node_count !== undefined) {
+                            this.targetValue = data.node_count;
+                            this.lastStats = data;
+                            this.lastSuccessfulFetch = Date.now();
+                            
+                            console.log('Received real-time data:', data);
+                        }
+                    } catch (error) {
+                        console.error('Failed to parse WebSocket message:', error);
+                    }
+                };
+                
+                this.ws.onerror = (error) => {
+                    console.error(`WebSocket error on ${endpoint}:`, error);
+                };
+                
+                this.ws.onclose = () => {
+                    console.log('WebSocket disconnected');
+                    this.wsConnected = false;
+                    this.ws = null;
+                    
+                    // Try to reconnect after 5 seconds
+                    setTimeout(() => this.connectWebSocket(), 5000);
+                };
+                
+                // If connection is successful, stop trying other endpoints
+                await new Promise(resolve => {
+                    setTimeout(resolve, 1000); // Wait 1 second to see if connection succeeds
+                });
+                
+                if (this.wsConnected) {
+                    break;
+                }
+            } catch (error) {
+                console.error(`Failed to connect to WebSocket ${endpoint}:`, error);
+            }
+        }
     }
     
     scheduleNextUpdate() {
