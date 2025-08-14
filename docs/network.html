@@ -390,7 +390,11 @@
             
             // Update status based on real connection
             if (stats.connected) {
-                statusTextEl.textContent = 'Connected to QUIVer Network';
+                if (stats.network_type === 'local_development') {
+                    statusTextEl.textContent = 'Development Network (Local Testing)';
+                } else {
+                    statusTextEl.textContent = 'Connected to QUIVer Network';
+                }
                 if (stats.network_health) {
                     statusTextEl.textContent += ` (${stats.network_health})`;
                 }

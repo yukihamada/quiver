@@ -1,17 +1,26 @@
 {
-  "node_count": 7,
-  "online_nodes": 6,
-  "countries": 2,
-  "total_capacity": 8.4,
-  "throughput": 1050,
-  "last_update": "2025-08-14T12:30:00Z",
-  "network_health": "excellent",
-  "growth_24h": "16.7%",
-  "version": "1.0.0",
+  "node_count": 5,
+  "online_nodes": 5,
+  "countries": 1,
+  "total_capacity": 6.0,
+  "throughput": 750,
+  "last_update": "2025-08-14T13:27:43Z",
+  "network_health": "good",
+  "network_type": "production",
+  "growth_24h": "0%",
+  "version": "1.0.0-dev",
+  "nodes": {
+    "bootstrap": 1,
+    "provider": 2,
+    "gateway": 1,
+    "aggregator": 1
+  },
   "regions": {
-    "asia": 5,
-    "north_america": 2,
+    "local": 5,
+    "asia": 0,
+    "north_america": 0,
     "europe": 0,
     "other": 0
-  }
+  },
+  "note": "Real-time network status"
 }
