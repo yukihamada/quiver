@@ -62,12 +62,50 @@ echo "Creating archive..."
 cd release
 tar -czf "$ARCHIVE_NAME" "quiver-provider-$VERSION"
 
+# Create DMG with installer
+echo "Creating DMG with auto-installer..."
+
+# Create DMG directory
+DMG_DIR="dmg-contents"
+rm -rf "$DMG_DIR"
+mkdir -p "$DMG_DIR"
+
+# Copy app and installer
+cp -R "$RELEASE_DIR/QUIVerProvider.app" "$DMG_DIR/"
+cp -R ../installer/InstallQUIVer.app "$DMG_DIR/"
+cp ../installer/auto-install.command "$DMG_DIR/インストール.command"
+
+# Create background and instructions
+cat > "$DMG_DIR/インストール方法.txt" << 'INSTRUCTIONS'
+QUIVer Provider インストール方法
+================================
+
+方法1（推奨）: 自動インストール
+1. 「InstallQUIVer」アイコンをダブルクリック
+2. 「インストール」ボタンをクリック
+3. パスワードを入力（必要な場合）
+4. 自動的にセットアップが完了します
+
+方法2: 手動インストール
+1. QUIVer Provider.appをApplicationsフォルダにドラッグ
+2. Applicationsフォルダから起動
+
+インストール後：
+- 自動的に収益化が開始されます
+- ダッシュボードで収益を確認できます
+- いつでも停止可能です
+
+サポート: https://github.com/yukihamada/quiver
+INSTRUCTIONS
+
 # Create DMG
-echo "Creating DMG..."
 hdiutil create -volname "QUIVer Provider" \
-    -srcfolder "quiver-provider-$VERSION" \
+    -srcfolder "$DMG_DIR" \
     -ov -format UDZO \
-    "QUIVerProvider-$VERSION.dmg"
+    "QUIVerProvider-$VERSION-autoinstall.dmg"
+
+# Clean up
+rm -rf "$DMG_DIR"
 
 echo ""
 echo "✅ Release package created:"
