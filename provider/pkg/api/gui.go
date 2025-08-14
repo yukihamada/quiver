@@ -55,6 +55,16 @@ func (g *GUIServer) Start(addr string) error {
         }
     }
     
+    // Serve dashboard HTML at root
+    mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+        if r.URL.Path != "/" {
+            http.NotFound(w, r)
+            return
+        }
+        w.Header().Set("Content-Type", "text/html; charset=utf-8")
+        w.Write([]byte(DashboardHTML))
+    })
+    
     mux.HandleFunc("/stats", handler(g.handleStats))
     mux.HandleFunc("/start", handler(g.handleStart))
     mux.HandleFunc("/stop", handler(g.handleStop))

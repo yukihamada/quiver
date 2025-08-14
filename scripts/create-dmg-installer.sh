@@ -20,7 +20,19 @@ mkdir -p "$DMG_DIR"
 
 # Copy application
 echo "Copying application..."
-cp -R "QUIVerProvider.app" "$DMG_DIR/$APP_NAME.app"
+if [ -d "QUIVerProvider.app" ]; then
+    cp -R "QUIVerProvider.app" "$DMG_DIR/$APP_NAME.app"
+else
+    echo "Error: QUIVerProvider.app not found. Building it first..."
+    # Build the application
+    cd provider && go build -o ../QUIVerProvider.app/Contents/MacOS/QUIVerProvider ./cmd/provider-app/main.go && cd ..
+    if [ $? -eq 0 ]; then
+        cp -R "QUIVerProvider.app" "$DMG_DIR/$APP_NAME.app"
+    else
+        echo "Failed to build application"
+        exit 1
+    fi
+fi
 
 # Copy auto-installer
 echo "Adding auto-installer..."
