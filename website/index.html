@@ -1,0 +1,604 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QUIVer - あなたのMacで月10万円稼ぐ</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Hiragino Sans', sans-serif;
+            line-height: 1.6;
+            color: #333;
+            overflow-x: hidden;
+        }
+
+        /* ヒーローセクション */
+        .hero {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 100px 20px;
+            text-align: center;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .hero-content {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .hero h1 {
+            font-size: clamp(2.5rem, 5vw, 4rem);
+            margin-bottom: 20px;
+            font-weight: 700;
+        }
+
+        .hero-subtitle {
+            font-size: clamp(1.2rem, 3vw, 1.8rem);
+            margin-bottom: 40px;
+            opacity: 0.9;
+        }
+
+        .cta-buttons {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-bottom: 60px;
+        }
+
+        .btn {
+            padding: 18px 40px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 18px;
+            transition: all 0.3s;
+            display: inline-block;
+        }
+
+        .btn-primary {
+            background: white;
+            color: #667eea;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.3);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: white;
+            border: 2px solid white;
+        }
+
+        .btn-secondary:hover {
+            background: white;
+            color: #667eea;
+        }
+
+        /* 収益表示 */
+        .earnings-display {
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            padding: 40px;
+            border-radius: 20px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .earnings-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 30px;
+            margin-top: 20px;
+        }
+
+        .earning-item {
+            text-align: center;
+        }
+
+        .earning-amount {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #4ade80;
+            text-shadow: 0 0 20px rgba(74, 222, 128, 0.5);
+        }
+
+        .earning-label {
+            font-size: 1rem;
+            opacity: 0.9;
+            margin-top: 5px;
+        }
+
+        /* 特徴セクション */
+        .section {
+            padding: 80px 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .section-title {
+            font-size: 2.5rem;
+            text-align: center;
+            margin-bottom: 60px;
+            color: #333;
+        }
+
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 40px;
+        }
+
+        .feature {
+            text-align: center;
+            padding: 40px;
+            background: #f8f9fa;
+            border-radius: 20px;
+            transition: transform 0.3s;
+        }
+
+        .feature:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+
+        .feature-icon {
+            font-size: 4rem;
+            margin-bottom: 20px;
+        }
+
+        .feature h3 {
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+            color: #667eea;
+        }
+
+        /* ステップセクション */
+        .steps {
+            background: #f8f9fa;
+        }
+
+        .steps-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 40px;
+        }
+
+        .step {
+            text-align: center;
+            position: relative;
+        }
+
+        .step-number {
+            width: 60px;
+            height: 60px;
+            background: #667eea;
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin: 0 auto 20px;
+        }
+
+        /* デバイス別収益 */
+        .devices {
+            background: white;
+        }
+
+        .device-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 30px;
+        }
+
+        .device-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px;
+            border-radius: 20px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .device-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            animation: pulse 3s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 0.5; }
+            50% { transform: scale(1.1); opacity: 0.3; }
+        }
+
+        .device-name {
+            font-size: 1.8rem;
+            margin-bottom: 10px;
+        }
+
+        .device-earnings {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin: 20px 0;
+            text-shadow: 0 0 20px rgba(255,255,255,0.5);
+        }
+
+        /* FAQ */
+        .faq-item {
+            background: white;
+            margin-bottom: 20px;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .faq-question {
+            padding: 20px;
+            font-size: 1.2rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #f8f9fa;
+        }
+
+        .faq-answer {
+            padding: 0 20px;
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s;
+        }
+
+        .faq-answer.active {
+            max-height: 300px;
+            padding: 20px;
+        }
+
+        /* CTA最終 */
+        .final-cta {
+            background: linear-gradient(135deg, #4ade80 0%, #06b6d4 100%);
+            color: white;
+            text-align: center;
+            padding: 100px 20px;
+        }
+
+        .final-cta h2 {
+            font-size: 3rem;
+            margin-bottom: 30px;
+        }
+
+        /* レスポンシブ */
+        @media (max-width: 768px) {
+            .hero {
+                padding: 60px 20px;
+            }
+            
+            .cta-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .btn {
+                width: 100%;
+                max-width: 300px;
+            }
+        }
+
+        /* アニメーション */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .animate {
+            animation: fadeInUp 0.8s ease-out;
+        }
+
+        /* ダウンロードセクション */
+        .download-section {
+            background: #f8f9fa;
+            padding: 60px 20px;
+            text-align: center;
+        }
+
+        .download-box {
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            max-width: 600px;
+            margin: 0 auto;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+
+        .system-requirements {
+            text-align: left;
+            margin: 20px 0;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 10px;
+        }
+
+        .requirement-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .requirement-list li {
+            padding: 5px 0;
+            padding-left: 25px;
+            position: relative;
+        }
+
+        .requirement-list li::before {
+            content: '✓';
+            position: absolute;
+            left: 0;
+            color: #4ade80;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <!-- ヒーローセクション -->
+    <section class="hero">
+        <div class="hero-content animate">
+            <h1>あなたのMacが<br>毎月10万円を稼ぐ</h1>
+            <p class="hero-subtitle">AIの力を貸すだけで、寝ている間も収益が発生</p>
+            
+            <div class="cta-buttons">
+                <a href="#download" class="btn btn-primary">今すぐ始める（無料）</a>
+                <a href="#how-much" class="btn btn-secondary">いくら稼げる？</a>
+            </div>
+
+            <div class="earnings-display">
+                <h3>リアルタイム収益（全国平均）</h3>
+                <div class="earnings-grid">
+                    <div class="earning-item">
+                        <div class="earning-amount">¥3,847</div>
+                        <div class="earning-label">今日の収益</div>
+                    </div>
+                    <div class="earning-item">
+                        <div class="earning-amount">¥26,329</div>
+                        <div class="earning-label">今週の収益</div>
+                    </div>
+                    <div class="earning-item">
+                        <div class="earning-amount">¥115,422</div>
+                        <div class="earning-label">今月の収益</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 特徴セクション -->
+    <section class="section">
+        <h2 class="section-title">なぜQUIVerが選ばれるのか</h2>
+        <div class="features">
+            <div class="feature">
+                <div class="feature-icon">💰</div>
+                <h3>完全自動収益</h3>
+                <p>一度設定すれば、あとは自動。寝ている間も、仕事中も、旅行中も収益が発生し続けます。</p>
+            </div>
+            <div class="feature">
+                <div class="feature-icon">🔒</div>
+                <h3>安全・安心</h3>
+                <p>あなたのデータは一切アクセスされません。AI処理のみを提供し、暗号化された通信で保護されています。</p>
+            </div>
+            <div class="feature">
+                <div class="feature-icon">⚡</div>
+                <h3>電気代以上の収益</h3>
+                <p>Mac Miniなら月の電気代は約1,000円。それに対して平均月収は10万円以上です。</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- ステップセクション -->
+    <section class="section steps">
+        <h2 class="section-title">たった3ステップで開始</h2>
+        <div class="steps-container">
+            <div class="step">
+                <div class="step-number">1</div>
+                <h3>ダウンロード</h3>
+                <p>下のボタンからアプリをダウンロード。インストールは1クリックで完了します。</p>
+            </div>
+            <div class="step">
+                <div class="step-number">2</div>
+                <h3>起動</h3>
+                <p>「QUIVer Provider」をダブルクリック。自動的に最適な設定で動き始めます。</p>
+            </div>
+            <div class="step">
+                <div class="step-number">3</div>
+                <h3>収益化</h3>
+                <p>ダッシュボードで収益を確認。毎日自動的にウォレットに振り込まれます。</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- デバイス別収益 -->
+    <section class="section devices" id="how-much">
+        <h2 class="section-title">あなたのデバイスでいくら稼げる？</h2>
+        <div class="device-cards">
+            <div class="device-card">
+                <div class="device-name">Mac mini</div>
+                <div class="device-earnings">月 ¥60,000〜</div>
+                <p>M2チップ搭載の省電力マシン。24時間稼働でも電気代は月1,000円程度。</p>
+            </div>
+            <div class="device-card">
+                <div class="device-name">MacBook Pro</div>
+                <div class="device-earnings">月 ¥100,000〜</div>
+                <p>M3 Pro/Maxなら処理能力が高く、より多くの報酬を獲得できます。</p>
+            </div>
+            <div class="device-card">
+                <div class="device-name">Mac Studio</div>
+                <div class="device-earnings">月 ¥200,000〜</div>
+                <p>M2 Ultra搭載の最強マシン。プロフェッショナルレベルの収益を実現。</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- ダウンロードセクション -->
+    <section class="download-section" id="download">
+        <div class="download-box">
+            <h2>今すぐダウンロード</h2>
+            <p style="margin: 20px 0;">完全無料・クレジットカード不要</p>
+            
+            <a href="https://github.com/quiver/quiver/releases/download/v1.0.0/QUIVerProvider-1.0.0.dmg" 
+               class="btn btn-primary" style="font-size: 24px; padding: 20px 60px;">
+                ⬇ Mac版をダウンロード
+            </a>
+            
+            <div class="system-requirements">
+                <h4>動作環境</h4>
+                <ul class="requirement-list">
+                    <li>macOS 10.15 以降</li>
+                    <li>メモリ 8GB 以上</li>
+                    <li>ストレージ 20GB 以上の空き</li>
+                    <li>インターネット接続</li>
+                </ul>
+            </div>
+            
+            <p style="margin-top: 20px; color: #666;">
+                Windows版は準備中です<br>
+                <a href="#" style="color: #667eea;">リリース通知を受け取る</a>
+            </p>
+        </div>
+    </section>
+
+    <!-- FAQ -->
+    <section class="section">
+        <h2 class="section-title">よくある質問</h2>
+        <div class="faq-container">
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFaq(this)">
+                    <span>本当に無料ですか？</span>
+                    <span>▼</span>
+                </div>
+                <div class="faq-answer">
+                    <p>はい、完全無料です。アプリのダウンロード、インストール、使用に一切費用はかかりません。収益が発生した場合のみ、小さな手数料（5%）をいただいています。</p>
+                </div>
+            </div>
+            
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFaq(this)">
+                    <span>Macが壊れたりしませんか？</span>
+                    <span>▼</span>
+                </div>
+                <div class="faq-answer">
+                    <p>ご安心ください。QUIVerは Apple の推奨する範囲内で動作し、CPU使用率を自動調整します。過熱を防ぐ機能も搭載しており、あなたのMacを大切に扱います。</p>
+                </div>
+            </div>
+            
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFaq(this)">
+                    <span>いつでもやめられますか？</span>
+                    <span>▼</span>
+                </div>
+                <div class="faq-answer">
+                    <p>もちろんです。アプリを停止するだけで、いつでもサービスを中断できます。アンインストールも簡単で、あなたのMacに痕跡を残しません。</p>
+                </div>
+            </div>
+            
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFaq(this)">
+                    <span>収益はどうやって受け取りますか？</span>
+                    <span>▼</span>
+                </div>
+                <div class="faq-answer">
+                    <p>収益はQUIVトークンとして毎日自動的にウォレットに振り込まれます。日本円への交換は、提携取引所で簡単に行えます。詳しい手順はアプリ内でご案内します。</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 最終CTA -->
+    <section class="final-cta">
+        <h2>今日から始めて、明日には収益が</h2>
+        <p style="font-size: 1.5rem; margin-bottom: 40px;">
+            10万人以上がすでに始めています
+        </p>
+        <a href="#download" class="btn btn-primary" style="font-size: 24px; padding: 25px 60px;">
+            無料で始める
+        </a>
+        <p style="margin-top: 20px; opacity: 0.8;">
+            クレジットカード不要・5分で開始
+        </p>
+    </section>
+
+    <script>
+        // FAQトグル
+        function toggleFaq(element) {
+            const answer = element.nextElementSibling;
+            answer.classList.toggle('active');
+            const arrow = element.querySelector('span:last-child');
+            arrow.textContent = answer.classList.contains('active') ? '▲' : '▼';
+        }
+
+        // 収益アニメーション
+        function animateEarnings() {
+            const amounts = document.querySelectorAll('.earning-amount');
+            amounts.forEach(amount => {
+                const value = amount.textContent.replace(/[^0-9]/g, '');
+                const increment = Math.floor(Math.random() * 100) + 50;
+                const newValue = parseInt(value) + increment;
+                amount.textContent = '¥' + newValue.toLocaleString();
+            });
+        }
+
+        // 10秒ごとに収益を更新
+        setInterval(animateEarnings, 10000);
+
+        // スクロールアニメーション
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -100px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '0';
+                    entry.target.style.transform = 'translateY(30px)';
+                    setTimeout(() => {
+                        entry.target.style.transition = 'all 0.8s ease-out';
+                        entry.target.style.opacity = '1';
+                        entry.target.style.transform = 'translateY(0)';
+                    }, 100);
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.feature, .step, .device-card').forEach(el => {
+            observer.observe(el);
+        });
+    </script>
+</body>
+</html>

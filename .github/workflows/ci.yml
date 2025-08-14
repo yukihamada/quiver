@@ -1,0 +1,136 @@
+name: CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Set up Go
+      uses: actions/setup-go@v4
+      with:
+        go-version: '1.21'
+    
+    - name: Run linters
+      run: make lint
+
+  test:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Set up Go
+      uses: actions/setup-go@v4
+      with:
+        go-version: '1.21'
+    
+    - name: Run unit tests
+      run: |
+        make test
+        go test -coverprofile=coverage.out ./...
+        go tool cover -func=coverage.out | grep total | awk '{print $3}' | sed 's/%//' > coverage.txt
+        
+    - name: Check coverage threshold
+      run: |
+        COVERAGE=$(cat coverage.txt)
+        echo "Coverage: ${COVERAGE}%"
+        if (( $(echo "$COVERAGE < 70" | bc -l) )); then
+          echo "Coverage ${COVERAGE}% is below 70% threshold"
+          exit 1
+        fi
+    
+    - name: Upload coverage reports
+      uses: actions/upload-artifact@v3
+      with:
+        name: coverage-report
+        path: coverage.out
+
+  integration:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Build containers
+      run: docker-compose build
+    
+    - name: Run integration tests
+      run: |
+        docker-compose up -d ollama-mock provider gateway aggregator
+        sleep 10  # Wait for services
+        docker-compose run --rm integration-tests
+    
+    - name: Check test results
+      run: |
+        if [ -f test-results/integration.xml ]; then
+          echo "Integration tests completed"
+          # Parse junit results if needed
+        else
+          echo "Integration test results not found"
+          exit 1
+        fi
+    
+    - name: Upload test results
+      uses: actions/upload-artifact@v3
+      with:
+        name: test-results
+        path: test-results/
+
+  benchmark:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Build and start services
+      run: |
+        docker-compose build
+        docker-compose up -d ollama-mock provider gateway aggregator
+        sleep 15  # Wait for services to stabilize
+    
+    - name: Run benchmark
+      run: |
+        cd tests/bench
+        python3 benchmark.py 200
+    
+    - name: Upload benchmark results
+      uses: actions/upload-artifact@v3
+      with:
+        name: benchmark-results
+        path: tests/bench/benchmark_results.json
+
+  e2e:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Run E2E tests
+      run: |
+        docker-compose build
+        docker-compose up -d
+        sleep 20  # Wait for all services
+        
+        # Run E2E tests
+        docker-compose exec -T gateway curl -f http://localhost:8080/health || exit 1
+        docker-compose exec -T aggregator curl -f http://localhost:8081/health || exit 1
+        
+        # Run Python E2E tests
+        pip install pytest httpx
+        cd tests/e2e
+        pytest -v test_e2e.py::test_e2e_multi_client_provider
+    
+    - name: Collect logs
+      if: always()
+      run: |
+        docker-compose logs > docker-logs.txt
+        
+    - name: Upload logs
+      if: always()
+      uses: actions/upload-artifact@v3
+      with:
+        name: docker-logs
+        path: docker-logs.txt

@@ -1,0 +1,335 @@
+{
+  "component_diagram": "┌─────────────────┐     ┌─────────────────┐     ┌─────────────────┐\n│                 │     │                 │     │                 │\n│   Client Apps   │────▶│     Gateway     │────▶│  LLM Provider   │\n│                 │     │   (FastAPI/Go)  │     │   (Ollama/      │\n└─────────────────┘     │                 │     │   Jan-Nano)     │\n                        └────────┬────────┘     └─────────────────┘\n                                 │                        │\n                                 ▼                        │\n                        ┌─────────────────┐               │\n                        │                 │               │\n                        │  P2P Provider   │◀──────────────┘\n                        │  (libp2p QUIC)  │\n                        │                 │\n                        └────────┬────────┘\n                                 │ Receipts\n                                 ▼\n                        ┌─────────────────┐\n                        │                 │\n                        │   Aggregator    │\n                        │  (Merkle Root)  │\n                        │                 │\n                        └────────┬────────┘\n                                 │ Commits\n                                 ▼\n                        ┌─────────────────┐\n                        │                 │\n                        │  Chain Mock     │\n                        │ (EVM/Solana/   │\n                        │   In-Memory)    │\n                        └─────────────────┘",
+  "schemas": {
+    "API.GenerateRequest": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "type": "object",
+      "required": ["prompt", "model"],
+      "properties": {
+        "prompt": {
+          "type": "string",
+          "maxLength": 4096
+        },
+        "model": {
+          "type": "string",
+          "enum": ["jan-nano", "ollama-compatible"]
+        },
+        "max_tokens": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 2048,
+          "default": 256
+        },
+        "temperature": {
+          "type": "number",
+          "const": 0
+        },
+        "seed": {
+          "type": "integer",
+          "default": 42
+        }
+      }
+    },
+    "API.GenerateResponse": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "type": "object",
+      "required": ["completion", "receipt"],
+      "properties": {
+        "completion": {
+          "type": "string"
+        },
+        "receipt": {
+          "$ref": "#/definitions/Receipt"
+        }
+      }
+    },
+    "API.Receipt": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "type": "object",
+      "required": [
+        "version",
+        "provider_pk",
+        "model",
+        "prompt_hash",
+        "output_hash",
+        "tokens_in",
+        "tokens_out",
+        "start_iso",
+        "end_iso",
+        "duration_ms",
+        "epoch",
+        "seq",
+        "prev_hash",
+        "canary",
+        "rate",
+        "receipt_id",
+        "signature"
+      ],
+      "properties": {
+        "version": {
+          "type": "string",
+          "const": "1.0.0"
+        },
+        "provider_pk": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9+/]{44}$"
+        },
+        "model": {
+          "type": "string"
+        },
+        "prompt_hash": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "output_hash": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "tokens_in": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "tokens_out": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "start_iso": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "end_iso": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "duration_ms": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "epoch": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "seq": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "prev_hash": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "canary": {
+          "type": "object",
+          "required": ["id", "passed"],
+          "properties": {
+            "id": {
+              "type": "string"
+            },
+            "passed": {
+              "type": "boolean"
+            }
+          }
+        },
+        "rate": {
+          "type": "object",
+          "required": ["throttle", "truncated"],
+          "properties": {
+            "throttle": {
+              "type": "boolean"
+            },
+            "truncated": {
+              "type": "boolean"
+            }
+          }
+        },
+        "receipt_id": {
+          "type": "string",
+          "pattern": "^[1-9A-HJ-NP-Za-km-z]{22}$"
+        },
+        "signature": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9+/]{88}$"
+        }
+      }
+    },
+    "API.MerkleCommit": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "type": "object",
+      "required": ["receipts", "epoch"],
+      "properties": {
+        "receipts": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Receipt"
+          }
+        },
+        "epoch": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    "API.ClaimRequest": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "type": "object",
+      "required": ["receipt_id", "merkle_proof", "epoch"],
+      "properties": {
+        "receipt_id": {
+          "type": "string",
+          "pattern": "^[1-9A-HJ-NP-Za-km-z]{22}$"
+        },
+        "merkle_proof": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          }
+        },
+        "epoch": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    "API.ClaimResponse": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "type": "object",
+      "required": ["valid", "amount", "tx_hash"],
+      "properties": {
+        "valid": {
+          "type": "boolean"
+        },
+        "amount": {
+          "type": "string"
+        },
+        "tx_hash": {
+          "type": "string"
+        }
+      }
+    }
+  },
+  "repo_tree": "QUIVer/\n├── Makefile\n├── README.md\n├── CLAUDE.md\n├── .github/\n│   └── workflows/\n│       └── ci.yml\n├── provider/\n│   ├── go.mod\n│   ├── go.sum\n│   ├── cmd/\n│   │   └── provider/\n│   │       └── main.go\n│   ├── pkg/\n│   │   ├── p2p/\n│   │   │   ├── host.go\n│   │   │   └── dht.go\n│   │   ├── receipt/\n│   │   │   ├── signer.go\n│   │   │   └── canonical.go\n│   │   └── stream/\n│   │       └── handler.go\n│   └── internal/\n│       └── config/\n│           └── config.go\n├── gateway/\n│   ├── go.mod\n│   ├── go.sum\n│   ├── requirements.txt\n│   ├── cmd/\n│   │   └── gateway/\n│   │       └── main.go\n│   ├── pkg/\n│   │   ├── api/\n│   │   │   └── handlers.go\n│   │   ├── llm/\n│   │   │   ├── ollama.go\n│   │   │   └── jannano.go\n│   │   └── ratelimit/\n│   │       └── limiter.go\n│   └── python/\n│       ├── main.py\n│       ├── models.py\n│       └── llm_client.py\n├── aggregator/\n│   ├── go.mod\n│   ├── go.sum\n│   ├── cmd/\n│   │   └── aggregator/\n│   │       └── main.go\n│   ├── pkg/\n│   │   ├── merkle/\n│   │   │   └── tree.go\n│   │   ├── epoch/\n│   │   │   └── manager.go\n│   │   └── api/\n│   │       └── handlers.go\n│   └── internal/\n│       └── storage/\n│           └── receipts.go\n├── contracts/\n│   ├── package.json\n│   ├── hardhat.config.js\n│   ├── contracts/\n│   │   └── QUIVerSettlement.sol\n│   ├── scripts/\n│   │   └── deploy.js\n│   ├── test/\n│   │   └── settlement.test.js\n│   └── mock/\n│       ├── chain.go\n│       └── chain_test.go\n└── tests/\n    ├── requirements.txt\n    ├── conftest.py\n    ├── test_p2p_connectivity.py\n    ├── test_e2e_flow.py\n    ├── test_determinism.py\n    └── test_merkle_proofs.py",
+  "interfaces": {
+    "provider": {
+      "go": {
+        "P2PHost": "type P2PHost interface {\n\tStart(ctx context.Context) error\n\tAdvertise(topic string) error\n\tHandleStream(protocol string, handler StreamHandler) error\n\tClose() error\n}",
+        "ReceiptSigner": "type ReceiptSigner interface {\n\tSign(receipt *Receipt) (*SignedReceipt, error)\n\tVerify(receipt *SignedReceipt) (bool, error)\n\tPublicKey() ed25519.PublicKey\n}",
+        "Canonicalizer": "type Canonicalizer interface {\n\tCanonicalize(v interface{}) ([]byte, error)\n\tHash(data []byte) string\n}"
+      }
+    },
+    "gateway": {
+      "go": {
+        "LLMClient": "type LLMClient interface {\n\tGenerate(ctx context.Context, req *GenerateRequest) (*GenerateResponse, error)\n\tHealthCheck(ctx context.Context) error\n}",
+        "RateLimiter": "type RateLimiter interface {\n\tAllow(key string) bool\n\tWait(ctx context.Context, key string) error\n}"
+      },
+      "python": {
+        "LLMClient": "from abc import ABC, abstractmethod\nfrom typing import Protocol\n\nclass LLMClient(Protocol):\n    async def generate(self, request: GenerateRequest) -> GenerateResponse: ...\n    async def health_check(self) -> bool: ...",
+        "RateLimiter": "class RateLimiter(Protocol):\n    def allow(self, key: str) -> bool: ...\n    async def wait(self, key: str) -> None: ..."
+      }
+    },
+    "aggregator": {
+      "go": {
+        "MerkleTree": "type MerkleTree interface {\n\tAddLeaf(data []byte)\n\tBuild() error\n\tRoot() string\n\tProof(index int) ([]string, error)\n\tVerify(leaf []byte, proof []string, root string) bool\n}",
+        "EpochManager": "type EpochManager interface {\n\tCurrentEpoch() uint64\n\tStartNewEpoch() error\n\tFinalizeEpoch(epoch uint64, root string) error\n\tGetEpochInfo(epoch uint64) (*EpochInfo, error)\n}",
+        "ReceiptStore": "type ReceiptStore interface {\n\tStore(receipt *SignedReceipt) error\n\tGetByID(id string) (*SignedReceipt, error)\n\tGetByEpoch(epoch uint64) ([]*SignedReceipt, error)\n\tCount(epoch uint64) (int, error)\n}"
+      }
+    },
+    "chain_mock": {
+      "go": {
+        "ChainMock": "type ChainMock interface {\n\tCommitRoot(epoch uint64, root string) (string, error)\n\tVerifyClaim(receipt string, proof []string, epoch uint64) (bool, error)\n\tProcessClaim(claimID string, amount *big.Int) (string, error)\n\tGetBalance(address string) (*big.Int, error)\n}",
+        "StateStore": "type StateStore interface {\n\tGetRoot(epoch uint64) (string, error)\n\tSetRoot(epoch uint64, root string) error\n\tRecordClaim(claimID string, amount *big.Int) error\n\tIsClaimProcessed(claimID string) (bool, error)\n}"
+      }
+    }
+  },
+  "risks": [
+    {
+      "id": "RISK-001",
+      "category": "Security",
+      "severity": "High",
+      "title": "Receipt Forgery",
+      "description": "Malicious providers could forge receipts without actual LLM usage",
+      "mitigation": "Ed25519 signature verification with provider registry",
+      "test_hook": "test_forged_receipt_rejection"
+    },
+    {
+      "id": "RISK-002",
+      "category": "Availability",
+      "severity": "Medium",
+      "title": "LLM Provider Downtime",
+      "description": "Ollama/Jan-Nano services may be unavailable",
+      "mitigation": "Health checks, circuit breaker, fallback providers",
+      "test_hook": "test_provider_failover"
+    },
+    {
+      "id": "RISK-003",
+      "category": "Performance",
+      "severity": "Medium",
+      "title": "P2P Network Latency",
+      "description": "QUIC streams may experience high latency in poor network conditions",
+      "mitigation": "Local provider cache, connection pooling, timeout controls",
+      "test_hook": "test_high_latency_handling"
+    },
+    {
+      "id": "RISK-004",
+      "category": "Security",
+      "severity": "High",
+      "title": "Prompt Injection",
+      "description": "Malicious prompts could extract sensitive data or cause harmful outputs",
+      "mitigation": "Input sanitization, prompt templates, output filtering",
+      "test_hook": "test_prompt_injection_prevention"
+    },
+    {
+      "id": "RISK-005",
+      "category": "Operational",
+      "severity": "Medium",
+      "title": "Non-Deterministic Outputs",
+      "description": "LLM may produce different outputs for same input despite temp=0",
+      "mitigation": "Fixed seed, model version pinning, output hash verification",
+      "test_hook": "test_deterministic_generation"
+    },
+    {
+      "id": "RISK-006",
+      "category": "Financial",
+      "severity": "High",
+      "title": "Double Spending",
+      "description": "Same receipt could be claimed multiple times",
+      "mitigation": "On-chain claim tracking, idempotency keys, nonce management",
+      "test_hook": "test_double_claim_prevention"
+    },
+    {
+      "id": "RISK-007",
+      "category": "Privacy",
+      "severity": "Medium",
+      "title": "PII Leakage",
+      "description": "User prompts/outputs may contain sensitive information",
+      "mitigation": "Hash-only logging, no prompt/output storage, encrypted transport",
+      "test_hook": "test_pii_redaction"
+    },
+    {
+      "id": "RISK-008",
+      "category": "Scalability",
+      "severity": "Low",
+      "title": "Merkle Tree Size",
+      "description": "Large epoch sizes could make proof generation expensive",
+      "mitigation": "Epoch size limits, incremental tree building, proof caching",
+      "test_hook": "test_large_epoch_handling"
+    },
+    {
+      "id": "RISK-009",
+      "category": "Security",
+      "severity": "Medium",
+      "title": "DHT Poisoning",
+      "description": "Malicious nodes could advertise fake provider addresses",
+      "mitigation": "Provider reputation, signed advertisements, peer verification",
+      "test_hook": "test_dht_poisoning_resistance"
+    },
+    {
+      "id": "RISK-010",
+      "category": "Compliance",
+      "severity": "Low",
+      "title": "Rate Limit Bypass",
+      "description": "Users could circumvent rate limits via multiple identities",
+      "mitigation": "IP-based limiting, proof-of-work, authentication tokens",
+      "test_hook": "test_rate_limit_enforcement"
+    }
+  ]
+}

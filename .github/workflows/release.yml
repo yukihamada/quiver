@@ -1,0 +1,85 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: macos-latest
+    
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Set up Go
+      uses: actions/setup-go@v4
+      with:
+        go-version: '1.23'
+    
+    - name: Build
+      run: make build-all
+    
+    - name: Create Release Package
+      run: ./scripts/create-release.sh
+    
+    - name: Create Release
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: ${{ github.ref }}
+        release_name: Release ${{ github.ref }}
+        body: |
+          ## 🚀 QUIVer Provider ${{ github.ref }}
+          
+          ### 📥 ダウンロード
+          - **Mac (Intel/Apple Silicon)**: `QUIVerProvider-*.dmg`
+          - **コマンドライン版**: `quiver-provider-macos.tar.gz`
+          
+          ### 🔧 インストール方法
+          
+          **方法1: DMGインストーラー**
+          1. `QUIVerProvider-*.dmg` をダウンロード
+          2. DMGを開いてApplicationsにドラッグ
+          3. QUIVer Providerを起動
+          
+          **方法2: コマンドライン**
+          ```bash
+          curl -fsSL https://raw.githubusercontent.com/yukihamada/quiver/main/install.sh | bash
+          ```
+          
+          ### 💰 収益予測
+          - Mac mini: 月 ¥60,000〜90,000
+          - MacBook Pro: 月 ¥100,000〜150,000
+          - Mac Studio: 月 ¥200,000〜300,000
+          
+          ### 📊 新機能
+          - リアルタイムダッシュボード
+          - モバイル対応
+          - 自動アップデート
+        draft: false
+        prerelease: false
+    
+    - name: Upload DMG
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: ./release/QUIVerProvider-*.dmg
+        asset_name: QUIVerProvider-${{ github.ref }}.dmg
+        asset_content_type: application/x-apple-diskimage
+    
+    - name: Upload Archive
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: ./release/quiver-provider-macos.tar.gz
+        asset_name: quiver-provider-macos.tar.gz
+        asset_content_type: application/gzip

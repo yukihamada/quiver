@@ -1,0 +1,20 @@
+FROM golang:1.21-alpine AS builder
+
+RUN apk add --no-cache git make
+
+WORKDIR /build
+COPY gateway/go.mod gateway/go.sum ./
+RUN go mod download
+
+COPY gateway/ .
+RUN go build -o gateway cmd/gateway/main.go
+
+FROM alpine:latest
+
+RUN apk add --no-cache ca-certificates
+WORKDIR /app
+
+COPY --from=builder /build/gateway .
+
+EXPOSE 8080 4002/udp
+CMD ["./gateway"]

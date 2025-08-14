@@ -1,0 +1,63 @@
+# Binaries
+bin/
+*.exe
+*.dll
+*.so
+*.dylib
+
+# Test binaries
+*.test
+
+# Output of go coverage
+*.out
+
+# Go workspace
+go.work
+
+# Dependency directories
+vendor/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Project specific
+data/
+*.key
+*.log
+.env
+.env.local
+
+# Node modules
+node_modules/
+package-lock.json
+
+# Build artifacts
+dist/
+build/
+*.dmg
+*.app
+*.pkg
+
+# Hardhat
+cache/
+artifacts/
+deployments/
+
+# Temporary files
+bootstrap/bootstrap
+bootstrap/go.mod
+bootstrap/go.sum
+bootstrap/main.go
+/tmp/
+temp-keygen/
+
+# Hardhat node PID
+hardhat-node.pid

@@ -1,0 +1,23 @@
+{
+  "name": "quiver-contracts",
+  "version": "1.0.0",
+  "description": "QUIVer smart contracts for decentralized AI inference",
+  "scripts": {
+    "compile": "hardhat compile",
+    "test": "hardhat test",
+    "deploy:local": "hardhat run scripts/deploy.js --network hardhat",
+    "deploy:mumbai": "hardhat run scripts/deploy.js --network polygon_mumbai",
+    "deploy:amoy": "hardhat run scripts/deploy.js --network polygon_amoy",
+    "deploy:sepolia": "hardhat run scripts/deploy.js --network sepolia",
+    "verify": "hardhat verify"
+  },
+  "devDependencies": {
+    "@nomicfoundation/hardhat-toolbox": "^4.0.0",
+    "@openzeppelin/contracts": "^5.4.0",
+    "dotenv": "^16.6.1",
+    "hardhat": "^2.19.0"
+  },
+  "dependencies": {
+    "ethers": "^6.15.0"
+  }
+}

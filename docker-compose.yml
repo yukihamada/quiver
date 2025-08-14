@@ -1,0 +1,79 @@
+version: '3.8'
+
+services:
+  ollama-mock:
+    build:
+      context: ./tests/integration
+      dockerfile: Dockerfile.ollama-mock
+    ports:
+      - "11434:11434"
+    environment:
+      - DETERMINISTIC=true
+      - CANARY_RESPONSES=true
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:11434/api/tags"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  provider:
+    build:
+      context: .
+      dockerfile: Dockerfile.provider
+    depends_on:
+      ollama-mock:
+        condition: service_healthy
+    environment:
+      - OLLAMA_URL=http://ollama-mock:11434
+      - LISTEN_ADDR=/ip4/0.0.0.0/udp/4001/quic-v1
+    ports:
+      - "4001:4001/udp"
+    volumes:
+      - ./data/provider:/data
+
+  gateway:
+    build:
+      context: .
+      dockerfile: Dockerfile.gateway
+    depends_on:
+      - provider
+    environment:
+      - P2P_LISTEN_ADDR=/ip4/0.0.0.0/udp/4002/quic-v1
+      - DHT_BOOTSTRAP=/ip4/provider/udp/4001/quic-v1
+      - PORT=8080
+    ports:
+      - "8080:8080"
+      - "4002:4002/udp"
+    volumes:
+      - ./data/gateway:/data
+
+  aggregator:
+    build:
+      context: .
+      dockerfile: Dockerfile.aggregator
+    environment:
+      - PORT=8081
+      - STORAGE_PATH=/data
+    ports:
+      - "8081:8081"
+    volumes:
+      - ./data/aggregator:/data
+
+  integration-tests:
+    build:
+      context: ./tests/integration
+      dockerfile: Dockerfile.tests
+    depends_on:
+      - gateway
+      - aggregator
+    environment:
+      - GATEWAY_URL=http://gateway:8080
+      - AGGREGATOR_URL=http://aggregator:8081
+      - TEST_ITERATIONS=100
+    volumes:
+      - ./test-results:/results
+    command: ["pytest", "-v", "--junit-xml=/results/integration.xml", "--cov=/app", "--cov-report=xml:/results/coverage.xml"]
+
+networks:
+  default:
+    name: quiver-net
