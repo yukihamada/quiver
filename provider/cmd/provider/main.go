@@ -20,8 +20,8 @@ import (
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
 
-const protocolID = "/jan-nano/1.0.0"
-const dhtTopic = "ai.providers.jan-nano/1.0.0"
+const protocolID = "/quiver/inference/1.0.0"
+const dhtTopic = "quiver.providers"
 
 var startTime = time.Now()
 

@@ -20,8 +20,8 @@ import (
 	"github.com/multiformats/go-multiaddr"
 )
 
-const protocolID = "/jan-nano/1.0.0"
-const dhtTopic = "ai.providers.jan-nano/1.0.0"
+const protocolID = "/quiver/inference/1.0.0"
+const dhtTopic = "quiver.providers"
 
 type Client struct {
 	host host.Host
@@ -219,6 +219,35 @@ func (c *Client) CreateStream(ctx context.Context, providerID peer.ID, req *Stre
 	}
 	
 	return stream, nil
+}
+
+// IsConnected checks if the client is connected to the P2P network
+func (c *Client) IsConnected() bool {
+	return len(c.host.Network().Peers()) > 0
+}
+
+// PeerCount returns the number of connected peers
+func (c *Client) PeerCount() int {
+	return len(c.host.Network().Peers())
+}
+
+// GetProviders returns a list of available inference providers
+func (c *Client) GetProviders(ctx context.Context) []peer.ID {
+	providers, _ := c.FindProviders()
+	peerIDs := make([]peer.ID, len(providers))
+	for i, p := range providers {
+		peerIDs[i] = p.ID
+	}
+	return peerIDs
+}
+
+// SendRequest sends an inference request to a provider
+func (c *Client) SendRequest(ctx context.Context, providerID peer.ID, data []byte) (network.Stream, error) {
+	var req StreamRequest
+	if err := json.Unmarshal(data, &req); err != nil {
+		return nil, fmt.Errorf("failed to unmarshal request: %w", err)
+	}
+	return c.CreateStream(ctx, providerID, &req)
 }
 
 func (c *Client) Close() error {
