@@ -1,0 +1,755 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QUIVer Network - 分散型AI推論ネットワーク</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: #0a0a0a;
+            color: #ffffff;
+            overflow-x: hidden;
+        }
+        
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background: radial-gradient(circle at center, #1a1a2e 0%, #0a0a0a 100%);
+            position: relative;
+        }
+        
+        .grid-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: 
+                linear-gradient(rgba(255,255,255,0.05) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255,255,255,0.05) 1px, transparent 1px);
+            background-size: 50px 50px;
+            pointer-events: none;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            position: relative;
+            z-index: 1;
+        }
+        
+        h1 {
+            font-size: 4rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-align: center;
+        }
+        
+        .subtitle {
+            font-size: 1.5rem;
+            color: #a0a0a0;
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+        
+        .cta-container {
+            display: flex;
+            gap: 2rem;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-bottom: 4rem;
+        }
+        
+        .cta-button {
+            padding: 1rem 2rem;
+            font-size: 1.2rem;
+            border-radius: 12px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            display: inline-block;
+            font-weight: 600;
+        }
+        
+        .primary-cta {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+        
+        .primary-cta:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 25px rgba(102, 126, 234, 0.6);
+        }
+        
+        .secondary-cta {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .secondary-cta:hover {
+            background: rgba(255, 255, 255, 0.2);
+            border-color: rgba(255, 255, 255, 0.4);
+        }
+        
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 2rem;
+            margin-bottom: 4rem;
+        }
+        
+        .stat-card {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 2rem;
+            border-radius: 16px;
+            text-align: center;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .stat-number {
+            font-size: 3rem;
+            font-weight: 700;
+            color: #667eea;
+            margin-bottom: 0.5rem;
+        }
+        
+        .stat-label {
+            color: #a0a0a0;
+            font-size: 1.1rem;
+        }
+        
+        .features {
+            padding: 4rem 0;
+            background: #0f0f0f;
+        }
+        
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+        
+        .feature-card {
+            background: rgba(255, 255, 255, 0.03);
+            padding: 2rem;
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+        
+        .feature-card:hover {
+            background: rgba(255, 255, 255, 0.05);
+            transform: translateY(-5px);
+            border-color: #667eea;
+        }
+        
+        .feature-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+        
+        .feature-title {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            color: #ffffff;
+        }
+        
+        .feature-desc {
+            color: #a0a0a0;
+            line-height: 1.6;
+        }
+        
+        .models-section {
+            padding: 4rem 0;
+            background: #0a0a0a;
+        }
+        
+        .model-selector {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 3rem;
+            border-radius: 20px;
+            margin-top: 2rem;
+        }
+        
+        .model-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+        
+        .model-card {
+            background: rgba(255, 255, 255, 0.03);
+            padding: 1.5rem;
+            border-radius: 12px;
+            border: 2px solid transparent;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .model-card:hover {
+            border-color: #667eea;
+            background: rgba(102, 126, 234, 0.1);
+        }
+        
+        .model-name {
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+        
+        .model-specs {
+            color: #a0a0a0;
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .model-requirements {
+            color: #667eea;
+            font-size: 0.85rem;
+        }
+        
+        .setup-section {
+            padding: 4rem 0;
+            background: #0f0f0f;
+        }
+        
+        .setup-steps {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+        
+        .step-card {
+            text-align: center;
+            padding: 2rem;
+        }
+        
+        .step-number {
+            display: inline-block;
+            width: 60px;
+            height: 60px;
+            line-height: 60px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 50%;
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+        
+        .code-block {
+            background: #1a1a1a;
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin: 1rem 0;
+            overflow-x: auto;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .code-block code {
+            color: #4ade80;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+        }
+        
+        .section-title {
+            font-size: 2.5rem;
+            text-align: center;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .section-subtitle {
+            text-align: center;
+            color: #a0a0a0;
+            font-size: 1.2rem;
+            margin-bottom: 3rem;
+        }
+        
+        footer {
+            padding: 2rem 0;
+            text-align: center;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            color: #666;
+        }
+        
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+        
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2.5rem;
+            }
+            
+            .subtitle {
+                font-size: 1.2rem;
+            }
+            
+            .cta-container {
+                flex-direction: column;
+                align-items: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <section class="hero">
+        <div class="grid-bg"></div>
+        <div class="container">
+            <h1>QUIVer Network</h1>
+            <p class="subtitle">あなたのPCをAI推論プロバイダーに変えて収益化</p>
+            
+            <div class="cta-container">
+                <a href="#quick-start" class="cta-button primary-cta">
+                    今すぐProviderになる
+                </a>
+                <a href="#models" class="cta-button secondary-cta">
+                    対応モデルを見る
+                </a>
+            </div>
+            
+            <div class="stats">
+                <div class="stat-card">
+                    <div class="stat-number pulse" id="active-nodes">7</div>
+                    <div class="stat-label">アクティブノード</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="inference-rate">2.3</div>
+                    <div class="stat-label">推論/秒</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="total-tflops">29</div>
+                    <div class="stat-label">総計算力 (TFLOPS)</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">P2P</div>
+                    <div class="stat-label">完全分散型</div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <section class="features">
+        <div class="container">
+            <h2 class="section-title">なぜQUIVerを選ぶか</h2>
+            <p class="section-subtitle">最新のP2P技術で構築された次世代AI推論ネットワーク</p>
+            
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">💰</div>
+                    <h3 class="feature-title">収益化</h3>
+                    <p class="feature-desc">余っているGPU/CPUリソースを活用して、AI推論を提供することで収益を得られます。</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🔒</div>
+                    <h3 class="feature-title">プライバシー重視</h3>
+                    <p class="feature-desc">ローカルで動作するため、データが外部に送信されることはありません。</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">⚡</div>
+                    <h3 class="feature-title">高速・低遅延</h3>
+                    <p class="feature-desc">QUIC プロトコルによる高速通信と、近隣ノードへの自動ルーティング。</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🌐</div>
+                    <h3 class="feature-title">完全分散型</h3>
+                    <p class="feature-desc">中央サーバーに依存しない、真のP2Pネットワーク。</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">📊</div>
+                    <h3 class="feature-title">透明な報酬</h3>
+                    <p class="feature-desc">Ed25519署名付きレシートで、すべての推論が記録・検証可能。</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🚀</div>
+                    <h3 class="feature-title">簡単セットアップ</h3>
+                    <p class="feature-desc">ワンクリックで始められる、初心者にも優しい設計。</p>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <section id="models" class="models-section">
+        <div class="container">
+            <h2 class="section-title">対応モデル</h2>
+            <p class="section-subtitle">あなたのスペックに合わせて最適なモデルを選択</p>
+            
+            <div class="model-selector">
+                <h3 style="font-size: 1.5rem; margin-bottom: 1rem;">推奨モデル</h3>
+                
+                <div class="model-grid">
+                    <div class="model-card">
+                        <div class="model-name">Qwen3 0.6B</div>
+                        <div class="model-specs">超軽量・高速モデル</div>
+                        <div class="model-requirements">RAM: 2GB以上</div>
+                    </div>
+                    
+                    <div class="model-card">
+                        <div class="model-name">Qwen3 3B</div>
+                        <div class="model-specs">バランス型</div>
+                        <div class="model-requirements">RAM: 8GB以上</div>
+                    </div>
+                    
+                    <div class="model-card">
+                        <div class="model-name">Qwen3 7B</div>
+                        <div class="model-specs">高性能</div>
+                        <div class="model-requirements">RAM: 16GB以上</div>
+                    </div>
+                    
+                    <div class="model-card">
+                        <div class="model-name">Qwen3 14B</div>
+                        <div class="model-specs">プロフェッショナル</div>
+                        <div class="model-requirements">RAM: 32GB以上</div>
+                    </div>
+                    
+                    <div class="model-card">
+                        <div class="model-name">Qwen3 32B</div>
+                        <div class="model-specs">エンタープライズ</div>
+                        <div class="model-requirements">RAM: 64GB以上</div>
+                    </div>
+                    
+                    <div class="model-card">
+                        <div class="model-name">Qwen3-Coder 30B</div>
+                        <div class="model-specs">コード特化型</div>
+                        <div class="model-requirements">RAM: 64GB以上</div>
+                    </div>
+                    
+                    <div class="model-card">
+                        <div class="model-name">GPT-OSS 20B</div>
+                        <div class="model-specs">ローカル実行用</div>
+                        <div class="model-requirements">RAM: 48GB以上</div>
+                    </div>
+                    
+                    <div class="model-card">
+                        <div class="model-name">GPT-OSS 120B</div>
+                        <div class="model-specs">フラッグシップ</div>
+                        <div class="model-requirements">RAM: 256GB以上</div>
+                    </div>
+                    
+                    <div class="model-card">
+                        <div class="model-name">Jan-Nano 32K</div>
+                        <div class="model-specs">長文対応</div>
+                        <div class="model-requirements">RAM: 16GB以上</div>
+                    </div>
+                    
+                    <div class="model-card">
+                        <div class="model-name">Jan-Nano 128K</div>
+                        <div class="model-specs">超長文対応</div>
+                        <div class="model-requirements">RAM: 32GB以上</div>
+                    </div>
+                    
+                    <div class="model-card">
+                        <div class="model-name">Llama 3.2 3B</div>
+                        <div class="model-specs">Meta公式</div>
+                        <div class="model-requirements">RAM: 8GB以上</div>
+                    </div>
+                    
+                    <div class="model-card">
+                        <div class="model-name">Mistral 7B</div>
+                        <div class="model-specs">効率重視</div>
+                        <div class="model-requirements">RAM: 16GB以上</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <section id="quick-start" class="setup-section">
+        <div class="container">
+            <h2 class="section-title">3ステップで開始</h2>
+            <p class="section-subtitle">5分以内にProviderとして稼働開始</p>
+            
+            <div class="setup-steps">
+                <div class="step-card">
+                    <div class="step-number">1</div>
+                    <h3 style="font-size: 1.5rem; margin-bottom: 1rem;">インストール</h3>
+                    <div class="code-block">
+                        <code>curl -fsSL https://quiver.network/install.sh | bash</code>
+                    </div>
+                    <p style="color: #a0a0a0;">ワンライナーで全て自動設定</p>
+                </div>
+                
+                <div class="step-card">
+                    <div class="step-number">2</div>
+                    <h3 style="font-size: 1.5rem; margin-bottom: 1rem;">モデル選択</h3>
+                    <div class="code-block">
+                        <code>quiver-provider select-model</code>
+                    </div>
+                    <p style="color: #a0a0a0;">スペックに合わせて自動推奨</p>
+                </div>
+                
+                <div class="step-card">
+                    <div class="step-number">3</div>
+                    <h3 style="font-size: 1.5rem; margin-bottom: 1rem;">稼働開始</h3>
+                    <div class="code-block">
+                        <code>quiver-provider start</code>
+                    </div>
+                    <p style="color: #a0a0a0;">P2Pネットワークに自動接続</p>
+                </div>
+            </div>
+            
+            <div style="text-align: center; margin-top: 3rem;">
+                <h3 style="font-size: 1.8rem; margin-bottom: 2rem;">対応プラットフォーム</h3>
+                <div style="display: flex; justify-content: center; gap: 3rem; flex-wrap: wrap;">
+                    <div>
+                        <div style="font-size: 3rem;">🍎</div>
+                        <p>macOS</p>
+                    </div>
+                    <div>
+                        <div style="font-size: 3rem;">🐧</div>
+                        <p>Linux</p>
+                    </div>
+                    <div>
+                        <div style="font-size: 3rem;">🪟</div>
+                        <p>Windows</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <section class="features" style="background: #0a0a0a;">
+        <div class="container">
+            <h2 class="section-title">収益シミュレーション</h2>
+            <p class="section-subtitle">あなたの環境でどれくらい稼げるか</p>
+            
+            <div style="background: rgba(255, 255, 255, 0.05); padding: 3rem; border-radius: 20px; margin-top: 2rem;">
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem;">
+                    <div style="text-align: center;">
+                        <h3 style="font-size: 1.5rem; margin-bottom: 1rem;">ライトユーザー</h3>
+                        <p style="color: #a0a0a0; margin-bottom: 1rem;">8GB RAM / Qwen3 0.6B</p>
+                        <div style="font-size: 2.5rem; color: #4ade80; font-weight: 700;">~$50/月</div>
+                        <p style="color: #666; margin-top: 0.5rem;">8時間/日稼働</p>
+                    </div>
+                    
+                    <div style="text-align: center;">
+                        <h3 style="font-size: 1.5rem; margin-bottom: 1rem;">ミドルユーザー</h3>
+                        <p style="color: #a0a0a0; margin-bottom: 1rem;">32GB RAM / Qwen3 7B</p>
+                        <div style="font-size: 2.5rem; color: #4ade80; font-weight: 700;">~$200/月</div>
+                        <p style="color: #666; margin-top: 0.5rem;">16時間/日稼働</p>
+                    </div>
+                    
+                    <div style="text-align: center;">
+                        <h3 style="font-size: 1.5rem; margin-bottom: 1rem;">ヘビーユーザー</h3>
+                        <p style="color: #a0a0a0; margin-bottom: 1rem;">64GB+ RAM / 複数モデル</p>
+                        <div style="font-size: 2.5rem; color: #4ade80; font-weight: 700;">~$500+/月</div>
+                        <p style="color: #666; margin-top: 0.5rem;">24時間稼働</p>
+                    </div>
+                </div>
+                
+                <p style="text-align: center; color: #666; margin-top: 2rem; font-size: 0.9rem;">
+                    ※ 収益は推論リクエスト数により変動します
+                </p>
+            </div>
+        </div>
+    </section>
+    
+    <footer>
+        <div class="container">
+            <p>&copy; 2024 QUIVer Network. Built with P2P technology.</p>
+            <p style="margin-top: 0.5rem;">
+                <a href="https://github.com/yukihamada/quiver" style="color: #667eea; text-decoration: none;">GitHub</a>
+                ・
+                <a href="https://docs.quiver.network" style="color: #667eea; text-decoration: none;">Docs</a>
+                ・
+                <a href="https://discord.gg/quiver" style="color: #667eea; text-decoration: none;">Discord</a>
+            </p>
+        </div>
+    </footer>
+    
+    <script src="api/stats.js"></script>
+    <script>
+        // リアルタイムネットワーク統計の更新
+        async function updateNetworkStats() {
+            try {
+                const stats = await fetchNetworkStats();
+                
+                // アクティブノード数を更新
+                const activeNodesEl = document.getElementById('active-nodes');
+                if (activeNodesEl && stats.activeNodes) {
+                    activeNodesEl.textContent = stats.activeNodes;
+                }
+                
+                // 推論速度を更新
+                const inferenceRateEl = document.getElementById('inference-rate');
+                if (inferenceRateEl && stats.inferencePerSec) {
+                    inferenceRateEl.textContent = stats.inferencePerSec;
+                }
+                
+                // 総計算力を更新
+                const tflopsEl = document.getElementById('total-tflops');
+                if (tflopsEl && stats.totalTFLOPS) {
+                    tflopsEl.textContent = stats.totalTFLOPS;
+                }
+            } catch (error) {
+                console.error('Failed to update stats:', error);
+            }
+        }
+        
+        // 初回読み込み
+        updateNetworkStats();
+        
+        // 5秒ごとに更新
+        setInterval(updateNetworkStats, 5000);
+        
+        // WebSocket接続を試みる（利用可能な場合）
+        if (typeof connectToNetwork === 'function') {
+            try {
+                connectToNetwork((stats) => {
+                    if (stats.activeNodes) {
+                        document.getElementById('active-nodes').textContent = stats.activeNodes;
+                    }
+                    if (stats.inferencePerSec) {
+                        document.getElementById('inference-rate').textContent = stats.inferencePerSec;
+                    }
+                    if (stats.totalTFLOPS) {
+                        document.getElementById('total-tflops').textContent = stats.totalTFLOPS;
+                    }
+                });
+            } catch (error) {
+                console.log('WebSocket not available, using polling');
+            }
+        }
+        
+        // モデルカードのクリックハンドラー
+        document.querySelectorAll('.model-card').forEach(card => {
+            card.addEventListener('click', function() {
+                const modelName = this.querySelector('.model-name').textContent;
+                const requirements = this.querySelector('.model-requirements').textContent;
+                
+                // すべてのカードの選択を解除
+                document.querySelectorAll('.model-card').forEach(c => {
+                    c.style.borderColor = 'transparent';
+                    c.style.background = 'rgba(255, 255, 255, 0.03)';
+                });
+                
+                // 選択したカードをハイライト
+                this.style.borderColor = '#667eea';
+                this.style.background = 'rgba(102, 126, 234, 0.2)';
+                
+                // コマンドを更新
+                updateInstallCommand(modelName);
+            });
+        });
+        
+        function updateInstallCommand(modelName) {
+            const modelMap = {
+                'Qwen3 0.6B': 'qwen3:0.6b',
+                'Qwen3 3B': 'qwen3:3b',
+                'Qwen3 7B': 'qwen3:7b',
+                'Qwen3 14B': 'qwen3:14b',
+                'Qwen3 32B': 'qwen3:32b',
+                'Qwen3-Coder 30B': 'qwen3-coder:30b',
+                'GPT-OSS 20B': 'gpt-oss:20b',
+                'GPT-OSS 120B': 'gpt-oss:120b',
+                'Jan-Nano 32K': 'jan-nano:32k',
+                'Jan-Nano 128K': 'jan-nano:128k',
+                'Llama 3.2 3B': 'llama3.2:3b',
+                'Mistral 7B': 'mistral:7b'
+            };
+            
+            const modelCode = modelMap[modelName] || 'llama3.2:3b';
+            
+            // インストールコマンドを表示
+            const commandDisplay = document.createElement('div');
+            commandDisplay.style.cssText = `
+                position: fixed;
+                bottom: 20px;
+                right: 20px;
+                background: rgba(26, 26, 26, 0.95);
+                padding: 1.5rem;
+                border-radius: 12px;
+                border: 1px solid #667eea;
+                max-width: 400px;
+                z-index: 1000;
+                animation: slideIn 0.3s ease;
+            `;
+            
+            commandDisplay.innerHTML = `
+                <h4 style="margin-bottom: 1rem; color: #667eea;">${modelName} のセットアップ</h4>
+                <div class="code-block" style="margin: 0;">
+                    <code>export QUIVER_MODEL="${modelCode}"<br>
+curl -fsSL https://quiver.network/install.sh | bash</code>
+                </div>
+                <p style="color: #666; font-size: 0.85rem; margin-top: 1rem; margin-bottom: 0;">
+                    このコマンドで自動的に${modelName}がインストールされます
+                </p>
+            `;
+            
+            // 既存の表示を削除
+            const existing = document.querySelector('.command-display');
+            if (existing) existing.remove();
+            
+            commandDisplay.classList.add('command-display');
+            document.body.appendChild(commandDisplay);
+            
+            // 5秒後に自動で消す
+            setTimeout(() => {
+                commandDisplay.style.animation = 'slideOut 0.3s ease';
+                setTimeout(() => commandDisplay.remove(), 300);
+            }, 5000);
+        }
+        
+        // スムーズスクロール
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
+    </script>
+    
+    <style>
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+        
+        @keyframes slideOut {
+            from {
+                transform: translateX(0);
+                opacity: 1;
+            }
+            to {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+        }
+    </style>
+</body>
+</html> 
