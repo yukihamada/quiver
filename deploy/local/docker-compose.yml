@@ -1,0 +1,155 @@
+version: '3.8'
+
+services:
+  # Public Bootstrap Node 1
+  bootstrap1:
+    build: 
+      context: ../../
+      dockerfile: bootstrap/Dockerfile
+    container_name: quiver-bootstrap-1
+    ports:
+      - "4001:4001"     # TCP
+      - "4001:4001/udp" # QUIC
+      - "4003:4003"     # WebSocket
+    environment:
+      - QUIVER_NODE_ID=bootstrap1
+      - QUIVER_ENABLE_WEBSOCKET=true
+      - QUIVER_PUBLIC_NODE=true
+      - QUIVER_ANNOUNCE_ADDRESSES=/dns4/localhost/tcp/4001,/dns4/localhost/udp/4001/quic-v1,/dns4/localhost/tcp/4003/ws
+    networks:
+      - quiver-net
+    volumes:
+      - bootstrap1-data:/data
+
+  # Public Bootstrap Node 2
+  bootstrap2:
+    build: 
+      context: ../../
+      dockerfile: bootstrap/Dockerfile
+    container_name: quiver-bootstrap-2
+    ports:
+      - "4011:4001"
+      - "4011:4001/udp"
+      - "4013:4003"
+    environment:
+      - QUIVER_NODE_ID=bootstrap2
+      - QUIVER_ENABLE_WEBSOCKET=true
+      - QUIVER_PUBLIC_NODE=true
+      - QUIVER_BOOTSTRAP_PEERS=/ip4/bootstrap1/tcp/4001
+    networks:
+      - quiver-net
+    volumes:
+      - bootstrap2-data:/data
+
+  # Signalling Server
+  signalling:
+    build:
+      context: ../../gateway
+      dockerfile: Dockerfile.signalling
+    container_name: quiver-signalling
+    ports:
+      - "8444:8444"
+    environment:
+      - PORT=8444
+    networks:
+      - quiver-net
+
+  # Gateway with WebRTC support
+  gateway:
+    build:
+      context: ../../gateway
+      dockerfile: Dockerfile
+    container_name: quiver-gateway
+    ports:
+      - "8080:8080"
+      - "8443:8443" # WebTransport
+    environment:
+      - QUIVER_BOOTSTRAP=/ip4/bootstrap1/tcp/4001,/ip4/bootstrap2/tcp/4001
+      - QUIVER_ENABLE_WEBRTC=true
+      - QUIVER_ENABLE_WEBTRANSPORT=true
+    networks:
+      - quiver-net
+    depends_on:
+      - bootstrap1
+      - bootstrap2
+
+  # Provider Node 1
+  provider1:
+    build:
+      context: ../../provider
+      dockerfile: Dockerfile
+    container_name: quiver-provider-1
+    environment:
+      - QUIVER_BOOTSTRAP=/ip4/bootstrap1/tcp/4001
+      - OLLAMA_HOST=ollama:11434
+    networks:
+      - quiver-net
+    depends_on:
+      - bootstrap1
+      - ollama
+
+  # Provider Node 2
+  provider2:
+    build:
+      context: ../../provider
+      dockerfile: Dockerfile
+    container_name: quiver-provider-2
+    environment:
+      - QUIVER_BOOTSTRAP=/ip4/bootstrap2/tcp/4001
+      - OLLAMA_HOST=ollama:11434
+    networks:
+      - quiver-net
+    depends_on:
+      - bootstrap2
+      - ollama
+
+  # Ollama for AI models
+  ollama:
+    image: ollama/ollama:latest
+    container_name: quiver-ollama
+    volumes:
+      - ollama-data:/root/.ollama
+    networks:
+      - quiver-net
+
+  # Stats Server
+  stats:
+    build:
+      context: ../../stats-server
+      dockerfile: Dockerfile
+    container_name: quiver-stats
+    ports:
+      - "8087:8087"
+    environment:
+      - QUIVER_BOOTSTRAP=/ip4/bootstrap1/tcp/4001
+    networks:
+      - quiver-net
+    depends_on:
+      - bootstrap1
+
+  # Nginx reverse proxy for WebSocket/WebRTC
+  nginx:
+    image: nginx:alpine
+    container_name: quiver-nginx
+    ports:
+      - "443:443"
+      - "80:80"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./certs:/etc/nginx/certs:ro
+    networks:
+      - quiver-net
+    depends_on:
+      - signalling
+      - gateway
+      - bootstrap1
+      - bootstrap2
+
+networks:
+  quiver-net:
+    driver: bridge
+
+volumes:
+  bootstrap1-data:
+  bootstrap2-data:
+  ollama-data:

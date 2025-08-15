@@ -91,6 +91,7 @@ resource "google_compute_backend_service" "global_gateway_backend" {
     cache_mode = "CACHE_ALL_STATIC"
     default_ttl = 300
     max_ttl = 3600
+    signed_url_cache_max_age_sec = 3600
     
     negative_caching = true
     negative_caching_policy {
@@ -173,9 +174,9 @@ output "global_gateway_ip" {
   description = "Global load balancer IP address"
 }
 
-output "global_gateway_url" {
+output "global_gateway_https_url" {
   value       = "https://quiver-global-lb.quiver.network"
-  description = "Global load-balanced gateway URL"
+  description = "Global load-balanced HTTPS gateway URL"
 }
 
 output "regional_urls" {

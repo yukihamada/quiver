@@ -97,7 +97,7 @@ resource "google_compute_instance" "bootstrap_node" {
     }
   }
 
-  metadata_startup_script = file("${path.module}/scripts/bootstrap-node.sh")
+  metadata_startup_script = file("${path.module}/scripts/bootstrap-node-fixed.sh")
 
   service_account {
     scopes = ["cloud-platform"]
@@ -169,7 +169,7 @@ resource "google_compute_instance" "gateway_nodes" {
     bootstrap_addr = google_compute_instance.bootstrap_node.network_interface[0].access_config[0].nat_ip
   }
 
-  metadata_startup_script = file("${path.module}/scripts/gateway-node.sh")
+  metadata_startup_script = file("${path.module}/scripts/gateway-node-fixed.sh")
 
   service_account {
     scopes = ["cloud-platform"]
