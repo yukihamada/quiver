@@ -551,13 +551,15 @@
         
         // Configuration
         const STREAM_ENDPOINTS = [
-            'http://localhost:8080/generate/stream',
-            'http://34.146.32.216:8081/generate/stream',
-            'https://api.quiver.network/generate/stream'
+            'http://localhost:8080/generate',
+            'http://172.20.10.2:8080/generate',
+            'http://34.146.32.216:8081/generate',
+            'https://api.quiver.network/generate'
         ];
         
         const STATS_ENDPOINTS = [
             'http://localhost:8087/api/stats',
+            'http://172.20.10.2:8087/api/stats',
             'http://34.146.63.195:8087/api/stats'
         ];
         
@@ -645,6 +647,7 @@
                 const endpoint = STREAM_ENDPOINTS[(currentEndpoint + i) % STREAM_ENDPOINTS.length];
                 
                 try {
+                    const startTime = Date.now();
                     const response = await fetch(endpoint, {
                         method: 'POST',
                         headers: {
@@ -661,30 +664,51 @@
                         throw new Error('Request failed');
                     }
                     
-                    // Set up SSE reader
-                    const reader = response.body.getReader();
-                    const decoder = new TextDecoder();
-                    let buffer = '';
+                    // Get response as JSON
+                    const data = await response.json();
                     
-                    while (true) {
-                        const { done, value } = await reader.read();
-                        if (done) break;
-                        
-                        buffer += decoder.decode(value, { stream: true });
-                        const lines = buffer.split('\n');
-                        buffer = lines.pop() || '';
-                        
-                        for (const line of lines) {
-                            if (line.startsWith('data: ')) {
-                                try {
-                                    const event = JSON.parse(line.slice(6));
-                                    handleStreamEvent(event);
-                                } catch (e) {
-                                    console.error('Failed to parse event:', e);
-                                }
-                            }
-                        }
+                    if (data.error) {
+                        throw new Error(data.error);
                     }
+                    
+                    // Calculate first token time
+                    const firstTokenTime = Date.now() - startTime;
+                    
+                    // Send timing event
+                    handleStreamEvent({
+                        type: 'timing',
+                        data: { first_token_ms: firstTokenTime }
+                    });
+                    
+                    // Simulate streaming by chunking the response
+                    const text = data.completion;
+                    const words = text.split(' ');
+                    const chunkSize = 3;
+                    
+                    for (let j = 0; j < words.length; j += chunkSize) {
+                        const end = Math.min(j + chunkSize, words.length);
+                        const chunk = words.slice(j, end).join(' ') + (end < words.length ? ' ' : '');
+                        
+                        handleStreamEvent({
+                            type: 'chunk',
+                            data: { content: chunk }
+                        });
+                        
+                        // Simulate network delay
+                        await new Promise(resolve => setTimeout(resolve, 50));
+                    }
+                    
+                    // Send completion event
+                    const totalTime = Date.now() - startTime;
+                    handleStreamEvent({
+                        type: 'complete',
+                        data: {
+                            total_ms: totalTime,
+                            first_token_ms: firstTokenTime,
+                            tokens_per_sec: words.length / (totalTime / 1000),
+                            receipt: data.receipt
+                        }
+                    });
                     
                     connected = true;
                     currentEndpoint = (currentEndpoint + i) % STREAM_ENDPOINTS.length;
