@@ -5,6 +5,7 @@ import (
 	"crypto/rand"
 	"encoding/json"
 	"fmt"
+	"net"
 	"time"
 
 	"github.com/libp2p/go-libp2p"
@@ -14,6 +15,8 @@ import (
 	"github.com/libp2p/go-libp2p/core/network"
 	"github.com/libp2p/go-libp2p/core/peer"
 	"github.com/libp2p/go-libp2p/core/protocol"
+	libp2pquic "github.com/libp2p/go-libp2p/p2p/transport/quic"
+	"github.com/libp2p/go-libp2p/p2p/transport/tcp"
 	"github.com/multiformats/go-multiaddr"
 )
 
@@ -50,13 +53,29 @@ func NewClient(ctx context.Context, listenAddr string, bootstrapPeers []string) 
 		return nil, err
 	}
 
+	// Create additional QUIC listen address
+	_, port, _ := net.SplitHostPort(listen.String())
+	quicAddr, _ := multiaddr.NewMultiaddr(fmt.Sprintf("/ip4/0.0.0.0/udp/%s/quic-v1", port))
+	
 	h, err := libp2p.New(
 		libp2p.Identity(priv),
-		libp2p.ListenAddrs(listen),
-		// Use default transports (TCP + QUIC) for better compatibility
-		libp2p.DefaultTransports,
+		libp2p.ListenAddrs(listen, quicAddr),
+		
+		// Enable both TCP and QUIC transports
+		libp2p.Transport(tcp.NewTCPTransport),
+		libp2p.Transport(libp2pquic.NewTransport),
+		
+		// Enable NAT traversal
+		libp2p.EnableNATService(),
+		
+		// Enable hole punching for NAT traversal
+		libp2p.EnableHolePunching(),
+		
+		// Enable relay for nodes behind NAT
+		libp2p.EnableRelay(),
+		
+		// Default security
 		libp2p.DefaultSecurity,
-		// NAT traversal will be configured separately
 	)
 	if err != nil {
 		return nil, err

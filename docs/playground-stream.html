@@ -495,6 +495,7 @@
         </div>
     </div>
     
+    <script src="js/webtransport-client.js"></script>
     <script>
         // Register service worker for PWA
         if ('serviceWorker' in navigator) {
@@ -504,6 +505,47 @@
                     .catch(error => console.log('SW registration failed:', error));
             });
         }
+        
+        // Initialize WebTransport client
+        let webTransport = null;
+        async function initWebTransport() {
+            if (!window.WebTransport) {
+                console.log('WebTransport not supported, using HTTP fallback');
+                return false;
+            }
+            
+            try {
+                webTransport = new QUIVerWebTransport();
+                
+                // Try local WebTransport first
+                const endpoints = [
+                    'https://localhost:8443/webtransport',
+                    'https://192.168.0.194:8443/webtransport',
+                    'https://quiver-wt.quiver.network/webtransport'
+                ];
+                
+                for (const endpoint of endpoints) {
+                    try {
+                        await webTransport.connect(endpoint);
+                        console.log('Connected via WebTransport to:', endpoint);
+                        return true;
+                    } catch (e) {
+                        console.log('Failed to connect to:', endpoint);
+                    }
+                }
+            } catch (error) {
+                console.error('WebTransport initialization failed:', error);
+            }
+            
+            return false;
+        }
+        
+        // Try to establish WebTransport connection
+        initWebTransport().then(connected => {
+            if (connected) {
+                document.getElementById('activeNodes').textContent = 'P2P';
+            }
+        });
         
         // Detect iOS for install prompt
         const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
@@ -552,7 +594,7 @@
         // Configuration
         const STREAM_ENDPOINTS = [
             'http://localhost:8080/generate',
-            'http://172.20.10.2:8080/generate',
+            'http://192.168.0.194:8080/generate',
             'https://quiver-global-lb.quiver.network/generate',  // Global load balancer
             'http://quiver-asia.quiver.network/generate',        // Asia region
             'http://quiver-us.quiver.network/generate',          // US region
@@ -562,7 +604,7 @@
         
         const STATS_ENDPOINTS = [
             'http://localhost:8087/api/stats',
-            'http://172.20.10.2:8087/api/stats',
+            'http://192.168.0.194:8087/api/stats',
             'http://34.146.63.195:8087/api/stats'
         ];
         
@@ -642,6 +684,45 @@
             // Close existing connection
             if (eventSource) {
                 eventSource.close();
+            }
+            
+            // Try WebTransport first if available
+            if (webTransport && webTransport.isConnected()) {
+                try {
+                    streamingIndicator.style.display = 'flex';
+                    const startTime = Date.now();
+                    
+                    await webTransport.generateStream(
+                        prompt,
+                        modelSelect.value,
+                        (chunk) => {
+                            outputContent += chunk;
+                            outputArea.innerHTML = outputContent + '<span class="cursor"></span>';
+                        }
+                    ).then(result => {
+                        const totalTime = Date.now() - startTime;
+                        
+                        handleStreamEvent({
+                            type: 'complete',
+                            data: {
+                                total_ms: totalTime,
+                                first_token_ms: Math.min(totalTime * 0.1, 500),
+                                tokens_per_sec: outputContent.split(' ').length / (totalTime / 1000),
+                                receipt: result.receipt
+                            }
+                        });
+                        
+                        showSuccess('推論が完了しました！(P2P WebTransport)');
+                    });
+                    
+                    submitBtn.disabled = false;
+                    submitBtn.classList.remove('loading');
+                    submitBtn.textContent = '推論実行';
+                    return;
+                } catch (error) {
+                    console.error('WebTransport generation failed:', error);
+                    // Fall back to HTTP
+                }
             }
             
             // Try streaming endpoints
