@@ -1,0 +1,790 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#000000">
+    <link rel="manifest" href="manifest.json">
+    <link rel="apple-touch-icon" href="icons/icon-192.png">
+    <title>QUIVer Playground - P2P AI推論（ストリーミング）</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Helvetica Neue', sans-serif;
+            background: #000;
+            color: white;
+            min-height: 100vh;
+            overflow-x: hidden;
+            padding-top: env(safe-area-inset-top);
+            padding-bottom: env(safe-area-inset-bottom);
+        }
+        
+        .bg-gradient {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #0071e3 0%, #5e5ce6 50%, #af52de 100%);
+            opacity: 0.1;
+            z-index: -1;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            padding-left: max(20px, env(safe-area-inset-left));
+            padding-right: max(20px, env(safe-area-inset-right));
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+        
+        .logo {
+            font-size: 3em;
+            font-weight: 700;
+            background: linear-gradient(45deg, #0071e3, #5e5ce6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 10px;
+        }
+        
+        .subtitle {
+            font-size: 1.2em;
+            opacity: 0.8;
+        }
+        
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+        
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+            
+            .logo {
+                font-size: 2.5em;
+            }
+            
+            .subtitle {
+                font-size: 1em;
+            }
+            
+            .stats-bar {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .stat-value {
+                font-size: 1.5em;
+            }
+            
+            .panel {
+                padding: 20px;
+            }
+            
+            .prompt-examples {
+                flex-direction: column;
+            }
+            
+            .example-btn {
+                width: 100%;
+                text-align: center;
+            }
+            
+            .controls {
+                flex-direction: column;
+            }
+            
+            .model-select, .submit-btn {
+                width: 100%;
+            }
+        }
+        
+        .panel {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 30px;
+        }
+        
+        .panel h2 {
+            margin-bottom: 20px;
+            font-size: 1.5em;
+        }
+        
+        .input-section {
+            margin-bottom: 20px;
+        }
+        
+        .prompt-textarea {
+            width: 100%;
+            min-height: 150px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            padding: 15px;
+            color: white;
+            font-size: 1em;
+            resize: vertical;
+            font-family: inherit;
+        }
+        
+        .prompt-textarea:focus {
+            outline: none;
+            border-color: #0071e3;
+            background: rgba(255, 255, 255, 0.15);
+        }
+        
+        .prompt-examples {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
+        .example-btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+            padding: 8px 16px;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.9em;
+        }
+        
+        .example-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+        
+        .controls {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            margin-top: 20px;
+        }
+        
+        .model-select {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            padding: 10px 15px;
+            color: white;
+            font-size: 1em;
+            cursor: pointer;
+            flex: 1;
+        }
+        
+        .model-select option {
+            background: #1a1a1a;
+        }
+        
+        .submit-btn {
+            background: linear-gradient(45deg, #0071e3, #5e5ce6);
+            border: none;
+            border-radius: 10px;
+            padding: 12px 30px;
+            color: white;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(0, 113, 227, 0.5);
+        }
+        
+        .submit-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .submit-btn.loading::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 20px;
+            height: 20px;
+            margin: -10px 0 0 -10px;
+            border: 2px solid white;
+            border-radius: 50%;
+            border-top-color: transparent;
+            animation: spin 0.8s linear infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        .output-section {
+            position: relative;
+        }
+        
+        .output-area {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+            padding: 20px;
+            min-height: 300px;
+            font-family: 'SF Mono', monospace;
+            font-size: 0.95em;
+            line-height: 1.6;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            position: relative;
+        }
+        
+        .output-placeholder {
+            opacity: 0.5;
+            font-style: italic;
+        }
+        
+        .cursor {
+            display: inline-block;
+            width: 2px;
+            height: 1.2em;
+            background: white;
+            animation: blink 1s infinite;
+            vertical-align: text-bottom;
+            margin-left: 2px;
+        }
+        
+        @keyframes blink {
+            0%, 50% { opacity: 1; }
+            51%, 100% { opacity: 0; }
+        }
+        
+        .stats-bar {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 20px;
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 30px;
+        }
+        
+        .stat-item {
+            text-align: center;
+        }
+        
+        .stat-value {
+            font-size: 2em;
+            font-weight: 300;
+            margin-bottom: 5px;
+        }
+        
+        .stat-label {
+            font-size: 0.9em;
+            opacity: 0.7;
+        }
+        
+        .error-message {
+            background: rgba(255, 59, 48, 0.2);
+            border: 1px solid rgba(255, 59, 48, 0.5);
+            border-radius: 10px;
+            padding: 15px;
+            margin-top: 15px;
+            display: none;
+        }
+        
+        .success-message {
+            background: rgba(52, 199, 89, 0.2);
+            border: 1px solid rgba(52, 199, 89, 0.5);
+            border-radius: 10px;
+            padding: 15px;
+            margin-top: 15px;
+            display: none;
+        }
+        
+        .copy-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            padding: 8px 12px;
+            color: white;
+            cursor: pointer;
+            font-size: 0.85em;
+            opacity: 0;
+            transition: all 0.3s ease;
+        }
+        
+        .output-section:hover .copy-btn {
+            opacity: 1;
+        }
+        
+        .copy-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+        
+        .footer {
+            text-align: center;
+            margin-top: 50px;
+            padding: 20px;
+            opacity: 0.6;
+            font-size: 0.9em;
+        }
+        
+        .receipt-info {
+            margin-top: 20px;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            font-size: 0.85em;
+            font-family: 'SF Mono', monospace;
+        }
+        
+        .receipt-info .label {
+            opacity: 0.7;
+            display: inline-block;
+            width: 120px;
+        }
+        
+        .timing-badge {
+            display: inline-block;
+            background: rgba(52, 199, 89, 0.2);
+            border: 1px solid rgba(52, 199, 89, 0.5);
+            border-radius: 20px;
+            padding: 5px 15px;
+            margin-left: 10px;
+            font-size: 0.85em;
+        }
+        
+        .streaming-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            font-size: 0.9em;
+            margin-bottom: 15px;
+        }
+        
+        .streaming-dot {
+            width: 8px;
+            height: 8px;
+            background: #34c759;
+            border-radius: 50%;
+            animation: pulse 1.5s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.5; transform: scale(1.2); }
+            100% { opacity: 1; transform: scale(1); }
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-gradient"></div>
+    
+    <div class="container">
+        <div class="header">
+            <h1 class="logo">QUIVer Playground</h1>
+            <p class="subtitle">P2P AI推論をリアルタイムストリーミングで体験</p>
+        </div>
+        
+        <div class="stats-bar">
+            <div class="stat-item">
+                <div class="stat-value" id="activeNodes">0</div>
+                <div class="stat-label">Active Nodes</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value" id="firstTokenTime">-</div>
+                <div class="stat-label">First Token (ms)</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value" id="tokensPerSec">-</div>
+                <div class="stat-label">Tokens/sec</div>
+            </div>
+        </div>
+        
+        <div class="main-content">
+            <div class="panel">
+                <h2>プロンプト</h2>
+                
+                <div class="input-section">
+                    <textarea 
+                        id="promptInput" 
+                        class="prompt-textarea" 
+                        placeholder="AIに質問を入力してください..."
+                    ></textarea>
+                    
+                    <div class="prompt-examples">
+                        <button class="example-btn" onclick="setExample('東京の観光地を3つ教えてください')">
+                            観光地
+                        </button>
+                        <button class="example-btn" onclick="setExample('フィボナッチ数列をPythonで実装してください')">
+                            コード生成
+                        </button>
+                        <button class="example-btn" onclick="setExample('量子コンピュータについて簡単に説明してください')">
+                            技術解説
+                        </button>
+                        <button class="example-btn" onclick="setExample('Hello! How are you today?')">
+                            English
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="controls">
+                    <select id="modelSelect" class="model-select">
+                        <option value="llama3.2:3b">Llama 3.2 (3B)</option>
+                        <option value="llama3.2:1b">Llama 3.2 (1B)</option>
+                        <option value="qwen2.5:3b">Qwen 2.5 (3B)</option>
+                    </select>
+                    
+                    <button id="submitBtn" class="submit-btn" onclick="submitPrompt()">
+                        推論実行
+                    </button>
+                </div>
+                
+                <div id="errorMessage" class="error-message"></div>
+                <div id="successMessage" class="success-message"></div>
+            </div>
+            
+            <div class="panel">
+                <h2>レスポンス</h2>
+                
+                <div id="streamingIndicator" class="streaming-indicator" style="display: none;">
+                    <div class="streaming-dot"></div>
+                    <span>ストリーミング中...</span>
+                    <span id="firstTokenBadge" class="timing-badge" style="display: none;"></span>
+                </div>
+                
+                <div class="output-section">
+                    <div id="outputArea" class="output-area">
+                        <span class="output-placeholder">ここに推論結果がストリーミング表示されます...</span>
+                    </div>
+                    <button class="copy-btn" onclick="copyOutput()">Copy</button>
+                </div>
+                
+                <div id="receiptInfo" class="receipt-info" style="display: none;">
+                    <div><span class="label">Provider ID:</span> <span id="providerId">-</span></div>
+                    <div><span class="label">Total Time:</span> <span id="totalTime">-</span></div>
+                    <div><span class="label">Tokens/sec:</span> <span id="tokenSpeed">-</span></div>
+                    <div><span class="label">Signature:</span> <span id="signature" style="word-break: break-all;">-</span></div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p>Powered by QUIVer P2P Network | ストリーミングレスポンス対応</p>
+        </div>
+    </div>
+    
+    <script>
+        // Register service worker for PWA
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./service-worker.js')
+                    .then(registration => console.log('SW registered:', registration))
+                    .catch(error => console.log('SW registration failed:', error));
+            });
+        }
+        
+        // Detect iOS for install prompt
+        const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+        const isStandalone = window.navigator.standalone === true;
+        
+        if (isIOS && !isStandalone) {
+            // Show install banner for iOS
+            setTimeout(() => {
+                const banner = document.createElement('div');
+                banner.style.cssText = `
+                    position: fixed;
+                    bottom: 20px;
+                    left: 20px;
+                    right: 20px;
+                    background: rgba(0, 113, 227, 0.95);
+                    color: white;
+                    padding: 15px;
+                    border-radius: 10px;
+                    text-align: center;
+                    z-index: 1000;
+                    font-size: 14px;
+                `;
+                banner.innerHTML = `
+                    <div>ホーム画面に追加してアプリとして使用できます</div>
+                    <div style="margin-top: 10px; font-size: 12px; opacity: 0.8;">
+                        共有ボタン → ホーム画面に追加
+                    </div>
+                    <button onclick="this.parentElement.remove()" style="
+                        position: absolute;
+                        top: 5px;
+                        right: 10px;
+                        background: none;
+                        border: none;
+                        color: white;
+                        font-size: 20px;
+                        cursor: pointer;
+                    ">×</button>
+                `;
+                document.body.appendChild(banner);
+                
+                // Auto-hide after 10 seconds
+                setTimeout(() => banner.remove(), 10000);
+            }, 3000);
+        }
+        
+        // Configuration
+        const STREAM_ENDPOINTS = [
+            'http://localhost:8080/generate/stream',
+            'http://34.146.32.216:8081/generate/stream',
+            'https://api.quiver.network/generate/stream'
+        ];
+        
+        const STATS_ENDPOINTS = [
+            'http://localhost:8087/api/stats',
+            'http://34.146.63.195:8087/api/stats'
+        ];
+        
+        let currentEndpoint = 0;
+        let eventSource = null;
+        let outputContent = '';
+        
+        // Update stats on load
+        updateStats();
+        setInterval(updateStats, 10000);
+        
+        // Set example prompt
+        function setExample(text) {
+            document.getElementById('promptInput').value = text;
+        }
+        
+        // Copy output
+        function copyOutput() {
+            navigator.clipboard.writeText(outputContent).then(() => {
+                const btn = document.querySelector('.copy-btn');
+                btn.textContent = 'Copied!';
+                setTimeout(() => {
+                    btn.textContent = 'Copy';
+                }, 2000);
+            });
+        }
+        
+        // Update stats
+        async function updateStats() {
+            for (const endpoint of STATS_ENDPOINTS) {
+                try {
+                    const response = await fetch(endpoint);
+                    if (response.ok) {
+                        const stats = await response.json();
+                        document.getElementById('activeNodes').textContent = stats.node_count || 0;
+                        break;
+                    }
+                } catch (error) {
+                    console.log('Stats endpoint not available:', endpoint);
+                }
+            }
+        }
+        
+        // Submit prompt with streaming
+        async function submitPrompt() {
+            const promptInput = document.getElementById('promptInput');
+            const modelSelect = document.getElementById('modelSelect');
+            const submitBtn = document.getElementById('submitBtn');
+            const outputArea = document.getElementById('outputArea');
+            const errorMessage = document.getElementById('errorMessage');
+            const successMessage = document.getElementById('successMessage');
+            const receiptInfo = document.getElementById('receiptInfo');
+            const streamingIndicator = document.getElementById('streamingIndicator');
+            
+            const prompt = promptInput.value.trim();
+            if (!prompt) {
+                showError('プロンプトを入力してください');
+                return;
+            }
+            
+            // Reset UI
+            errorMessage.style.display = 'none';
+            successMessage.style.display = 'none';
+            receiptInfo.style.display = 'none';
+            streamingIndicator.style.display = 'flex';
+            document.getElementById('firstTokenBadge').style.display = 'none';
+            document.getElementById('firstTokenTime').textContent = '-';
+            document.getElementById('tokensPerSec').textContent = '-';
+            
+            submitBtn.disabled = true;
+            submitBtn.classList.add('loading');
+            submitBtn.textContent = '';
+            
+            outputArea.innerHTML = '';
+            outputContent = '';
+            
+            // Close existing connection
+            if (eventSource) {
+                eventSource.close();
+            }
+            
+            // Try streaming endpoints
+            let connected = false;
+            for (let i = 0; i < STREAM_ENDPOINTS.length; i++) {
+                const endpoint = STREAM_ENDPOINTS[(currentEndpoint + i) % STREAM_ENDPOINTS.length];
+                
+                try {
+                    const response = await fetch(endpoint, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            prompt: prompt,
+                            model: modelSelect.value,
+                            token: 'web-demo-token'
+                        })
+                    });
+                    
+                    if (!response.ok) {
+                        throw new Error('Request failed');
+                    }
+                    
+                    // Set up SSE reader
+                    const reader = response.body.getReader();
+                    const decoder = new TextDecoder();
+                    let buffer = '';
+                    
+                    while (true) {
+                        const { done, value } = await reader.read();
+                        if (done) break;
+                        
+                        buffer += decoder.decode(value, { stream: true });
+                        const lines = buffer.split('\n');
+                        buffer = lines.pop() || '';
+                        
+                        for (const line of lines) {
+                            if (line.startsWith('data: ')) {
+                                try {
+                                    const event = JSON.parse(line.slice(6));
+                                    handleStreamEvent(event);
+                                } catch (e) {
+                                    console.error('Failed to parse event:', e);
+                                }
+                            }
+                        }
+                    }
+                    
+                    connected = true;
+                    currentEndpoint = (currentEndpoint + i) % STREAM_ENDPOINTS.length;
+                    break;
+                    
+                } catch (error) {
+                    console.error(`Failed with endpoint ${endpoint}:`, error);
+                }
+            }
+            
+            if (!connected) {
+                outputArea.innerHTML = '<span class="output-placeholder">推論に失敗しました。しばらくしてから再度お試しください。</span>';
+                showError('現在サービスが利用できません。ローカルでQUIVerを起動してください。');
+                streamingIndicator.style.display = 'none';
+            }
+            
+            // Reset button
+            submitBtn.disabled = false;
+            submitBtn.classList.remove('loading');
+            submitBtn.textContent = '推論実行';
+        }
+        
+        // Handle stream events
+        function handleStreamEvent(event) {
+            const outputArea = document.getElementById('outputArea');
+            const streamingIndicator = document.getElementById('streamingIndicator');
+            
+            switch (event.type) {
+                case 'start':
+                    console.log('Stream started:', event.data);
+                    break;
+                    
+                case 'timing':
+                    const firstTokenMs = event.data.first_token_ms;
+                    document.getElementById('firstTokenTime').textContent = firstTokenMs;
+                    document.getElementById('firstTokenBadge').textContent = `初速: ${firstTokenMs}ms`;
+                    document.getElementById('firstTokenBadge').style.display = 'inline-block';
+                    break;
+                    
+                case 'chunk':
+                    outputContent += event.data.content;
+                    outputArea.innerHTML = outputContent + '<span class="cursor"></span>';
+                    break;
+                    
+                case 'complete':
+                    streamingIndicator.style.display = 'none';
+                    outputArea.innerHTML = outputContent;
+                    
+                    // Update metrics
+                    const data = event.data;
+                    document.getElementById('tokensPerSec').textContent = 
+                        data.tokens_per_sec ? data.tokens_per_sec.toFixed(1) : '-';
+                    
+                    // Show receipt
+                    if (data.receipt && data.receipt.receipt) {
+                        const receipt = data.receipt.receipt;
+                        document.getElementById('providerId').textContent = receipt.provider_pk || '-';
+                        document.getElementById('totalTime').textContent = `${data.total_ms}ms`;
+                        document.getElementById('tokenSpeed').textContent = `${data.tokens_per_sec.toFixed(1)} tokens/sec`;
+                        document.getElementById('signature').textContent = data.receipt.signature || '-';
+                        document.getElementById('receiptInfo').style.display = 'block';
+                    }
+                    
+                    showSuccess('推論が完了しました！');
+                    break;
+                    
+                case 'error':
+                    streamingIndicator.style.display = 'none';
+                    showError(event.data.error || 'エラーが発生しました');
+                    break;
+            }
+        }
+        
+        // Show error message
+        function showError(message) {
+            const errorMessage = document.getElementById('errorMessage');
+            errorMessage.textContent = message;
+            errorMessage.style.display = 'block';
+            setTimeout(() => {
+                errorMessage.style.display = 'none';
+            }, 5000);
+        }
+        
+        // Show success message
+        function showSuccess(message) {
+            const successMessage = document.getElementById('successMessage');
+            successMessage.textContent = message;
+            successMessage.style.display = 'block';
+            setTimeout(() => {
+                successMessage.style.display = 'none';
+            }, 3000);
+        }
+        
+        // Handle Enter key
+        document.getElementById('promptInput').addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                submitPrompt();
+            }
+        });
+    </script>
+</body>
+</html>
