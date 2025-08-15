@@ -337,16 +337,16 @@
             
             <div class="stats">
                 <div class="stat-card">
-                    <div class="stat-number pulse" id="provider-count">5+</div>
-                    <div class="stat-label">稼働中のProvider</div>
+                    <div class="stat-number pulse" id="active-nodes">7</div>
+                    <div class="stat-label">アクティブノード</div>
                 </div>
                 <div class="stat-card">
-                    <div class="stat-number">15+</div>
-                    <div class="stat-label">対応モデル</div>
+                    <div class="stat-number" id="inference-rate">2.3</div>
+                    <div class="stat-label">推論/秒</div>
                 </div>
                 <div class="stat-card">
-                    <div class="stat-number">24/7</div>
-                    <div class="stat-label">稼働時間</div>
+                    <div class="stat-number" id="total-tflops">29</div>
+                    <div class="stat-label">総計算力 (TFLOPS)</div>
                 </div>
                 <div class="stat-card">
                     <div class="stat-number">P2P</div>
@@ -584,13 +584,59 @@
         </div>
     </footer>
     
+    <script src="api/stats.js"></script>
     <script>
-        // Provider数をリアルタイムで更新（デモ用）
-        let providerCount = 5;
-        setInterval(() => {
-            providerCount += Math.floor(Math.random() * 3);
-            document.getElementById('provider-count').textContent = providerCount + '+';
-        }, 5000);
+        // リアルタイムネットワーク統計の更新
+        async function updateNetworkStats() {
+            try {
+                const stats = await fetchNetworkStats();
+                
+                // アクティブノード数を更新
+                const activeNodesEl = document.getElementById('active-nodes');
+                if (activeNodesEl && stats.activeNodes) {
+                    activeNodesEl.textContent = stats.activeNodes;
+                }
+                
+                // 推論速度を更新
+                const inferenceRateEl = document.getElementById('inference-rate');
+                if (inferenceRateEl && stats.inferencePerSec) {
+                    inferenceRateEl.textContent = stats.inferencePerSec;
+                }
+                
+                // 総計算力を更新
+                const tflopsEl = document.getElementById('total-tflops');
+                if (tflopsEl && stats.totalTFLOPS) {
+                    tflopsEl.textContent = stats.totalTFLOPS;
+                }
+            } catch (error) {
+                console.error('Failed to update stats:', error);
+            }
+        }
+        
+        // 初回読み込み
+        updateNetworkStats();
+        
+        // 5秒ごとに更新
+        setInterval(updateNetworkStats, 5000);
+        
+        // WebSocket接続を試みる（利用可能な場合）
+        if (typeof connectToNetwork === 'function') {
+            try {
+                connectToNetwork((stats) => {
+                    if (stats.activeNodes) {
+                        document.getElementById('active-nodes').textContent = stats.activeNodes;
+                    }
+                    if (stats.inferencePerSec) {
+                        document.getElementById('inference-rate').textContent = stats.inferencePerSec;
+                    }
+                    if (stats.totalTFLOPS) {
+                        document.getElementById('total-tflops').textContent = stats.totalTFLOPS;
+                    }
+                });
+            } catch (error) {
+                console.log('WebSocket not available, using polling');
+            }
+        }
         
         // モデルカードのクリックハンドラー
         document.querySelectorAll('.model-card').forEach(card => {
