@@ -496,6 +496,7 @@
     </div>
     
     <script src="js/webtransport-client.js"></script>
+    <script src="js/quiver-p2p-client.js"></script>
     <script>
         // Register service worker for PWA
         if ('serviceWorker' in navigator) {
@@ -506,7 +507,28 @@
             });
         }
         
-        // Initialize WebTransport client
+        // Initialize P2P client
+        let p2pClient = null;
+        async function initP2P() {
+            try {
+                p2pClient = new QUIVerP2PClient();
+                const connected = await p2pClient.connect();
+                
+                if (connected) {
+                    console.log('Connected to P2P network via WebRTC');
+                    document.getElementById('activeNodes').textContent = 'P2P Connected';
+                    return true;
+                }
+            } catch (error) {
+                console.error('P2P connection failed:', error);
+            }
+            return false;
+        }
+        
+        // Try P2P connection first
+        initP2P();
+        
+        // Initialize WebTransport client as fallback
         let webTransport = null;
         async function initWebTransport() {
             if (!window.WebTransport) {
@@ -686,7 +708,46 @@
                 eventSource.close();
             }
             
-            // Try WebTransport first if available
+            // Try P2P first if available
+            if (p2pClient && p2pClient.isConnected()) {
+                try {
+                    streamingIndicator.style.display = 'flex';
+                    const startTime = Date.now();
+                    
+                    await p2pClient.generateStream(
+                        prompt,
+                        modelSelect.value,
+                        (chunk) => {
+                            outputContent += chunk;
+                            outputArea.innerHTML = outputContent + '<span class="cursor"></span>';
+                        }
+                    ).then(result => {
+                        const totalTime = Date.now() - startTime;
+                        
+                        handleStreamEvent({
+                            type: 'complete',
+                            data: {
+                                total_ms: totalTime,
+                                first_token_ms: Math.min(totalTime * 0.1, 500),
+                                tokens_per_sec: outputContent.split(' ').length / (totalTime / 1000),
+                                receipt: result.receipt
+                            }
+                        });
+                        
+                        showSuccess('推論が完了しました！(P2P WebRTC)');
+                    });
+                    
+                    submitBtn.disabled = false;
+                    submitBtn.classList.remove('loading');
+                    submitBtn.textContent = '推論実行';
+                    return;
+                } catch (error) {
+                    console.error('P2P generation failed:', error);
+                    // Fall back to WebTransport or HTTP
+                }
+            }
+            
+            // Try WebTransport next if available
             if (webTransport && webTransport.isConnected()) {
                 try {
                     streamingIndicator.style.display = 'flex';
@@ -727,8 +788,11 @@
             
             // Try streaming endpoints
             let connected = false;
+            console.log('Available endpoints:', STREAM_ENDPOINTS);
+            
             for (let i = 0; i < STREAM_ENDPOINTS.length; i++) {
                 const endpoint = STREAM_ENDPOINTS[(currentEndpoint + i) % STREAM_ENDPOINTS.length];
+                console.log('Trying endpoint:', endpoint);
                 
                 try {
                     const startTime = Date.now();

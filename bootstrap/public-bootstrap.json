@@ -1,0 +1,52 @@
+{
+  "bootstrap_nodes": [
+    {
+      "id": "QmBootstrap1",
+      "addresses": [
+        "/dns4/bootstrap1.quiver.network/tcp/4001/p2p/QmBootstrap1",
+        "/dns4/bootstrap1.quiver.network/udp/4001/quic-v1/p2p/QmBootstrap1",
+        "/dns4/bootstrap1.quiver.network/tcp/443/wss/p2p/QmBootstrap1"
+      ],
+      "location": "asia-northeast1",
+      "public": true
+    },
+    {
+      "id": "QmBootstrap2", 
+      "addresses": [
+        "/dns4/bootstrap2.quiver.network/tcp/4001/p2p/QmBootstrap2",
+        "/dns4/bootstrap2.quiver.network/udp/4001/quic-v1/p2p/QmBootstrap2",
+        "/dns4/bootstrap2.quiver.network/tcp/443/wss/p2p/QmBootstrap2"
+      ],
+      "location": "us-central1",
+      "public": true
+    },
+    {
+      "id": "QmBootstrap3",
+      "addresses": [
+        "/dns4/bootstrap3.quiver.network/tcp/4001/p2p/QmBootstrap3",
+        "/dns4/bootstrap3.quiver.network/udp/4001/quic-v1/p2p/QmBootstrap3",
+        "/dns4/bootstrap3.quiver.network/tcp/443/wss/p2p/QmBootstrap3"
+      ],
+      "location": "europe-west1",
+      "public": true
+    }
+  ],
+  "relay_nodes": [
+    {
+      "id": "QmRelay1",
+      "addresses": [
+        "/dns4/relay1.quiver.network/tcp/4002/p2p/QmRelay1",
+        "/dns4/relay1.quiver.network/tcp/443/wss/p2p/QmRelay1"
+      ],
+      "location": "asia-northeast1",
+      "public": true,
+      "relay_v2": true
+    }
+  ],
+  "websocket_endpoints": [
+    "wss://ws.quiver.network",
+    "wss://ws-asia.quiver.network",
+    "wss://ws-us.quiver.network",
+    "wss://ws-eu.quiver.network"
+  ]
+}
