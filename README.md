@@ -6,7 +6,7 @@
 [![Download](https://img.shields.io/badge/Download-v1.1.0-brightgreen.svg)](https://github.com/yukihamada/quiver/releases/download/v1.1.0/QUIVerProvider-1.1.0.dmg)
 [![GitHub Stars](https://img.shields.io/github/stars/yukihamada/quiver?style=social)](https://github.com/yukihamada/quiver)
 
-[日本語版 →](README_JP.md) | [Website](https://quiver.network) | [Live Demo](https://yukihamada.github.io/quiver/playground-stream.html) | [Documentation](https://docs.quiver.network)
+[日本語版 →](README_JP.md) | [Website](https://yukihamada.github.io/quiver/) | [Live Demo](https://yukihamada.github.io/quiver/playground-stream.html) | [Documentation](https://github.com/yukihamada/quiver/wiki)
 
 > 🌐 **QUIVer** is an open-source project building a decentralized AI inference network. By connecting computers worldwide, we're creating democratic AI infrastructure that's fast, private, and accessible to everyone.
 
@@ -29,21 +29,27 @@ curl -L https://github.com/yukihamada/quiver/releases/download/v1.1.0/QUIVerProv
 open QUIVer.dmg
 
 # Or via Homebrew (coming soon)
-brew install quiver
+# brew install quiver  # Coming soon
 ```
 
 **Linux/Docker**
 ```bash
-docker run -d --name quiver-provider \
-  -p 4001:4001 -p 4003:4003 \
-  quiver/provider:latest
+# Build from source for now
+git clone https://github.com/yukihamada/quiver
+cd quiver/provider
+go build -o quiver-provider ./cmd/provider
+./quiver-provider
 ```
 
 ### For Developers (Build AI apps)
 
 ```javascript
 // Browser/Node.js SDK
-import { QUIVerClient } from '@quiver/sdk';
+// Load the SDK
+<script src="https://yukihamada.github.io/quiver/js/quiver-p2p-client.js"></script>
+
+// Or in your JavaScript
+const client = new QUIVerP2PClient();
 
 const client = new QUIVerClient();
 await client.connect();
@@ -125,11 +131,11 @@ graph TB
 
 | Metric | Current | Target (2025) |
 |--------|---------|---------------|
-| Active Nodes | 7 | 100,000+ |
-| Countries | 3 | 50+ |
-| Inference Speed | 2,431/sec | 1M/sec |
-| Cost vs AWS | -90% | -95% |
-| Uptime | 99.9% | 99.99% |
+| Active Nodes | 7 (GCP deployed) | 100,000+ |
+| Bootstrap Nodes | 3 | 10+ |
+| Supported Models | Llama 3.2, Qwen 2.5 | 50+ models |
+| Response Time | <300ms (P2P) | <100ms |
+| Network Coverage | Asia (GCP) | Global |
 
 ## 🛠️ Development Setup
 
@@ -224,10 +230,14 @@ quiver/
 ## 🗺️ Roadmap
 
 ### ✅ Phase 1: Foundation (Q4 2024)
-- [x] Core P2P protocol
-- [x] Basic inference engine
-- [x] Mac application
-- [x] Web playground
+- [x] Core P2P protocol with QUIC transport
+- [x] NAT traversal with Circuit Relay v2
+- [x] AI inference engine (Llama, Qwen support)
+- [x] Mac application (DMG installer)
+- [x] Web playground with P2P/WebRTC
+- [x] GCP deployment (3 regions)
+- [x] HyperLogLog node counting
+- [x] Cryptographic receipts
 
 ### 🚧 Phase 2: Scale (Q1 2025)
 - [ ] Windows & Linux apps
@@ -268,16 +278,16 @@ We welcome contributions! See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
 ## 📚 Resources
 
 ### Documentation
-- [Technical Whitepaper](https://quiver.network/whitepaper.pdf)
-- [API Reference](https://docs.quiver.network/api)
-- [SDK Documentation](https://docs.quiver.network/sdk)
-- [Provider Guide](https://docs.quiver.network/provider)
+- [Technical Overview](https://yukihamada.github.io/quiver/)
+- [API Playground](https://yukihamada.github.io/quiver/playground-stream.html)
+- [JavaScript SDK](https://github.com/yukihamada/quiver/tree/main/docs/js)
+- [Provider Setup](https://github.com/yukihamada/quiver/tree/main/provider)
 
 ### Community
-- [Discord Server](https://discord.gg/quiver) - 2.1K members
-- [Twitter/X](https://twitter.com/quivernetwork) - @quivernetwork
-- [Forum](https://forum.quiver.network) - Technical discussions
-- [Blog](https://blog.quiver.network) - Updates & tutorials
+- [GitHub Discussions](https://github.com/yukihamada/quiver/discussions) - Technical Q&A
+- [Issues](https://github.com/yukihamada/quiver/issues) - Bug reports & features
+- [Wiki](https://github.com/yukihamada/quiver/wiki) - Documentation
+- [Releases](https://github.com/yukihamada/quiver/releases) - Download latest version
 
 ### Deployment
 - [GitHub Actions](.github/workflows) - CI/CD pipeline

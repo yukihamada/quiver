@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QUIVer Documentation - 分散型AI推論ネットワーク</title>
+    <style>
+        :root {
+            --primary: #0071e3;
+            --secondary: #5e5ce6;
+            --dark: #1d1d1f;
+            --light: #f5f5f7;
+            --gray: #86868b;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif;
+            background: #000;
+            color: #fff;
+            line-height: 1.6;
+        }
+
+        /* ヘッダー */
+        header {
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(20px);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--primary);
+            text-decoration: none;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 30px;
+        }
+
+        .nav-links a {
+            color: #fff;
+            text-decoration: none;
+            opacity: 0.8;
+            transition: opacity 0.3s;
+        }
+
+        .nav-links a:hover {
+            opacity: 1;
+        }
+
+        /* メインコンテンツ */
+        .container {
+            display: flex;
+            max-width: 1200px;
+            margin: 0 auto;
+            gap: 40px;
+            padding: 40px 20px;
+        }
+
+        /* サイドバー */
+        .sidebar {
+            width: 280px;
+            position: sticky;
+            top: 100px;
+            height: fit-content;
+        }
+
+        .sidebar h3 {
+            color: var(--gray);
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 20px;
+        }
+
+        .sidebar-section {
+            margin-bottom: 40px;
+        }
+
+        .sidebar-link {
+            display: block;
+            padding: 10px 15px;
+            color: #fff;
+            text-decoration: none;
+            border-radius: 8px;
+            margin-bottom: 5px;
+            transition: all 0.3s;
+        }
+
+        .sidebar-link:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .sidebar-link.active {
+            background: var(--primary);
+        }
+
+        /* メインコンテンツ */
+        .content {
+            flex: 1;
+            max-width: 800px;
+        }
+
+        .content h1 {
+            font-size: 3rem;
+            margin-bottom: 30px;
+            background: linear-gradient(45deg, #fff, var(--primary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .content h2 {
+            font-size: 2rem;
+            margin: 40px 0 20px;
+            color: var(--primary);
+        }
+
+        .content h3 {
+            font-size: 1.5rem;
+            margin: 30px 0 15px;
+            color: var(--secondary);
+        }
+
+        .content p {
+            margin-bottom: 20px;
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        .content code {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: 'SF Mono', monospace;
+        }
+
+        .content pre {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            padding: 20px;
+            overflow-x: auto;
+            margin: 20px 0;
+        }
+
+        .content pre code {
+            background: none;
+            padding: 0;
+        }
+
+        /* アラート */
+        .alert {
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+
+        .alert-info {
+            background: rgba(0, 113, 227, 0.1);
+            border: 1px solid var(--primary);
+        }
+
+        .alert-warning {
+            background: rgba(255, 149, 0, 0.1);
+            border: 1px solid var(--warning);
+        }
+
+        /* テーブル */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+
+        table th {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 15px;
+            text-align: left;
+            border-bottom: 2px solid var(--primary);
+        }
+
+        table td {
+            padding: 15px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        /* リスト */
+        ul, ol {
+            margin: 20px 0;
+            padding-left: 30px;
+        }
+
+        li {
+            margin-bottom: 10px;
+        }
+
+        /* レスポンシブ */
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+            }
+
+            .sidebar {
+                width: 100%;
+                position: static;
+            }
+
+            .content h1 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-content">
+            <a href="/" class="logo">QUIVer</a>
+            <nav class="nav-links">
+                <a href="/">Home</a>
+                <a href="/playground-stream.html">Playground</a>
+                <a href="/docs.html">Docs</a>
+                <a href="https://github.com/yukihamada/quiver">GitHub</a>
+            </nav>
+        </div>
+    </header>
+
+    <div class="container">
+        <aside class="sidebar">
+            <div class="sidebar-section">
+                <h3>はじめに</h3>
+                <a href="#overview" class="sidebar-link active">概要</a>
+                <a href="#quickstart" class="sidebar-link">クイックスタート</a>
+                <a href="#architecture" class="sidebar-link">アーキテクチャ</a>
+            </div>
+
+            <div class="sidebar-section">
+                <h3>Provider向け</h3>
+                <a href="#provider-setup" class="sidebar-link">セットアップ</a>
+                <a href="#provider-config" class="sidebar-link">設定</a>
+                <a href="#provider-earnings" class="sidebar-link">収益化</a>
+            </div>
+
+            <div class="sidebar-section">
+                <h3>開発者向け</h3>
+                <a href="#api-reference" class="sidebar-link">API リファレンス</a>
+                <a href="#sdk-javascript" class="sidebar-link">JavaScript SDK</a>
+                <a href="#sdk-python" class="sidebar-link">Python SDK</a>
+                <a href="#examples" class="sidebar-link">サンプルコード</a>
+            </div>
+
+            <div class="sidebar-section">
+                <h3>技術詳細</h3>
+                <a href="#p2p-protocol" class="sidebar-link">P2P プロトコル</a>
+                <a href="#security" class="sidebar-link">セキュリティ</a>
+                <a href="#smart-contracts" class="sidebar-link">スマートコントラクト</a>
+            </div>
+        </aside>
+
+        <main class="content">
+            <section id="overview">
+                <h1>QUIVer Documentation</h1>
+                
+                <p>QUIVerは、世界中のコンピューターをつなぎ、分散型AI推論ネットワークを構築するオープンソースプロジェクトです。</p>
+
+                <div class="alert alert-info">
+                    <strong>📢 最新情報</strong><br>
+                    v1.1.0がリリースされました！Mac版のDMGインストーラーが利用可能です。
+                </div>
+
+                <h2>主な特徴</h2>
+                <ul>
+                    <li><strong>完全分散型</strong>: 中央サーバーなしで動作</li>
+                    <li><strong>P2P通信</strong>: QUIC/WebRTCによる高速通信</li>
+                    <li><strong>暗号化</strong>: エンドツーエンド暗号化</li>
+                    <li><strong>報酬システム</strong>: QUIVトークンによる自動決済</li>
+                </ul>
+            </section>
+
+            <section id="quickstart">
+                <h2>クイックスタート</h2>
+
+                <h3>1. Mac版をインストール</h3>
+                <pre><code># DMGをダウンロード
+curl -L https://github.com/yukihamada/quiver/releases/download/v1.1.0/QUIVerProvider-1.1.0.dmg -o QUIVer.dmg
+
+# インストール
+open QUIVer.dmg
+# 「インストール.command」をダブルクリック</code></pre>
+
+                <h3>2. ソースからビルド</h3>
+                <pre><code># リポジトリをクローン
+git clone https://github.com/yukihamada/quiver
+cd quiver
+
+# ビルド
+make build-all
+
+# 起動
+./scripts/start-network.sh</code></pre>
+
+                <h3>3. Dockerで実行</h3>
+                <pre><code># Dockerイメージをビルド
+cd quiver
+docker build -t quiver-provider provider/
+
+# 実行
+docker run -d -p 4001:4001 quiver-provider</code></pre>
+            </section>
+
+            <section id="architecture">
+                <h2>アーキテクチャ</h2>
+
+                <p>QUIVerは、以下のコンポーネントで構成されています：</p>
+
+                <table>
+                    <thead>
+                        <tr>
+                            <th>コンポーネント</th>
+                            <th>役割</th>
+                            <th>技術スタック</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Provider Node</td>
+                            <td>AI推論を実行</td>
+                            <td>Go, libp2p, Ollama</td>
+                        </tr>
+                        <tr>
+                            <td>Gateway</td>
+                            <td>HTTPからP2Pへの変換</td>
+                            <td>Go, WebRTC, WebSocket</td>
+                        </tr>
+                        <tr>
+                            <td>Bootstrap Node</td>
+                            <td>ピア発見</td>
+                            <td>Go, Kademlia DHT</td>
+                        </tr>
+                        <tr>
+                            <td>Smart Contract</td>
+                            <td>決済・ガバナンス</td>
+                            <td>Solidity, Polygon</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </section>
+
+            <section id="provider-setup">
+                <h2>Provider セットアップ</h2>
+
+                <h3>必要な環境</h3>
+                <ul>
+                    <li>macOS 10.15以降 または Linux</li>
+                    <li>8GB以上のRAM</li>
+                    <li>20GB以上の空きストレージ</li>
+                    <li>安定したインターネット接続</li>
+                </ul>
+
+                <h3>設定ファイル</h3>
+                <pre><code># ~/.quiver/config.json
+{
+  "provider": {
+    "models": ["llama3.2:3b", "qwen2.5:3b"],
+    "max_concurrent": 5,
+    "port": 4001
+  },
+  "p2p": {
+    "bootstrap": [
+      "/dns4/bootstrap1.quiver.network/tcp/4001",
+      "/dns4/bootstrap2.quiver.network/tcp/4001"
+    ],
+    "nat_traversal": true,
+    "relay": "auto"
+  },
+  "earnings": {
+    "wallet": "0x...",
+    "min_payout": "100"
+  }
+}</code></pre>
+            </section>
+
+            <section id="api-reference">
+                <h2>API リファレンス</h2>
+
+                <h3>推論リクエスト</h3>
+                <pre><code>POST https://api.quiver.network/inference
+
+{
+  "model": "llama3.2:3b",
+  "prompt": "Explain quantum computing",
+  "stream": true,
+  "max_tokens": 1000
+}</code></pre>
+
+                <h3>レスポンス</h3>
+                <pre><code>{
+  "completion": "Quantum computing is a revolutionary...",
+  "usage": {
+    "prompt_tokens": 4,
+    "completion_tokens": 150,
+    "total_tokens": 154
+  },
+  "receipt": {
+    "provider_id": "12D3KooW...",
+    "timestamp": 1704931200,
+    "signature": "0x..."
+  }
+}</code></pre>
+            </section>
+
+            <section id="sdk-javascript">
+                <h2>JavaScript SDK</h2>
+
+                <h3>インストール</h3>
+                <pre><code>&lt;script src="https://yukihamada.github.io/quiver/js/quiver-p2p-client.js"&gt;&lt;/script&gt;</code></pre>
+
+                <h3>使用例</h3>
+                <pre><code>// P2Pクライアントを初期化
+const client = new QUIVerP2PClient();
+
+// ネットワークに接続
+await client.connect();
+
+// 推論を実行（ストリーミング）
+const response = await client.generateStream(
+  "量子コンピューターについて説明してください",
+  "llama3.2:3b",
+  (chunk) => {
+    console.log("Chunk:", chunk);
+  }
+);
+
+console.log("完了:", response);</code></pre>
+            </section>
+
+            <section id="p2p-protocol">
+                <h2>P2P プロトコル</h2>
+
+                <h3>使用技術</h3>
+                <ul>
+                    <li><strong>libp2p</strong>: P2Pネットワーキングスタック</li>
+                    <li><strong>QUIC</strong>: 高速・安全な転送プロトコル</li>
+                    <li><strong>Kademlia DHT</strong>: 分散ハッシュテーブル</li>
+                    <li><strong>GossipSub</strong>: メッセージ伝播</li>
+                    <li><strong>Circuit Relay v2</strong>: NAT traversal</li>
+                </ul>
+
+                <h3>ピア接続フロー</h3>
+                <pre><code>1. Bootstrap nodeに接続
+2. DHTでピアを発見
+3. QUIC/TCPで直接接続を試行
+4. 失敗時はCircuit Relay経由
+5. 暗号化チャネルを確立
+6. 推論リクエスト/レスポンス</code></pre>
+            </section>
+
+            <section id="security">
+                <h2>セキュリティ</h2>
+
+                <div class="alert alert-warning">
+                    <strong>⚠️ セキュリティ脆弱性を発見した場合</strong><br>
+                    security@quiver.network までご連絡ください。公開Issueには投稿しないでください。
+                </div>
+
+                <h3>実装されているセキュリティ機能</h3>
+                <ul>
+                    <li>TLS 1.3によるトランスポート暗号化</li>
+                    <li>Ed25519による署名検証</li>
+                    <li>Noise Protocolによるセキュアチャネル</li>
+                    <li>レート制限とDDoS対策</li>
+                </ul>
+            </section>
+        </main>
+    </div>
+
+    <script>
+        // サイドバーのアクティブリンク管理
+        document.querySelectorAll('.sidebar-link').forEach(link => {
+            link.addEventListener('click', (e) => {
+                document.querySelectorAll('.sidebar-link').forEach(l => l.classList.remove('active'));
+                e.target.classList.add('active');
+            });
+        });
+
+        // スムーススクロール
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+    </script>
+</body>
+</html>
