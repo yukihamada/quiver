@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>料金プラン - QUIVer Network</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: #0a0a0a;
+            color: #ffffff;
+            line-height: 1.6;
+        }
+        
+        .header {
+            background: rgba(10, 10, 10, 0.95);
+            backdrop-filter: blur(10px);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 1rem 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            list-style: none;
+        }
+        
+        .nav-links a {
+            color: #ffffff;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+        
+        .nav-links a:hover {
+            color: #667eea;
+        }
+        
+        .hero {
+            padding: 4rem 20px;
+            text-align: center;
+            background: radial-gradient(circle at center, #1a1a2e 0%, #0a0a0a 100%);
+        }
+        
+        .hero h1 {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .hero p {
+            font-size: 1.3rem;
+            color: #a0a0a0;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        .pricing-section {
+            padding: 4rem 20px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        .pricing-toggle {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+        
+        .toggle-container {
+            display: inline-flex;
+            align-items: center;
+            gap: 1rem;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 0.5rem;
+            border-radius: 30px;
+        }
+        
+        .toggle-option {
+            padding: 0.5rem 1.5rem;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .toggle-option.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        
+        .pricing-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-bottom: 4rem;
+        }
+        
+        .pricing-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 2.5rem;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+        
+        .pricing-card:hover {
+            background: rgba(255, 255, 255, 0.05);
+            transform: translateY(-5px);
+            border-color: #667eea;
+        }
+        
+        .pricing-card.popular {
+            border-color: #667eea;
+            background: rgba(102, 126, 234, 0.1);
+        }
+        
+        .popular-badge {
+            position: absolute;
+            top: -12px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 0.3rem 1.5rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+        
+        .plan-name {
+            font-size: 1.8rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .plan-price {
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+        
+        .plan-price span {
+            font-size: 1.2rem;
+            color: #a0a0a0;
+        }
+        
+        .plan-description {
+            color: #a0a0a0;
+            margin-bottom: 2rem;
+        }
+        
+        .plan-features {
+            list-style: none;
+            margin-bottom: 2rem;
+        }
+        
+        .plan-features li {
+            padding: 0.75rem 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        
+        .plan-features li:last-child {
+            border-bottom: none;
+        }
+        
+        .check-icon {
+            color: #4ade80;
+            font-size: 1.2rem;
+        }
+        
+        .x-icon {
+            color: #666;
+            font-size: 1.2rem;
+        }
+        
+        .plan-cta {
+            display: block;
+            width: 100%;
+            padding: 1rem;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            text-align: center;
+            text-decoration: none;
+            border-radius: 10px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+        
+        .plan-cta:hover {
+            background: rgba(255, 255, 255, 0.2);
+            border-color: rgba(255, 255, 255, 0.3);
+        }
+        
+        .pricing-card.popular .plan-cta {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        
+        .pricing-card.popular .plan-cta:hover {
+            opacity: 0.9;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+        }
+        
+        .enterprise-section {
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 20px;
+            padding: 3rem;
+            text-align: center;
+            margin-bottom: 4rem;
+        }
+        
+        .enterprise-section h2 {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+        }
+        
+        .enterprise-features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 2rem;
+            margin: 2rem 0;
+        }
+        
+        .enterprise-feature {
+            text-align: center;
+        }
+        
+        .enterprise-feature-icon {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .comparison-section {
+            padding: 4rem 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .comparison-table {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 20px;
+            overflow: hidden;
+        }
+        
+        .comparison-table th,
+        .comparison-table td {
+            padding: 1.5rem;
+            text-align: left;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        
+        .comparison-table th {
+            background: rgba(255, 255, 255, 0.05);
+            font-weight: 600;
+        }
+        
+        .comparison-table tr:last-child td {
+            border-bottom: none;
+        }
+        
+        .faq-section {
+            padding: 4rem 20px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .faq-item {
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .faq-item:hover {
+            background: rgba(255, 255, 255, 0.05);
+        }
+        
+        .faq-question {
+            font-size: 1.1rem;
+            font-weight: 600;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .faq-answer {
+            margin-top: 1rem;
+            color: #a0a0a0;
+            display: none;
+        }
+        
+        .faq-item.active .faq-answer {
+            display: block;
+        }
+        
+        footer {
+            padding: 2rem 20px;
+            text-align: center;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            color: #666;
+        }
+        
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2rem;
+            }
+            
+            .pricing-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .nav-links {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <nav class="nav-container">
+            <a href="/" class="logo">QUIVer Network</a>
+            <ul class="nav-links">
+                <li><a href="/">ホーム</a></li>
+                <li><a href="/pricing.html">料金</a></li>
+                <li><a href="/docs">ドキュメント</a></li>
+                <li><a href="https://github.com/yukihamada/quiver">GitHub</a></li>
+            </ul>
+        </nav>
+    </header>
+    
+    <section class="hero">
+        <h1>シンプルで透明な料金体系</h1>
+        <p>個人開発者から大企業まで、あらゆる規模に対応するプラン</p>
+    </section>
+    
+    <section class="pricing-section">
+        <div class="pricing-toggle">
+            <div class="toggle-container">
+                <div class="toggle-option active" onclick="toggleBilling('monthly')">月額</div>
+                <div class="toggle-option" onclick="toggleBilling('annual')">年額 (20%割引)</div>
+            </div>
+        </div>
+        
+        <div class="pricing-grid">
+            <!-- Free Plan -->
+            <div class="pricing-card">
+                <h3 class="plan-name">Free</h3>
+                <div class="plan-price">
+                    $0<span>/月</span>
+                </div>
+                <p class="plan-description">個人開発者やテスト用途に最適</p>
+                
+                <ul class="plan-features">
+                    <li><span class="check-icon">✓</span> 月間1,000リクエスト</li>
+                    <li><span class="check-icon">✓</span> 軽量モデル (3Bまで)</li>
+                    <li><span class="check-icon">✓</span> 10リクエスト/分</li>
+                    <li><span class="check-icon">✓</span> コミュニティサポート</li>
+                    <li><span class="x-icon">✗</span> APIキー発行</li>
+                    <li><span class="x-icon">✗</span> 優先処理</li>
+                </ul>
+                
+                <a href="/signup?plan=free" class="plan-cta">無料で始める</a>
+            </div>
+            
+            <!-- Starter Plan -->
+            <div class="pricing-card popular">
+                <div class="popular-badge">人気プラン</div>
+                <h3 class="plan-name">Starter</h3>
+                <div class="plan-price">
+                    $9.99<span>/月</span>
+                </div>
+                <p class="plan-description">スタートアップや小規模プロジェクトに</p>
+                
+                <ul class="plan-features">
+                    <li><span class="check-icon">✓</span> 月間10,000リクエスト</li>
+                    <li><span class="check-icon">✓</span> 中規模モデル (7Bまで)</li>
+                    <li><span class="check-icon">✓</span> 60リクエスト/分</li>
+                    <li><span class="check-icon">✓</span> APIキー発行</li>
+                    <li><span class="check-icon">✓</span> メールサポート</li>
+                    <li><span class="check-icon">✓</span> 使用状況分析</li>
+                </ul>
+                
+                <a href="/signup?plan=starter" class="plan-cta">今すぐ始める</a>
+            </div>
+            
+            <!-- Pro Plan -->
+            <div class="pricing-card">
+                <h3 class="plan-name">Pro</h3>
+                <div class="plan-price">
+                    $49.99<span>/月</span>
+                </div>
+                <p class="plan-description">本格的なビジネス利用に</p>
+                
+                <ul class="plan-features">
+                    <li><span class="check-icon">✓</span> 月間100,000リクエスト</li>
+                    <li><span class="check-icon">✓</span> 全モデル (32Bまで)</li>
+                    <li><span class="check-icon">✓</span> 300リクエスト/分</li>
+                    <li><span class="check-icon">✓</span> 複数APIキー</li>
+                    <li><span class="check-icon">✓</span> 優先サポート</li>
+                    <li><span class="check-icon">✓</span> Webhooks対応</li>
+                </ul>
+                
+                <a href="/signup?plan=pro" class="plan-cta">Proプランを選択</a>
+            </div>
+        </div>
+        
+        <!-- Enterprise Section -->
+        <div class="enterprise-section">
+            <h2>Enterprise</h2>
+            <p style="font-size: 1.5rem; color: #a0a0a0; margin-bottom: 2rem;">
+                大規模な組織向けのカスタムソリューション
+            </p>
+            
+            <div class="enterprise-features">
+                <div class="enterprise-feature">
+                    <div class="enterprise-feature-icon">∞</div>
+                    <h4>無制限リクエスト</h4>
+                </div>
+                <div class="enterprise-feature">
+                    <div class="enterprise-feature-icon">🛡️</div>
+                    <h4>SLA保証 99.9%</h4>
+                </div>
+                <div class="enterprise-feature">
+                    <div class="enterprise-feature-icon">🎯</div>
+                    <h4>専用インフラ</h4>
+                </div>
+                <div class="enterprise-feature">
+                    <div class="enterprise-feature-icon">🤝</div>
+                    <h4>専任サポート</h4>
+                </div>
+            </div>
+            
+            <a href="/contact-sales" class="plan-cta" style="display: inline-block; width: auto; padding: 1rem 3rem;">
+                営業担当に相談
+            </a>
+        </div>
+    </section>
+    
+    <!-- Comparison Table -->
+    <section class="comparison-section">
+        <h2 style="text-align: center; font-size: 2.5rem; margin-bottom: 3rem;">
+            プラン比較
+        </h2>
+        
+        <table class="comparison-table">
+            <thead>
+                <tr>
+                    <th>機能</th>
+                    <th>Free</th>
+                    <th>Starter</th>
+                    <th>Pro</th>
+                    <th>Enterprise</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>月間リクエスト数</td>
+                    <td>1,000</td>
+                    <td>10,000</td>
+                    <td>100,000</td>
+                    <td>無制限</td>
+                </tr>
+                <tr>
+                    <td>対応モデルサイズ</td>
+                    <td>3Bまで</td>
+                    <td>7Bまで</td>
+                    <td>32Bまで</td>
+                    <td>カスタム</td>
+                </tr>
+                <tr>
+                    <td>レート制限</td>
+                    <td>10/分</td>
+                    <td>60/分</td>
+                    <td>300/分</td>
+                    <td>カスタム</td>
+                </tr>
+                <tr>
+                    <td>APIキー</td>
+                    <td>✗</td>
+                    <td>1個</td>
+                    <td>5個</td>
+                    <td>無制限</td>
+                </tr>
+                <tr>
+                    <td>優先処理</td>
+                    <td>✗</td>
+                    <td>中</td>
+                    <td>高</td>
+                    <td>最高</td>
+                </tr>
+                <tr>
+                    <td>サポート</td>
+                    <td>コミュニティ</td>
+                    <td>メール</td>
+                    <td>優先メール</td>
+                    <td>専任担当</td>
+                </tr>
+                <tr>
+                    <td>SLA</td>
+                    <td>✗</td>
+                    <td>✗</td>
+                    <td>✗</td>
+                    <td>99.9%</td>
+                </tr>
+                <tr>
+                    <td>カスタムモデル</td>
+                    <td>✗</td>
+                    <td>✗</td>
+                    <td>✗</td>
+                    <td>✓</td>
+                </tr>
+            </tbody>
+        </table>
+    </section>
+    
+    <!-- FAQ Section -->
+    <section class="faq-section">
+        <h2 style="text-align: center; font-size: 2.5rem; margin-bottom: 3rem;">
+            よくある質問
+        </h2>
+        
+        <div class="faq-item" onclick="toggleFAQ(this)">
+            <div class="faq-question">
+                リクエスト数を超えた場合はどうなりますか？
+                <span>▼</span>
+            </div>
+            <div class="faq-answer">
+                プランの上限に達した場合、APIはエラーを返します。プランをアップグレードするか、翌月まで待つ必要があります。Proプラン以上では、追加リクエストを従量課金で利用することも可能です。
+            </div>
+        </div>
+        
+        <div class="faq-item" onclick="toggleFAQ(this)">
+            <div class="faq-question">
+                プランの変更はいつでもできますか？
+                <span>▼</span>
+            </div>
+            <div class="faq-answer">
+                はい、いつでもプランの変更が可能です。アップグレードの場合は即座に反映され、ダウングレードの場合は次の請求サイクルから適用されます。
+            </div>
+        </div>
+        
+        <div class="faq-item" onclick="toggleFAQ(this)">
+            <div class="faq-question">
+                Provider報酬はどのように計算されますか？
+                <span>▼</span>
+            </div>
+            <div class="faq-answer">
+                有料プランの収益の70%がProviderに分配されます。各Providerの報酬は、処理したリクエスト数、使用モデルのサイズ、応答速度などを考慮して計算されます。
+            </div>
+        </div>
+        
+        <div class="faq-item" onclick="toggleFAQ(this)">
+            <div class="faq-question">
+                無料プランでも商用利用は可能ですか？
+                <span>▼</span>
+            </div>
+            <div class="faq-answer">
+                はい、無料プランでも商用利用が可能です。ただし、リクエスト数やモデルサイズの制限があるため、本格的な商用利用にはStarterプラン以上をお勧めします。
+            </div>
+        </div>
+    </section>
+    
+    <footer>
+        <div style="max-width: 1200px; margin: 0 auto;">
+            <p>&copy; 2024 QUIVer Network. Built with P2P technology.</p>
+            <p style="margin-top: 0.5rem;">
+                <a href="https://github.com/yukihamada/quiver" style="color: #667eea; text-decoration: none;">GitHub</a>
+                ・
+                <a href="https://docs.quiver.network" style="color: #667eea; text-decoration: none;">Docs</a>
+                ・
+                <a href="https://discord.gg/quiver" style="color: #667eea; text-decoration: none;">Discord</a>
+            </p>
+        </div>
+    </footer>
+    
+    <script>
+        function toggleBilling(type) {
+            const options = document.querySelectorAll('.toggle-option');
+            options.forEach(opt => opt.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            const prices = {
+                monthly: {
+                    starter: '$9.99',
+                    pro: '$49.99'
+                },
+                annual: {
+                    starter: '$7.99',
+                    pro: '$39.99'
+                }
+            };
+            
+            // Update prices based on selection
+            // This is simplified - in production would update all price displays
+        }
+        
+        function toggleFAQ(item) {
+            item.classList.toggle('active');
+        }
+    </script>
+</body>
+</html>

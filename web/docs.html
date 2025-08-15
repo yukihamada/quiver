@@ -1,0 +1,766 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ドキュメント - QUIVer Network</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .docs-container {
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            gap: 2rem;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem 20px;
+            min-height: calc(100vh - 200px);
+        }
+        
+        .docs-sidebar {
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 16px;
+            padding: 2rem;
+            height: fit-content;
+            position: sticky;
+            top: 100px;
+        }
+        
+        .docs-nav {
+            list-style: none;
+        }
+        
+        .docs-nav > li {
+            margin-bottom: 1.5rem;
+        }
+        
+        .docs-nav-title {
+            font-weight: 600;
+            color: #ffffff;
+            margin-bottom: 0.5rem;
+            font-size: 1.1rem;
+        }
+        
+        .docs-nav-items {
+            list-style: none;
+            margin-left: 1rem;
+        }
+        
+        .docs-nav-items li {
+            margin-bottom: 0.5rem;
+        }
+        
+        .docs-nav-items a {
+            color: #a0a0a0;
+            text-decoration: none;
+            font-size: 0.95rem;
+            transition: color 0.3s ease;
+            display: block;
+            padding: 0.25rem 0;
+        }
+        
+        .docs-nav-items a:hover {
+            color: #667eea;
+        }
+        
+        .docs-nav-items a.active {
+            color: #667eea;
+            font-weight: 500;
+        }
+        
+        .docs-content {
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 16px;
+            padding: 3rem;
+        }
+        
+        .docs-content h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .docs-content h2 {
+            font-size: 2rem;
+            margin-top: 3rem;
+            margin-bottom: 1rem;
+            color: #ffffff;
+        }
+        
+        .docs-content h3 {
+            font-size: 1.5rem;
+            margin-top: 2rem;
+            margin-bottom: 1rem;
+            color: #ffffff;
+        }
+        
+        .docs-content p {
+            color: #a0a0a0;
+            line-height: 1.8;
+            margin-bottom: 1rem;
+        }
+        
+        .docs-content ul,
+        .docs-content ol {
+            margin-left: 2rem;
+            margin-bottom: 1rem;
+            color: #a0a0a0;
+        }
+        
+        .docs-content li {
+            margin-bottom: 0.5rem;
+            line-height: 1.6;
+        }
+        
+        .code-block {
+            background: #1a1a1a;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            padding: 1.5rem;
+            overflow-x: auto;
+            margin: 1rem 0;
+        }
+        
+        .code-block code {
+            color: #4ade80;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            white-space: pre;
+        }
+        
+        .api-endpoint {
+            background: rgba(102, 126, 234, 0.1);
+            border: 2px solid #667eea;
+            border-radius: 8px;
+            padding: 1rem;
+            margin: 1rem 0;
+        }
+        
+        .api-method {
+            display: inline-block;
+            background: #667eea;
+            color: white;
+            padding: 0.25rem 0.75rem;
+            border-radius: 4px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            margin-right: 0.5rem;
+        }
+        
+        .api-path {
+            font-family: 'Courier New', monospace;
+            font-weight: 600;
+        }
+        
+        .parameter-table {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: 8px;
+            overflow: hidden;
+            margin: 1rem 0;
+        }
+        
+        .parameter-table th,
+        .parameter-table td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        
+        .parameter-table th {
+            background: rgba(255, 255, 255, 0.05);
+            font-weight: 600;
+            color: #ffffff;
+        }
+        
+        .parameter-table td {
+            color: #a0a0a0;
+        }
+        
+        .parameter-table code {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.85rem;
+        }
+        
+        .alert {
+            padding: 1rem 1.5rem;
+            border-radius: 8px;
+            margin: 1rem 0;
+        }
+        
+        .alert-info {
+            background: rgba(59, 130, 246, 0.1);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            color: #93c5fd;
+        }
+        
+        .alert-warning {
+            background: rgba(251, 191, 36, 0.1);
+            border: 1px solid rgba(251, 191, 36, 0.3);
+            color: #fde047;
+        }
+        
+        .alert-success {
+            background: rgba(34, 197, 94, 0.1);
+            border: 1px solid rgba(34, 197, 94, 0.3);
+            color: #86efac;
+        }
+        
+        @media (max-width: 1024px) {
+            .docs-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .docs-sidebar {
+                position: static;
+                margin-bottom: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <nav class="nav-container">
+            <a href="/" class="logo">QUIVer Network</a>
+            <ul class="nav-links">
+                <li><a href="/">ホーム</a></li>
+                <li><a href="/pricing.html">料金</a></li>
+                <li><a href="/technology.html">技術</a></li>
+                <li><a href="/docs.html">ドキュメント</a></li>
+                <li><a href="https://github.com/yukihamada/quiver">GitHub</a></li>
+            </ul>
+        </nav>
+    </header>
+    
+    <div class="docs-container">
+        <aside class="docs-sidebar">
+            <nav>
+                <ul class="docs-nav">
+                    <li>
+                        <div class="docs-nav-title">はじめに</div>
+                        <ul class="docs-nav-items">
+                            <li><a href="#overview" class="active">概要</a></li>
+                            <li><a href="#quickstart">クイックスタート</a></li>
+                            <li><a href="#installation">インストール</a></li>
+                        </ul>
+                    </li>
+                    <li>
+                        <div class="docs-nav-title">Provider設定</div>
+                        <ul class="docs-nav-items">
+                            <li><a href="#provider-setup">セットアップ</a></li>
+                            <li><a href="#model-selection">モデル選択</a></li>
+                            <li><a href="#optimization">最適化</a></li>
+                        </ul>
+                    </li>
+                    <li>
+                        <div class="docs-nav-title">API リファレンス</div>
+                        <ul class="docs-nav-items">
+                            <li><a href="#api-auth">認証</a></li>
+                            <li><a href="#api-generate">推論API</a></li>
+                            <li><a href="#api-models">モデル一覧</a></li>
+                            <li><a href="#api-usage">使用状況</a></li>
+                        </ul>
+                    </li>
+                    <li>
+                        <div class="docs-nav-title">開発者向け</div>
+                        <ul class="docs-nav-items">
+                            <li><a href="#sdk">SDK</a></li>
+                            <li><a href="#webhooks">Webhooks</a></li>
+                            <li><a href="#examples">コード例</a></li>
+                        </ul>
+                    </li>
+                    <li>
+                        <div class="docs-nav-title">運用</div>
+                        <ul class="docs-nav-items">
+                            <li><a href="#monitoring">監視</a></li>
+                            <li><a href="#troubleshooting">トラブルシューティング</a></li>
+                            <li><a href="#faq">FAQ</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </nav>
+        </aside>
+        
+        <main class="docs-content">
+            <section id="overview">
+                <h1>QUIVer Network ドキュメント</h1>
+                <p>
+                    QUIVer Networkは、P2P技術を活用した分散型AI推論ネットワークです。
+                    誰でもProviderとして参加し、余剰計算リソースを活用して収益を得ることができます。
+                </p>
+                
+                <div class="alert alert-info">
+                    <strong>📢 最新情報:</strong> v1.1.0がリリースされました。15種類以上のモデルに対応し、
+                    ワンクリックインストールが可能になりました。
+                </div>
+                
+                <h2>主な特徴</h2>
+                <ul>
+                    <li><strong>完全分散型</strong> - 中央サーバーに依存しないP2Pアーキテクチャ</li>
+                    <li><strong>高速推論</strong> - QUICプロトコルによる低遅延通信</li>
+                    <li><strong>収益化</strong> - 推論処理ごとに報酬を獲得</li>
+                    <li><strong>セキュア</strong> - Ed25519署名による改ざん防止</li>
+                    <li><strong>柔軟性</strong> - 15種類以上のAIモデルに対応</li>
+                </ul>
+            </section>
+            
+            <section id="quickstart">
+                <h2>クイックスタート</h2>
+                
+                <h3>1分でProviderになる</h3>
+                <div class="code-block">
+<code># macOS/Linux
+curl -fsSL https://quiver.network/install.sh | bash
+
+# 特定のモデルを指定する場合
+export QUIVER_MODEL="qwen3:7b"
+curl -fsSL https://quiver.network/install.sh | bash</code>
+                </div>
+                
+                <h3>APIを使用する</h3>
+                <div class="code-block">
+<code># 無料アカウントで試す
+curl -X POST https://api.quiver.network/v1/generate \
+  -H "Content-Type: application/json" \
+  -d '{
+    "prompt": "Hello, world!",
+    "model": "llama3.2:3b",
+    "max_tokens": 100
+  }'</code>
+                </div>
+            </section>
+            
+            <section id="installation">
+                <h2>インストール詳細</h2>
+                
+                <h3>システム要件</h3>
+                <table class="parameter-table">
+                    <thead>
+                        <tr>
+                            <th>項目</th>
+                            <th>最小要件</th>
+                            <th>推奨</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>OS</td>
+                            <td>macOS 10.15+ / Ubuntu 20.04+</td>
+                            <td>macOS 12+ / Ubuntu 22.04+</td>
+                        </tr>
+                        <tr>
+                            <td>CPU</td>
+                            <td>4コア</td>
+                            <td>8コア以上</td>
+                        </tr>
+                        <tr>
+                            <td>RAM</td>
+                            <td>8GB</td>
+                            <td>32GB以上</td>
+                        </tr>
+                        <tr>
+                            <td>ストレージ</td>
+                            <td>20GB</td>
+                            <td>100GB以上（SSD）</td>
+                        </tr>
+                        <tr>
+                            <td>ネットワーク</td>
+                            <td>10Mbps</td>
+                            <td>100Mbps以上</td>
+                        </tr>
+                    </tbody>
+                </table>
+                
+                <h3>手動インストール</h3>
+                <div class="code-block">
+<code># 1. リポジトリをクローン
+git clone https://github.com/yukihamada/quiver.git
+cd quiver
+
+# 2. Providerをビルド
+cd provider
+go build -o quiver-provider ./cmd/provider
+
+# 3. 設定ファイルを作成
+cp config.example.yaml config.yaml
+vim config.yaml
+
+# 4. 起動
+./quiver-provider</code>
+                </div>
+            </section>
+            
+            <section id="api-generate">
+                <h2>推論API</h2>
+                
+                <div class="api-endpoint">
+                    <span class="api-method">POST</span>
+                    <span class="api-path">/v1/generate</span>
+                </div>
+                
+                <h3>リクエストパラメータ</h3>
+                <table class="parameter-table">
+                    <thead>
+                        <tr>
+                            <th>パラメータ</th>
+                            <th>型</th>
+                            <th>必須</th>
+                            <th>説明</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code>prompt</code></td>
+                            <td>string</td>
+                            <td>Yes</td>
+                            <td>入力プロンプト（最大32KB）</td>
+                        </tr>
+                        <tr>
+                            <td><code>model</code></td>
+                            <td>string</td>
+                            <td>Yes</td>
+                            <td>使用するモデル名（例: "llama3.2:3b"）</td>
+                        </tr>
+                        <tr>
+                            <td><code>max_tokens</code></td>
+                            <td>integer</td>
+                            <td>No</td>
+                            <td>最大生成トークン数（デフォルト: 1000）</td>
+                        </tr>
+                        <tr>
+                            <td><code>temperature</code></td>
+                            <td>float</td>
+                            <td>No</td>
+                            <td>生成の多様性（0.0-2.0、デフォルト: 0.7）</td>
+                        </tr>
+                        <tr>
+                            <td><code>stream</code></td>
+                            <td>boolean</td>
+                            <td>No</td>
+                            <td>ストリーミングレスポンス（デフォルト: false）</td>
+                        </tr>
+                    </tbody>
+                </table>
+                
+                <h3>レスポンス例</h3>
+                <div class="code-block">
+<code>{
+  "completion": "こんにちは！私はAIアシスタントです。",
+  "model": "llama3.2:3b",
+  "usage": {
+    "prompt_tokens": 10,
+    "completion_tokens": 15,
+    "total_tokens": 25
+  },
+  "receipt": {
+    "id": "550e8400-e29b-41d4-a716-446655440000",
+    "provider_id": "12D3KooWBBV3Sp2nCk47ygTCpCYf...",
+    "timestamp": 1703001234,
+    "signature": "3gYxK6Rt5N2J8Zk9Lm1Qw..."
+  }
+}</code>
+                </div>
+                
+                <h3>エラーレスポンス</h3>
+                <div class="code-block">
+<code>{
+  "error": {
+    "code": "rate_limit_exceeded",
+    "message": "API rate limit exceeded. Please upgrade your plan.",
+    "details": {
+      "limit": 10,
+      "window": "1m",
+      "retry_after": 45
+    }
+  }
+}</code>
+                </div>
+            </section>
+            
+            <section id="model-selection">
+                <h2>対応モデル一覧</h2>
+                
+                <h3>汎用モデル</h3>
+                <table class="parameter-table">
+                    <thead>
+                        <tr>
+                            <th>モデル名</th>
+                            <th>サイズ</th>
+                            <th>RAM要件</th>
+                            <th>特徴</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code>qwen3:0.6b</code></td>
+                            <td>0.6B</td>
+                            <td>2GB</td>
+                            <td>超軽量・高速レスポンス</td>
+                        </tr>
+                        <tr>
+                            <td><code>qwen3:3b</code></td>
+                            <td>3B</td>
+                            <td>8GB</td>
+                            <td>バランス型・日常使用</td>
+                        </tr>
+                        <tr>
+                            <td><code>qwen3:7b</code></td>
+                            <td>7B</td>
+                            <td>16GB</td>
+                            <td>高性能・複雑なタスク</td>
+                        </tr>
+                        <tr>
+                            <td><code>llama3.2:3b</code></td>
+                            <td>3B</td>
+                            <td>8GB</td>
+                            <td>Meta公式・安定性重視</td>
+                        </tr>
+                    </tbody>
+                </table>
+                
+                <h3>特化型モデル</h3>
+                <table class="parameter-table">
+                    <thead>
+                        <tr>
+                            <th>モデル名</th>
+                            <th>用途</th>
+                            <th>RAM要件</th>
+                            <th>特徴</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code>qwen3-coder:30b</code></td>
+                            <td>コーディング</td>
+                            <td>64GB</td>
+                            <td>コード生成・デバッグ支援</td>
+                        </tr>
+                        <tr>
+                            <td><code>jan-nano:32k</code></td>
+                            <td>長文処理</td>
+                            <td>16GB</td>
+                            <td>32Kトークンコンテキスト</td>
+                        </tr>
+                        <tr>
+                            <td><code>jan-nano:128k</code></td>
+                            <td>超長文処理</td>
+                            <td>32GB</td>
+                            <td>128Kトークンコンテキスト</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </section>
+            
+            <section id="sdk">
+                <h2>SDK</h2>
+                
+                <h3>JavaScript/TypeScript</h3>
+                <div class="code-block">
+<code>// インストール
+npm install @quiver/sdk
+
+// 使用例
+import { QUIVerClient } from '@quiver/sdk';
+
+const client = new QUIVerClient({
+  apiKey: 'sk_live_...',
+  baseURL: 'https://api.quiver.network'
+});
+
+const response = await client.generate({
+  prompt: 'Explain quantum computing',
+  model: 'qwen3:7b',
+  maxTokens: 500
+});
+
+console.log(response.completion);</code>
+                </div>
+                
+                <h3>Python</h3>
+                <div class="code-block">
+<code># インストール
+pip install quiver-sdk
+
+# 使用例
+from quiver import QUIVerClient
+
+client = QUIVerClient(
+    api_key='sk_live_...',
+    base_url='https://api.quiver.network'
+)
+
+response = client.generate(
+    prompt='Explain quantum computing',
+    model='qwen3:7b',
+    max_tokens=500
+)
+
+print(response.completion)</code>
+                </div>
+                
+                <h3>Go</h3>
+                <div class="code-block">
+<code>// インストール
+go get github.com/quiver/sdk-go
+
+// 使用例
+package main
+
+import (
+    "fmt"
+    "github.com/quiver/sdk-go"
+)
+
+func main() {
+    client := quiver.NewClient("sk_live_...")
+    
+    resp, err := client.Generate(&quiver.GenerateRequest{
+        Prompt:    "Explain quantum computing",
+        Model:     "qwen3:7b",
+        MaxTokens: 500,
+    })
+    
+    if err != nil {
+        panic(err)
+    }
+    
+    fmt.Println(resp.Completion)
+}</code>
+                </div>
+            </section>
+            
+            <section id="monitoring">
+                <h2>監視とメトリクス</h2>
+                
+                <h3>Provider メトリクス</h3>
+                <p>Providerは以下のエンドポイントでメトリクスを公開します：</p>
+                <div class="code-block">
+<code># Prometheusメトリクス
+http://localhost:8091/metrics
+
+# 健全性チェック
+http://localhost:8091/health
+
+# 統計情報
+http://localhost:8091/stats</code>
+                </div>
+                
+                <h3>主要メトリクス</h3>
+                <ul>
+                    <li><code>quiver_requests_total</code> - 総リクエスト数</li>
+                    <li><code>quiver_request_duration_seconds</code> - リクエスト処理時間</li>
+                    <li><code>quiver_tokens_processed_total</code> - 処理トークン数</li>
+                    <li><code>quiver_active_connections</code> - アクティブ接続数</li>
+                    <li><code>quiver_receipts_issued_total</code> - 発行レシート数</li>
+                </ul>
+                
+                <div class="alert alert-success">
+                    <strong>💡 ヒント:</strong> Grafanaダッシュボードテンプレートが
+                    <a href="https://github.com/yukihamada/quiver/tree/main/monitoring" style="color: inherit;">
+                        monitoring/
+                    </a>
+                    ディレクトリに用意されています。
+                </div>
+            </section>
+            
+            <section id="troubleshooting">
+                <h2>トラブルシューティング</h2>
+                
+                <h3>よくある問題</h3>
+                
+                <h4>Provider が起動しない</h4>
+                <div class="code-block">
+<code># ポートが使用中の場合
+lsof -i :4002
+kill -9 [PID]
+
+# 権限エラーの場合
+sudo chown -R $USER:$USER ~/.quiver
+
+# ログを確認
+journalctl -u quiver-provider -f</code>
+                </div>
+                
+                <h4>P2Pネットワークに接続できない</h4>
+                <ul>
+                    <li>ファイアウォール設定を確認（ポート4001-4003を開放）</li>
+                    <li>ブートストラップノードの状態を確認</li>
+                    <li>NAT設定を確認（UPnPを有効化）</li>
+                </ul>
+                
+                <h4>推論が遅い</h4>
+                <ul>
+                    <li>より小さいモデルを使用する</li>
+                    <li>GPUアクセラレーションを有効化</li>
+                    <li>同時リクエスト数を制限</li>
+                </ul>
+                
+                <div class="alert alert-warning">
+                    <strong>⚠️ 注意:</strong> 問題が解決しない場合は、
+                    <a href="https://discord.gg/quiver" style="color: inherit;">Discord</a>
+                    のサポートチャンネルでお問い合わせください。
+                </div>
+            </section>
+        </main>
+    </div>
+    
+    <footer>
+        <div class="container">
+            <p>&copy; 2024 QUIVer Network. Built with P2P technology.</p>
+            <p style="margin-top: 0.5rem;">
+                <a href="https://github.com/yukihamada/quiver" style="color: #667eea;">GitHub</a>
+                ・
+                <a href="https://discord.gg/quiver" style="color: #667eea;">Discord</a>
+                ・
+                <a href="/status" style="color: #667eea;">ステータス</a>
+            </p>
+        </div>
+    </footer>
+    
+    <script>
+        // Smooth scrolling for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                    
+                    // Update active state
+                    document.querySelectorAll('.docs-nav-items a').forEach(link => {
+                        link.classList.remove('active');
+                    });
+                    this.classList.add('active');
+                }
+            });
+        });
+        
+        // Highlight current section on scroll
+        window.addEventListener('scroll', () => {
+            const sections = document.querySelectorAll('section[id]');
+            const scrollY = window.pageYOffset;
+            
+            sections.forEach(section => {
+                const sectionHeight = section.offsetHeight;
+                const sectionTop = section.offsetTop - 100;
+                const sectionId = section.getAttribute('id');
+                
+                if (scrollY > sectionTop && scrollY <= sectionTop + sectionHeight) {
+                    document.querySelectorAll('.docs-nav-items a').forEach(link => {
+                        link.classList.remove('active');
+                        if (link.getAttribute('href') === `#${sectionId}`) {
+                            link.classList.add('active');
+                        }
+                    });
+                }
+            });
+        });
+    </script>
+</body>
+</html>
