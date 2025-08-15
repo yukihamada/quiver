@@ -430,13 +430,15 @@
         // Configuration
         const API_ENDPOINTS = [
             'http://localhost:8080/generate',
-            'http://34.146.32.216:8081/generate',
+            'http://34.117.120.147/generate',         // Global IP
+            'https://quiver-global-lb.quiver.network/generate',  // Global load balancer
+            'https://quiver-asia.quiver.network/generate',       // Asia region
             'https://api.quiver.network/generate'
         ];
         
         const STATS_ENDPOINTS = [
             'http://localhost:8087/api/stats',
-            'http://34.146.63.195:8087/api/stats'
+            'http://34.146.97.202:8087/api/stats'  // GCP stats server
         ];
         
         let currentEndpoint = 0;

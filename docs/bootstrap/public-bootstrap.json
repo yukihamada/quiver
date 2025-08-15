@@ -1,0 +1,76 @@
+{
+  "version": "1.0.0",
+  "updated": "2025-08-15T08:00:00Z",
+  "bootstrap_nodes": [
+    {
+      "name": "bootstrap1.quiver.network",
+      "multiaddrs": [
+        "/dns4/bootstrap1.quiver.network/tcp/4001",
+        "/dns4/bootstrap1.quiver.network/udp/4001/quic-v1",
+        "/dns4/bootstrap1.quiver.network/tcp/4003/ws",
+        "/ip4/34.146.197.230/tcp/4001",
+        "/ip4/34.146.197.230/udp/4001/quic-v1",
+        "/ip4/34.146.197.230/tcp/4003/ws"
+      ],
+      "location": "asia-northeast1",
+      "public": true
+    },
+    {
+      "name": "bootstrap2.quiver.network",
+      "multiaddrs": [
+        "/dns4/bootstrap2.quiver.network/tcp/4001",
+        "/dns4/bootstrap2.quiver.network/udp/4001/quic-v1",
+        "/dns4/bootstrap2.quiver.network/tcp/4003/ws",
+        "/ip4/34.146.92.189/tcp/4001",
+        "/ip4/34.146.92.189/udp/4001/quic-v1",
+        "/ip4/34.146.92.189/tcp/4003/ws"
+      ],
+      "location": "asia-northeast1",
+      "public": true
+    },
+    {
+      "name": "bootstrap3.quiver.network",
+      "multiaddrs": [
+        "/dns4/bootstrap3.quiver.network/tcp/4001",
+        "/dns4/bootstrap3.quiver.network/udp/4001/quic-v1",
+        "/dns4/bootstrap3.quiver.network/tcp/4003/ws",
+        "/ip4/104.198.123.81/tcp/4001",
+        "/ip4/104.198.123.81/udp/4001/quic-v1",
+        "/ip4/104.198.123.81/tcp/4003/ws"
+      ],
+      "location": "asia-northeast1",
+      "public": true
+    }
+  ],
+  "signalling_servers": [
+    {
+      "name": "signal.quiver.network",
+      "url": "wss://signal.quiver.network/signal",
+      "location": "asia-northeast1",
+      "ip": "34.146.216.182"
+    }
+  ],
+  "gateway_endpoints": [
+    {
+      "name": "Global Load Balancer",
+      "http": "http://34.117.120.147",
+      "https": "https://quiver-global-lb.quiver.network",
+      "location": "global"
+    },
+    {
+      "name": "Asia Region",
+      "https": "https://quiver-asia.quiver.network",
+      "location": "asia-northeast1"
+    },
+    {
+      "name": "US Region",
+      "https": "https://quiver-us.quiver.network",
+      "location": "us-central1"
+    },
+    {
+      "name": "EU Region",
+      "https": "https://quiver-eu.quiver.network",
+      "location": "europe-west1"
+    }
+  ]
+}

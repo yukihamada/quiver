@@ -543,7 +543,8 @@
                 const endpoints = [
                     'https://localhost:8443/webtransport',
                     'https://192.168.0.194:8443/webtransport',
-                    'https://quiver-wt.quiver.network/webtransport'
+                    'https://quiver-wt.quiver.network/webtransport',
+                    'https://34.146.216.182:8443/webtransport'  // GCP signalling server
                 ];
                 
                 for (const endpoint of endpoints) {
@@ -617,17 +618,18 @@
         const STREAM_ENDPOINTS = [
             'http://localhost:8080/generate',
             'http://192.168.0.194:8080/generate',
+            'http://34.117.120.147/generate',                    // Global IP
             'https://quiver-global-lb.quiver.network/generate',  // Global load balancer
-            'http://quiver-asia.quiver.network/generate',        // Asia region
-            'http://quiver-us.quiver.network/generate',          // US region
-            'http://quiver-eu.quiver.network/generate',          // EU region
+            'https://quiver-asia.quiver.network/generate',       // Asia region
+            'https://quiver-us.quiver.network/generate',         // US region
+            'https://quiver-eu.quiver.network/generate',         // EU region
             'https://api.quiver.network/generate'
         ];
         
         const STATS_ENDPOINTS = [
             'http://localhost:8087/api/stats',
             'http://192.168.0.194:8087/api/stats',
-            'http://34.146.63.195:8087/api/stats'
+            'http://34.146.97.202:8087/api/stats'  // GCP stats server
         ];
         
         let currentEndpoint = 0;

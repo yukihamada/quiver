@@ -35,8 +35,10 @@ class QUIVerP2PClient {
         return new Promise((resolve, reject) => {
             // Try multiple signalling servers
             const signallingUrls = [
-                'wss://signal.quiver.network',
-                'wss://signal-asia.quiver.network',
+                'wss://signal.localhost/signal',
+                'wss://signal.quiver.network/signal',
+                'wss://signal-asia.quiver.network/signal',
+                'wss://34.146.216.182:8444/signal',  // GCP signalling server
                 'wss://localhost:8444/signal'
             ];
 
