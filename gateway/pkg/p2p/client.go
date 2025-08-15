@@ -11,6 +11,7 @@ import (
 	dht "github.com/libp2p/go-libp2p-kad-dht"
 	"github.com/libp2p/go-libp2p/core/crypto"
 	"github.com/libp2p/go-libp2p/core/host"
+	"github.com/libp2p/go-libp2p/core/network"
 	"github.com/libp2p/go-libp2p/core/peer"
 	"github.com/libp2p/go-libp2p/core/protocol"
 	"github.com/multiformats/go-multiaddr"
@@ -29,6 +30,7 @@ type StreamRequest struct {
 	Prompt    string `json:"prompt"`
 	Model     string `json:"model"`
 	MaxTokens int    `json:"max_tokens"`
+	Stream    bool   `json:"stream,omitempty"`
 }
 
 type StreamResponse struct {
@@ -183,6 +185,21 @@ func (c *Client) CallProvider(ctx context.Context, providerID peer.ID, req *Stre
 	}
 
 	return &resp, nil
+}
+
+func (c *Client) CreateStream(ctx context.Context, providerID peer.ID, req *StreamRequest) (network.Stream, error) {
+	stream, err := c.host.NewStream(ctx, providerID, protocol.ID(protocolID))
+	if err != nil {
+		return nil, fmt.Errorf("failed to open stream: %w", err)
+	}
+	
+	encoder := json.NewEncoder(stream)
+	if err := encoder.Encode(req); err != nil {
+		stream.Close()
+		return nil, fmt.Errorf("failed to send request: %w", err)
+	}
+	
+	return stream, nil
 }
 
 func (c *Client) Close() error {

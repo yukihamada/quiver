@@ -10,16 +10,18 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
+	"github.com/quiver/gateway/pkg/loadbalancer"
 	"github.com/quiver/gateway/pkg/p2p"
 	"github.com/quiver/gateway/pkg/ratelimit"
 	"github.com/sirupsen/logrus"
 )
 
 type Handler struct {
-	p2pClient  *p2p.Client
-	limiter    *ratelimit.Limiter
-	canaryRate float64
-	logger     *logrus.Logger
+	p2pClient    *p2p.Client
+	limiter      *ratelimit.Limiter
+	canaryRate   float64
+	logger       *logrus.Logger
+	loadBalancer *loadbalancer.LoadBalancer
 }
 
 var canaryPrompts = []string{
@@ -38,11 +40,23 @@ func NewHandler(p2pClient *p2p.Client, limiter *ratelimit.Limiter, canaryRate fl
 	logger := logrus.New()
 	logger.SetFormatter(&logrus.JSONFormatter{})
 
+	lb := loadbalancer.NewLoadBalancer()
+	
+	// Start cleanup goroutine
+	go func() {
+		ticker := time.NewTicker(5 * time.Minute)
+		defer ticker.Stop()
+		for range ticker.C {
+			lb.Cleanup()
+		}
+	}()
+
 	return &Handler{
-		p2pClient:  p2pClient,
-		limiter:    limiter,
-		canaryRate: canaryRate,
-		logger:     logger,
+		p2pClient:    p2pClient,
+		limiter:      limiter,
+		canaryRate:   canaryRate,
+		logger:       logger,
+		loadBalancer: lb,
 	}
 }
 
@@ -80,7 +94,25 @@ func (h *Handler) Generate(c *gin.Context) {
 	ctx, cancel := context.WithTimeout(c.Request.Context(), 30*time.Second)
 	defer cancel()
 
-	for _, provider := range providers {
+	// Use load balancer to select provider
+	selectedProvider := h.loadBalancer.SelectProvider(providers)
+	if selectedProvider == "" {
+		selectedProvider = providers[0].ID
+	}
+	
+	// Try selected provider first
+	for i, provider := range providers {
+		// Reorder to try selected provider first
+		if i == 0 && provider.ID != selectedProvider {
+			for j, p := range providers {
+				if p.ID == selectedProvider {
+					providers[0], providers[j] = providers[j], providers[0]
+					break
+				}
+			}
+		}
+		
+		startTime := time.Now()
 		streamReq := &p2p.StreamRequest{
 			Prompt:    req.Prompt,
 			Model:     req.Model,
@@ -88,6 +120,11 @@ func (h *Handler) Generate(c *gin.Context) {
 		}
 
 		resp, err := h.p2pClient.CallProvider(ctx, provider.ID, streamReq)
+		responseTime := time.Since(startTime).Seconds()
+		
+		// Update load balancer metrics
+		h.loadBalancer.UpdateProvider(provider.ID, responseTime, err == nil)
+		
 		if err != nil {
 			h.logger.WithError(err).Error("Provider call failed")
 			continue
@@ -129,10 +166,16 @@ func (h *Handler) Generate(c *gin.Context) {
 }
 
 func (h *Handler) Health(c *gin.Context) {
+	healthyProviders := h.loadBalancer.GetHealthyProviders()
+	
 	c.JSON(http.StatusOK, gin.H{
 		"status": "healthy",
 		"service": "gateway",
 		"timestamp": time.Now().Unix(),
+		"loadbalancer": gin.H{
+			"healthy_providers": len(healthyProviders),
+			"providers": healthyProviders,
+		},
 	})
 }
 

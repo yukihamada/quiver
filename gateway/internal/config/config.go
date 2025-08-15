@@ -19,7 +19,9 @@ func DefaultConfig() *Config {
 	cfg := &Config{
 		Port:              "8080",
 		P2PListenAddr:     "/ip4/0.0.0.0/tcp/4002",
-		DHTBootstrapPeers: []string{},
+		DHTBootstrapPeers: []string{
+			"/ip4/127.0.0.1/tcp/4001/p2p/12D3KooWLfChFxVatDEJocxtMgdT8yqRAePZJG26h6WHt6kuCNUW",
+		},
 		RequestTimeout:    60 * time.Second,
 		RateLimitPerToken: 10,
 		CanaryRate:        0.05,
