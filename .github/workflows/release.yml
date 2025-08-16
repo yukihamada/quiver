@@ -24,7 +24,9 @@ jobs:
       run: make build-all
     
     - name: Create Release Package
-      run: ./scripts/create-release.sh
+      run: |
+        ./scripts/create-release.sh
+        ./scripts/build-signed-installer.sh
     
     - name: Create Release
       id: create_release
@@ -84,3 +86,13 @@ jobs:
         asset_path: ./release/quiver-provider-macos.tar.gz
         asset_name: quiver-provider-macos.tar.gz
         asset_content_type: application/gzip
+    
+    - name: Upload PKG
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: ./dist/QUIVerProvider.pkg
+        asset_name: QUIVerProvider.pkg
+        asset_content_type: application/octet-stream

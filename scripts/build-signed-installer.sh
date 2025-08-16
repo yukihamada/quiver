@@ -32,8 +32,11 @@ cp -f /tmp/quiver-provider /usr/local/bin/
 chmod +x /usr/local/bin/quiver-provider
 
 # LaunchAgentを設定
-PLIST_PATH="$HOME/Library/LaunchAgents/network.quiver.provider.plist"
-mkdir -p "$HOME/Library/LaunchAgents"
+PLIST_PATH="$2/Library/LaunchAgents/network.quiver.provider.plist"
+mkdir -p "$2/Library/LaunchAgents"
+
+# ログディレクトリを作成
+mkdir -p "$2/Library/Logs/QUIVerProvider"
 
 cat > "$PLIST_PATH" << PLIST
 <?xml version="1.0" encoding="UTF-8"?>
@@ -52,9 +55,9 @@ cat > "$PLIST_PATH" << PLIST
     <key>KeepAlive</key>
     <true/>
     <key>StandardOutPath</key>
-    <string>$HOME/Library/Logs/QUIVerProvider/provider.log</string>
+    <string>$2/Library/Logs/QUIVerProvider/provider.log</string>
     <key>StandardErrorPath</key>
-    <string>$HOME/Library/Logs/QUIVerProvider/provider.error.log</string>
+    <string>$2/Library/Logs/QUIVerProvider/provider.error.log</string>
 </dict>
 </plist>
 PLIST
