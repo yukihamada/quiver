@@ -13,6 +13,11 @@ type Config struct {
 	RequestTimeout    time.Duration
 	RateLimitPerToken int
 	CanaryRate        float64
+	
+	// Authentication settings
+	EnableAuth    bool
+	JWTSecret     string
+	APIKeyPrefix  string
 }
 
 func DefaultConfig() *Config {
@@ -25,6 +30,9 @@ func DefaultConfig() *Config {
 		RequestTimeout:    60 * time.Second,
 		RateLimitPerToken: 10,
 		CanaryRate:        0.05,
+		EnableAuth:        false,
+		JWTSecret:         "quiver-secret-key-change-in-production",
+		APIKeyPrefix:      "qvr",
 	}
 	
 	// Read from environment
@@ -34,6 +42,18 @@ func DefaultConfig() *Config {
 	
 	if port := os.Getenv("QUIVER_GATEWAY_PORT"); port != "" {
 		cfg.Port = port
+	}
+	
+	if enableAuth := os.Getenv("QUIVER_ENABLE_AUTH"); enableAuth == "true" {
+		cfg.EnableAuth = true
+	}
+	
+	if secret := os.Getenv("QUIVER_JWT_SECRET"); secret != "" {
+		cfg.JWTSecret = secret
+	}
+	
+	if prefix := os.Getenv("QUIVER_API_KEY_PREFIX"); prefix != "" {
+		cfg.APIKeyPrefix = prefix
 	}
 	
 	return cfg

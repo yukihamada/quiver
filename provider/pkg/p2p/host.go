@@ -21,6 +21,11 @@ type Host struct {
 	ctx  context.Context
 }
 
+// GetHost returns the underlying libp2p host
+func (h *Host) GetHost() host.Host {
+	return h.host
+}
+
 func NewHost(ctx context.Context, listenAddr string, bootstrapPeers []string) (*Host, error) {
 	priv, _, err := crypto.GenerateKeyPairWithReader(crypto.Ed25519, -1, rand.Reader)
 	if err != nil {

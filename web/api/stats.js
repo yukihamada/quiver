@@ -2,40 +2,46 @@
 // 実際のP2Pネットワークから統計情報を取得
 
 const BOOTSTRAP_NODE = "https://api.quiver.network";
-const FALLBACK_GATEWAY = "http://35.221.85.1:8090"; // Bootstrap metrics endpoint
+const FALLBACK_GATEWAY = "http://localhost:8080"; // Local gateway
+const GCP_GATEWAYS = [
+    "http://35.221.85.1:8080",
+    "http://34.146.103.161:8080", 
+    "http://35.200.31.99:8080"
+];
 
 // 実際のネットワーク統計を取得
 async function fetchNetworkStats() {
-    try {
-        // Try primary API
-        const response = await fetch(`${BOOTSTRAP_NODE}/stats`, {
-            method: 'GET',
-            headers: {
-                'Accept': 'application/json',
-            },
-            mode: 'cors',
-            cache: 'no-cache'
-        });
-        
-        if (response.ok) {
-            return await response.json();
+    // Try all available endpoints
+    const endpoints = [
+        `${BOOTSTRAP_NODE}/stats`,
+        `${FALLBACK_GATEWAY}/stats`,
+        ...GCP_GATEWAYS.map(gw => `${gw}/stats`)
+    ];
+    
+    for (const endpoint of endpoints) {
+        try {
+            const response = await fetch(endpoint, {
+                method: 'GET',
+                headers: {
+                    'Accept': 'application/json',
+                },
+                mode: 'cors',
+                cache: 'no-cache'
+            });
+            
+            if (response.ok) {
+                const data = await response.json();
+                console.log(`Stats fetched from ${endpoint}:`, data);
+                return data;
+            }
+        } catch (error) {
+            console.log(`Failed to fetch from ${endpoint}:`, error.message);
         }
-    } catch (error) {
-        console.log('Primary API failed, trying fallback...');
     }
     
-    // Fallback to direct metrics
-    try {
-        const metricsResponse = await fetch(`${FALLBACK_GATEWAY}/metrics`, {
-            mode: 'no-cors' // メトリクスエンドポイントはCORS非対応の可能性
-        });
-        
-        // メトリクスから推定
-        return estimateFromMetrics();
-    } catch (error) {
-        console.log('Fallback failed, using estimation...');
-        return estimateStats();
-    }
+    // If all fail, return realistic estimates
+    console.log('All endpoints failed, using estimation...');
+    return estimateStats();
 }
 
 // メトリクスデータから統計を推定

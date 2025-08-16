@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Become a Provider - QUIVer Network</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .provider-hero {
+            text-align: center;
+            padding: 80px 20px;
+            background: linear-gradient(135deg, #1a1a1a 0%, #0a0a0a 100%);
+            border-bottom: 1px solid #333;
+        }
+        
+        .provider-hero h1 {
+            font-size: 48px;
+            margin-bottom: 20px;
+            background: linear-gradient(45deg, #00d4ff, #0099cc);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .earnings-calculator {
+            background: #1a1a1a;
+            border: 1px solid #333;
+            border-radius: 16px;
+            padding: 40px;
+            margin: 40px auto;
+            max-width: 600px;
+        }
+        
+        .calculator-title {
+            font-size: 24px;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        
+        .slider-container {
+            margin: 30px 0;
+        }
+        
+        .slider-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            color: #aaa;
+        }
+        
+        .slider {
+            width: 100%;
+            height: 6px;
+            border-radius: 3px;
+            background: #333;
+            outline: none;
+            -webkit-appearance: none;
+        }
+        
+        .slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #00d4ff;
+            cursor: pointer;
+        }
+        
+        .slider::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #00d4ff;
+            cursor: pointer;
+            border: none;
+        }
+        
+        .earnings-display {
+            background: #0a0a0a;
+            border: 1px solid #222;
+            border-radius: 12px;
+            padding: 30px;
+            margin-top: 30px;
+            text-align: center;
+        }
+        
+        .earnings-amount {
+            font-size: 48px;
+            font-weight: 700;
+            color: #00d4ff;
+            margin: 10px 0;
+        }
+        
+        .earnings-period {
+            color: #888;
+            font-size: 18px;
+        }
+        
+        .requirements-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 30px;
+            margin: 40px 0;
+        }
+        
+        .requirement-card {
+            background: #1a1a1a;
+            border: 1px solid #333;
+            border-radius: 12px;
+            padding: 30px;
+            text-align: center;
+            transition: all 0.3s;
+        }
+        
+        .requirement-card:hover {
+            border-color: #00d4ff;
+            transform: translateY(-2px);
+        }
+        
+        .requirement-icon {
+            width: 60px;
+            height: 60px;
+            margin: 0 auto 20px;
+            background: #00d4ff;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 30px;
+        }
+        
+        .requirement-title {
+            font-size: 20px;
+            margin-bottom: 10px;
+            color: #fff;
+        }
+        
+        .requirement-desc {
+            color: #888;
+            line-height: 1.6;
+        }
+        
+        .setup-steps {
+            margin: 60px 0;
+        }
+        
+        .step {
+            display: flex;
+            align-items: flex-start;
+            margin: 30px 0;
+            position: relative;
+        }
+        
+        .step-number {
+            width: 40px;
+            height: 40px;
+            background: #00d4ff;
+            color: #000;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            flex-shrink: 0;
+            margin-right: 20px;
+        }
+        
+        .step-content h3 {
+            margin-bottom: 10px;
+            color: #fff;
+        }
+        
+        .step-content p {
+            color: #888;
+            line-height: 1.6;
+        }
+        
+        .step-content code {
+            background: #0a0a0a;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: monospace;
+            color: #00d4ff;
+        }
+        
+        .cta-section {
+            background: linear-gradient(135deg, #00d4ff 0%, #0099cc 100%);
+            color: #000;
+            padding: 60px 40px;
+            border-radius: 16px;
+            text-align: center;
+            margin: 60px 0;
+        }
+        
+        .cta-section h2 {
+            font-size: 36px;
+            margin-bottom: 20px;
+        }
+        
+        .cta-section p {
+            font-size: 20px;
+            margin-bottom: 30px;
+            opacity: 0.9;
+        }
+        
+        .install-buttons {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        .install-button {
+            background: #000;
+            color: #fff;
+            padding: 15px 30px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .install-button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+        
+        .faq-section {
+            margin: 60px 0;
+        }
+        
+        .faq-item {
+            background: #1a1a1a;
+            border: 1px solid #333;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+        
+        .faq-question {
+            padding: 20px 30px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: background 0.3s;
+        }
+        
+        .faq-question:hover {
+            background: #222;
+        }
+        
+        .faq-answer {
+            padding: 0 30px 20px;
+            color: #888;
+            line-height: 1.6;
+            display: none;
+        }
+        
+        .faq-item.active .faq-answer {
+            display: block;
+        }
+        
+        .faq-toggle {
+            font-size: 24px;
+            transition: transform 0.3s;
+        }
+        
+        .faq-item.active .faq-toggle {
+            transform: rotate(45deg);
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="/" class="nav-logo">QUIVer</a>
+            <div class="nav-links">
+                <a href="/">Home</a>
+                <a href="/models.html">Models</a>
+                <a href="/providers.html" class="active">Providers</a>
+                <a href="/pricing.html">Pricing</a>
+                <a href="/technology.html">Technology</a>
+                <a href="/docs.html">Docs</a>
+                <a href="https://github.com/yukihamada/quiver">GitHub</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="provider-hero">
+        <h1>Earn by Sharing Your GPU</h1>
+        <p style="font-size: 24px; color: #888; margin-bottom: 40px;">
+            Join the QUIVer network and monetize your idle computing power
+        </p>
+        <div class="install-buttons">
+            <a href="#quick-start" class="install-button">
+                <svg width="20" height="20" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M11.3 1.046A1 1 0 0112 2v5h4a1 1 0 01.82 1.573l-7 10A1 1 0 018 18v-5H4a1 1 0 01-.82-1.573l7-10a1 1 0 011.12-.38z"/>
+                </svg>
+                Quick Start
+            </a>
+        </div>
+    </div>
+
+    <main class="content">
+        <div class="earnings-calculator">
+            <h2 class="calculator-title">Earnings Calculator</h2>
+            
+            <div class="slider-container">
+                <div class="slider-label">
+                    <span>GPU Model</span>
+                    <span id="gpu-model">RTX 3080</span>
+                </div>
+                <select id="gpu-select" class="slider" style="height: 40px; padding: 0 10px;">
+                    <option value="rtx3060">RTX 3060 (12GB)</option>
+                    <option value="rtx3070">RTX 3070 (8GB)</option>
+                    <option value="rtx3080" selected>RTX 3080 (10GB)</option>
+                    <option value="rtx3090">RTX 3090 (24GB)</option>
+                    <option value="rtx4070">RTX 4070 (12GB)</option>
+                    <option value="rtx4080">RTX 4080 (16GB)</option>
+                    <option value="rtx4090">RTX 4090 (24GB)</option>
+                    <option value="a100">A100 (40GB)</option>
+                </select>
+            </div>
+            
+            <div class="slider-container">
+                <div class="slider-label">
+                    <span>Hours per Day</span>
+                    <span id="hours-value">12 hours</span>
+                </div>
+                <input type="range" min="1" max="24" value="12" class="slider" id="hours-slider">
+            </div>
+            
+            <div class="slider-container">
+                <div class="slider-label">
+                    <span>Network Demand</span>
+                    <span id="demand-value">Medium</span>
+                </div>
+                <input type="range" min="1" max="3" value="2" class="slider" id="demand-slider">
+            </div>
+            
+            <div class="earnings-display">
+                <div class="earnings-period">Estimated Monthly Earnings</div>
+                <div class="earnings-amount" id="earnings">$450</div>
+                <div class="earnings-period">Based on current network rates</div>
+            </div>
+        </div>
+
+        <section>
+            <h2 style="text-align: center; margin: 60px 0 40px;">Requirements</h2>
+            <div class="requirements-grid">
+                <div class="requirement-card">
+                    <div class="requirement-icon">🖥️</div>
+                    <h3 class="requirement-title">Hardware</h3>
+                    <p class="requirement-desc">
+                        NVIDIA GPU with 8GB+ VRAM<br>
+                        16GB+ System RAM<br>
+                        Stable internet connection
+                    </p>
+                </div>
+                <div class="requirement-card">
+                    <div class="requirement-icon">🔧</div>
+                    <h3 class="requirement-title">Software</h3>
+                    <p class="requirement-desc">
+                        macOS, Linux, or Windows<br>
+                        CUDA drivers installed<br>
+                        Docker (optional)
+                    </p>
+                </div>
+                <div class="requirement-card">
+                    <div class="requirement-icon">⚡</div>
+                    <h3 class="requirement-title">Network</h3>
+                    <p class="requirement-desc">
+                        50+ Mbps bandwidth<br>
+                        Low latency connection<br>
+                        Port 4001 open
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <section class="setup-steps" id="quick-start">
+            <h2 style="text-align: center; margin-bottom: 40px;">Setup in 3 Easy Steps</h2>
+            
+            <div class="step">
+                <div class="step-number">1</div>
+                <div class="step-content">
+                    <h3>Install QUIVer Provider</h3>
+                    <p>Run our one-line installer for your platform:</p>
+                    <div style="margin: 15px 0;">
+                        <strong>macOS/Linux:</strong>
+                        <pre style="background: #0a0a0a; padding: 15px; border-radius: 8px; overflow-x: auto;">
+curl -fsSL https://quiver.network/install.sh | bash</pre>
+                    </div>
+                    <div style="margin: 15px 0;">
+                        <strong>Windows:</strong>
+                        <pre style="background: #0a0a0a; padding: 15px; border-radius: 8px; overflow-x: auto;">
+iwr -useb https://quiver.network/install.ps1 | iex</pre>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="step">
+                <div class="step-number">2</div>
+                <div class="step-content">
+                    <h3>Choose Your Models</h3>
+                    <p>Select AI models based on your GPU capacity. The installer will guide you through available options and automatically download the best models for your hardware.</p>
+                </div>
+            </div>
+            
+            <div class="step">
+                <div class="step-number">3</div>
+                <div class="step-content">
+                    <h3>Start Earning</h3>
+                    <p>Your provider will automatically connect to the network and start processing requests. Monitor your earnings and performance through the dashboard.</p>
+                </div>
+            </div>
+        </section>
+
+        <div class="cta-section">
+            <h2>Ready to Start Earning?</h2>
+            <p>Join thousands of providers powering the future of AI</p>
+            <div class="install-buttons">
+                <a href="https://github.com/quiver-network/quiver/releases" class="install-button">
+                    <svg width="20" height="20" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z"/>
+                    </svg>
+                    Download Provider
+                </a>
+                <a href="/docs.html#provider-setup" class="install-button" style="background: #fff; color: #000;">
+                    <svg width="20" height="20" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M9 4.804A7.968 7.968 0 005.5 4c-1.255 0-2.443.29-3.5.804v10A7.969 7.969 0 015.5 14c1.669 0 3.218.51 4.5 1.385A7.962 7.962 0 0114.5 14c1.255 0 2.443.29 3.5.804v-10A7.968 7.968 0 0014.5 4c-1.255 0-2.443.29-3.5.804V12a1 1 0 11-2 0V4.804z"/>
+                    </svg>
+                    Read Documentation
+                </a>
+            </div>
+        </div>
+
+        <section class="faq-section">
+            <h2 style="text-align: center; margin-bottom: 40px;">Frequently Asked Questions</h2>
+            
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFAQ(this)">
+                    <span>How are earnings calculated?</span>
+                    <span class="faq-toggle">+</span>
+                </div>
+                <div class="faq-answer">
+                    Earnings are based on the number of tokens processed, your GPU performance, uptime, and network demand. Premium models and faster response times earn higher rates. Payments are processed automatically every week.
+                </div>
+            </div>
+            
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFAQ(this)">
+                    <span>What about electricity costs?</span>
+                    <span class="faq-toggle">+</span>
+                </div>
+                <div class="faq-answer">
+                    Most providers earn significantly more than their electricity costs. A typical RTX 3080 uses about 300W under load, costing roughly $0.05-0.10 per hour. With average earnings of $1.50-2.50 per hour, you'll have a healthy profit margin.
+                </div>
+            </div>
+            
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFAQ(this)">
+                    <span>Can I limit GPU usage?</span>
+                    <span class="faq-toggle">+</span>
+                </div>
+                <div class="faq-answer">
+                    Yes! You can set custom limits for GPU usage, operating hours, and maximum power consumption. The provider software includes advanced scheduling options to run only during specific times or when your computer is idle.
+                </div>
+            </div>
+            
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFAQ(this)">
+                    <span>Is my data secure?</span>
+                    <span class="faq-toggle">+</span>
+                </div>
+                <div class="faq-answer">
+                    Absolutely. All inference requests are encrypted end-to-end. The provider software runs in an isolated environment and only processes AI model inference - it cannot access your personal files or data. We also support privacy-preserving inference modes for sensitive workloads.
+                </div>
+            </div>
+            
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFAQ(this)">
+                    <span>What are the minimum payouts?</span>
+                    <span class="faq-toggle">+</span>
+                </div>
+                <div class="faq-answer">
+                    The minimum payout threshold is $10, which most active providers reach within a few days. Payments are processed weekly via cryptocurrency (ETH, USDC) or monthly via traditional payment methods (PayPal, bank transfer).
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        // GPU earnings rates ($ per hour)
+        const gpuRates = {
+            rtx3060: 0.80,
+            rtx3070: 1.20,
+            rtx3080: 1.50,
+            rtx3090: 2.00,
+            rtx4070: 1.80,
+            rtx4080: 2.50,
+            rtx4090: 3.50,
+            a100: 5.00
+        };
+        
+        // Demand multipliers
+        const demandMultipliers = {
+            1: 0.7,  // Low
+            2: 1.0,  // Medium
+            3: 1.5   // High
+        };
+        
+        const demandLabels = {
+            1: 'Low',
+            2: 'Medium',
+            3: 'High'
+        };
+        
+        function updateEarnings() {
+            const gpu = document.getElementById('gpu-select').value;
+            const hours = document.getElementById('hours-slider').value;
+            const demand = document.getElementById('demand-slider').value;
+            
+            // Update display values
+            document.getElementById('gpu-model').textContent = document.getElementById('gpu-select').selectedOptions[0].text;
+            document.getElementById('hours-value').textContent = hours + ' hours';
+            document.getElementById('demand-value').textContent = demandLabels[demand];
+            
+            // Calculate earnings
+            const hourlyRate = gpuRates[gpu] * demandMultipliers[demand];
+            const dailyEarnings = hourlyRate * hours;
+            const monthlyEarnings = dailyEarnings * 30;
+            
+            // Update earnings display
+            document.getElementById('earnings').textContent = '$' + Math.round(monthlyEarnings);
+        }
+        
+        // Add event listeners
+        document.getElementById('gpu-select').addEventListener('change', updateEarnings);
+        document.getElementById('hours-slider').addEventListener('input', updateEarnings);
+        document.getElementById('demand-slider').addEventListener('input', updateEarnings);
+        
+        // FAQ toggle
+        function toggleFAQ(element) {
+            const faqItem = element.parentElement;
+            faqItem.classList.toggle('active');
+        }
+        
+        // Initialize
+        updateEarnings();
+    </script>
+</body>
+</html>

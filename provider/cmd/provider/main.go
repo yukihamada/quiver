@@ -18,6 +18,7 @@ import (
 	"github.com/quiver/provider/pkg/receipt"
 	"github.com/quiver/provider/pkg/stream"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
+	"github.com/sirupsen/logrus"
 )
 
 const protocolID = "/quiver/inference/1.0.0"
@@ -28,19 +29,34 @@ var startTime = time.Now()
 func main() {
 	cfg := config.DefaultConfig()
 
+	// Setup logger
+	logger := logrus.New()
+	logger.SetLevel(logrus.InfoLevel)
+	if os.Getenv("DEBUG") == "true" {
+		logger.SetLevel(logrus.DebugLevel)
+	}
+
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
 	signer, err := receipt.NewSigner(cfg.PrivateKeyPath)
 	if err != nil {
-		log.Fatal("Failed to create signer:", err)
+		logger.Fatal("Failed to create signer:", err)
 	}
 
 	host, err := p2p.NewHost(ctx, cfg.ListenAddr, cfg.DHTBootstrapPeers)
 	if err != nil {
-		log.Fatal("Failed to create P2P host:", err)
+		logger.Fatal("Failed to create P2P host:", err)
 	}
 	defer host.Close()
+
+	// Initialize connection manager
+	connMgr, err := p2p.NewConnectionManager(host.GetHost(), cfg.DHTBootstrapPeers, logger)
+	if err != nil {
+		logger.Fatal("Failed to create connection manager:", err)
+	}
+	connMgr.Start()
+	defer connMgr.Stop()
 
 	llmClient := llm.NewClient(cfg.OllamaURL)
 
@@ -63,6 +79,7 @@ func main() {
 				"service": "provider",
 				"peer_id": host.ID().String(),
 				"uptime_seconds": time.Since(startTime).Seconds(),
+				"connections": connMgr.GetConnectionStats(),
 			})
 		})
 		mux.Handle("/metrics", promhttp.Handler())
@@ -70,33 +87,49 @@ func main() {
 		if port == "" {
 			port = "8090"
 		}
-		log.Printf("Health check and metrics endpoints started on :%s\n", port)
+		logger.Infof("Health check and metrics endpoints started on :%s", port)
 		if err := http.ListenAndServe(":"+port, mux); err != nil {
-			log.Printf("Health/metrics server failed: %v", err)
+			logger.Errorf("Health/metrics server failed: %v", err)
 		}
 	}()
 
 	go func() {
 		for {
 			if err := host.Advertise(dhtTopic); err != nil {
-				log.Printf("Failed to advertise: %v", err)
+				logger.Warnf("Failed to advertise: %v", err)
 			}
 			time.Sleep(5 * time.Minute)
 		}
 	}()
 
-	fmt.Printf("Provider started\n")
-	fmt.Printf("PeerID: %s\n", host.ID())
-	fmt.Printf("Addresses:\n")
+	// Periodic connection status logging
+	go func() {
+		ticker := time.NewTicker(30 * time.Second)
+		defer ticker.Stop()
+		
+		for range ticker.C {
+			if !connMgr.IsConnected() {
+				logger.Warn("No P2P connections! Attempting to reconnect...")
+				connMgr.ForceReconnect()
+			} else {
+				stats := connMgr.GetConnectionStats()
+				logger.Infof("P2P Status: %d connected peers", stats["connected_peers"])
+			}
+		}
+	}()
+
+	logger.Info("Provider started")
+	logger.Infof("PeerID: %s", host.ID())
+	logger.Info("Addresses:")
 	for _, addr := range host.Addrs() {
-		fmt.Printf("  %s/p2p/%s\n", addr, host.ID())
+		logger.Infof("  %s/p2p/%s", addr, host.ID())
 	}
-	fmt.Printf("Bootstrap peers: %v\n", cfg.DHTBootstrapPeers)
-	fmt.Printf("Public Key: %s\n", signer.PublicKeyBase64())
+	logger.Infof("Bootstrap peers: %v", cfg.DHTBootstrapPeers)
+	logger.Infof("Public Key: %s", signer.PublicKeyBase64())
 
 	sigCh := make(chan os.Signal, 1)
 	signal.Notify(sigCh, syscall.SIGINT, syscall.SIGTERM)
 	<-sigCh
 
-	fmt.Println("Shutting down...")
+	logger.Info("Shutting down...")
 }

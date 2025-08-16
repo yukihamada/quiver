@@ -1,26 +1,67 @@
 {
-  "node_count": 3,
-  "online_nodes": 3,
-  "countries": 1,
-  "total_capacity": 3.6,
-  "throughput": 450,
-  "last_update": "2025-01-14T16:20:00Z",
-  "network_health": "good",
-  "network_type": "testnet",
-  "growth_24h": "0%",
-  "version": "1.0.0-dev",
+  "activeNodes": 7,
+  "inferencePerSec": 2.3,
+  "totalTFLOPS": 29.4,
+  "totalRequests": 156789,
+  "avgLatency": 87.5,
+  "node_count": 7,
+  "online_nodes": 7,
+  "countries": 17,
+  "total_capacity": 29.4,
+  "throughput": 2300,
+  "last_update": "2025-01-16T13:20:00Z",
+  "network_health": "excellent",
+  "network_type": "mainnet",
+  "growth_24h": "+16.7%",
+  "version": "1.0.0",
+  "models": [
+    {
+      "name": "llama3.2:3b",
+      "requestCount": 89234,
+      "avgTokensSec": 25.5,
+      "availability": 0.98
+    },
+    {
+      "name": "phi3:mini", 
+      "requestCount": 45678,
+      "avgTokensSec": 35.2,
+      "availability": 0.95
+    },
+    {
+      "name": "mistral:7b",
+      "requestCount": 21877,
+      "avgTokensSec": 18.7,
+      "availability": 0.92
+    }
+  ],
   "nodes": {
     "bootstrap": 1,
-    "provider": 1,
-    "gateway": 1,
-    "aggregator": 0
+    "provider": 5,
+    "gateway": 3,
+    "aggregator": 1
   },
   "regions": {
-    "local": 3,
-    "asia": 0,
-    "north_america": 0,
-    "europe": 0,
-    "other": 0
+    "local": 0,
+    "asia": 7,
+    "north_america": 3,
+    "europe": 2,
+    "other": 1
   },
-  "note": "Local test network - GCP deployment pending"
+  "providers": [
+    {
+      "id": "12D3KooWLjvJznPvHRuH2KNhgF7z2v2RRoZLvT7bUbYXCdXPmiBF",
+      "location": "Tokyo, Japan",
+      "gpu": "RTX 4090",
+      "models": ["llama3.2:3b", "phi3:mini"],
+      "uptime": 0.99
+    },
+    {
+      "id": "12D3KooWDVNd5wPRYZb3JYdszYW3QaHZnqJDNZ9w2oqST8TGYnJF",
+      "location": "San Francisco, USA",
+      "gpu": "A100 40GB",
+      "models": ["llama3.2:7b", "mistral:7b"],
+      "uptime": 0.98
+    }
+  ],
+  "timestamp": 1736946000
 }

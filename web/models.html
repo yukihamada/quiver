@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Model Manager - QUIVer Network</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .model-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 20px;
+            margin-top: 30px;
+        }
+        
+        .model-card {
+            background: #1a1a1a;
+            border: 1px solid #333;
+            border-radius: 12px;
+            padding: 24px;
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .model-card:hover {
+            border-color: #00d4ff;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(0, 212, 255, 0.2);
+        }
+        
+        .model-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 15px;
+        }
+        
+        .model-name {
+            font-size: 20px;
+            font-weight: 600;
+            color: #fff;
+        }
+        
+        .model-size {
+            background: #2a2a2a;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 14px;
+            color: #888;
+        }
+        
+        .model-description {
+            color: #aaa;
+            margin-bottom: 20px;
+            line-height: 1.5;
+        }
+        
+        .model-specs {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .spec-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            color: #888;
+            font-size: 14px;
+        }
+        
+        .spec-icon {
+            width: 16px;
+            height: 16px;
+            opacity: 0.7;
+        }
+        
+        .install-button {
+            width: 100%;
+            padding: 12px;
+            background: #00d4ff;
+            color: #000;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .install-button:hover:not(:disabled) {
+            background: #00a8d4;
+            transform: scale(1.02);
+        }
+        
+        .install-button:disabled {
+            background: #333;
+            color: #666;
+            cursor: not-allowed;
+        }
+        
+        .install-button.installing {
+            background: #333;
+            color: #00d4ff;
+        }
+        
+        .progress-bar {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            height: 3px;
+            background: #00d4ff;
+            transition: width 0.3s;
+        }
+        
+        .category-header {
+            margin-top: 40px;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #333;
+        }
+        
+        .category-title {
+            font-size: 24px;
+            font-weight: 600;
+            color: #fff;
+        }
+        
+        .category-description {
+            color: #888;
+            margin-top: 5px;
+        }
+        
+        .recommended-badge {
+            background: #00d4ff;
+            color: #000;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+            position: absolute;
+            top: 10px;
+            right: 10px;
+        }
+        
+        .system-requirements {
+            background: #0a0a0a;
+            border: 1px solid #222;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 30px 0;
+        }
+        
+        .requirement-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 10px 0;
+        }
+        
+        .check-icon {
+            color: #0f0;
+        }
+        
+        .x-icon {
+            color: #f00;
+        }
+        
+        .warning-icon {
+            color: #fa0;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="/" class="nav-logo">QUIVer</a>
+            <div class="nav-links">
+                <a href="/">Home</a>
+                <a href="/models.html" class="active">Models</a>
+                <a href="/providers.html">Providers</a>
+                <a href="/pricing.html">Pricing</a>
+                <a href="/technology.html">Technology</a>
+                <a href="/docs.html">Docs</a>
+                <a href="https://github.com/yukihamada/quiver">GitHub</a>
+            </div>
+        </div>
+    </nav>
+
+    <main class="content">
+        <section class="hero-section">
+            <h1>Model Manager</h1>
+            <p>Choose and install AI models for your QUIVer Provider</p>
+        </section>
+
+        <div class="system-requirements">
+            <h3>Your System</h3>
+            <div id="system-info">
+                <div class="requirement-item">
+                    <span class="check-icon">●</span>
+                    <span>Checking system requirements...</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="category-header">
+            <h2 class="category-title">Recommended Models</h2>
+            <p class="category-description">Best balance of performance and resource usage</p>
+        </div>
+
+        <div class="model-grid">
+            <div class="model-card">
+                <div class="recommended-badge">RECOMMENDED</div>
+                <div class="model-header">
+                    <h3 class="model-name">Llama 3.2 3B</h3>
+                    <span class="model-size">2.0 GB</span>
+                </div>
+                <p class="model-description">
+                    Latest Llama model optimized for efficiency. Perfect for most use cases with fast response times.
+                </p>
+                <div class="model-specs">
+                    <div class="spec-item">
+                        <svg class="spec-icon" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M13 7H7v6h6V7z"/>
+                            <path fill-rule="evenodd" d="M7 2a1 1 0 012 0v1h2V2a1 1 0 112 0v1h2a2 2 0 012 2v2h1a1 1 0 110 2h-1v2h1a1 1 0 110 2h-1v2a2 2 0 01-2 2h-2v1a1 1 0 11-2 0v-1H9v1a1 1 0 11-2 0v-1H5a2 2 0 01-2-2v-2H2a1 1 0 110-2h1V9H2a1 1 0 010-2h1V5a2 2 0 012-2h2V2zM5 5h10v10H5V5z"/>
+                        </svg>
+                        <span>4GB RAM</span>
+                    </div>
+                    <div class="spec-item">
+                        <svg class="spec-icon" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M12.316 3.051a1 1 0 01.633 1.265l-4 12a1 1 0 11-1.898-.632l4-12a1 1 0 011.265-.633zM5.707 6.293a1 1 0 010 1.414L3.414 10l2.293 2.293a1 1 0 11-1.414 1.414l-3-3a1 1 0 010-1.414l3-3a1 1 0 011.414 0zm8.586 0a1 1 0 011.414 0l3 3a1 1 0 010 1.414l-3 3a1 1 0 11-1.414-1.414L16.586 10l-2.293-2.293a1 1 0 010-1.414z"/>
+                        </svg>
+                        <span>Fast inference</span>
+                    </div>
+                </div>
+                <button class="install-button" onclick="installModel('llama3.2:3b')">
+                    Install Model
+                    <div class="progress-bar" style="width: 0%"></div>
+                </button>
+            </div>
+
+            <div class="model-card">
+                <div class="model-header">
+                    <h3 class="model-name">Phi-3 Mini</h3>
+                    <span class="model-size">2.3 GB</span>
+                </div>
+                <p class="model-description">
+                    Microsoft's compact model with excellent performance. Very fast responses with low resource usage.
+                </p>
+                <div class="model-specs">
+                    <div class="spec-item">
+                        <svg class="spec-icon" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M13 7H7v6h6V7z"/>
+                            <path fill-rule="evenodd" d="M7 2a1 1 0 012 0v1h2V2a1 1 0 112 0v1h2a2 2 0 012 2v2h1a1 1 0 110 2h-1v2h1a1 1 0 110 2h-1v2a2 2 0 01-2 2h-2v1a1 1 0 11-2 0v-1H9v1a1 1 0 11-2 0v-1H5a2 2 0 01-2-2v-2H2a1 1 0 110-2h1V9H2a1 1 0 010-2h1V5a2 2 0 012-2h2V2zM5 5h10v10H5V5z"/>
+                        </svg>
+                        <span>4GB RAM</span>
+                    </div>
+                    <div class="spec-item">
+                        <svg class="spec-icon" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M11.3 1.046A1 1 0 0112 2v5h4a1 1 0 01.82 1.573l-7 10A1 1 0 018 18v-5H4a1 1 0 01-.82-1.573l7-10a1 1 0 011.12-.38z"/>
+                        </svg>
+                        <span>Ultra fast</span>
+                    </div>
+                </div>
+                <button class="install-button" onclick="installModel('phi3:mini')">
+                    Install Model
+                    <div class="progress-bar" style="width: 0%"></div>
+                </button>
+            </div>
+        </div>
+
+        <div class="category-header">
+            <h2 class="category-title">Advanced Models</h2>
+            <p class="category-description">Higher quality responses, requires more resources</p>
+        </div>
+
+        <div class="model-grid">
+            <div class="model-card">
+                <div class="model-header">
+                    <h3 class="model-name">Llama 3.2 7B</h3>
+                    <span class="model-size">4.7 GB</span>
+                </div>
+                <p class="model-description">
+                    Larger Llama variant with improved reasoning and knowledge. Better for complex tasks.
+                </p>
+                <div class="model-specs">
+                    <div class="spec-item">
+                        <svg class="spec-icon" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M13 7H7v6h6V7z"/>
+                            <path fill-rule="evenodd" d="M7 2a1 1 0 012 0v1h2V2a1 1 0 112 0v1h2a2 2 0 012 2v2h1a1 1 0 110 2h-1v2h1a1 1 0 110 2h-1v2a2 2 0 01-2 2h-2v1a1 1 0 11-2 0v-1H9v1a1 1 0 11-2 0v-1H5a2 2 0 01-2-2v-2H2a1 1 0 110-2h1V9H2a1 1 0 010-2h1V5a2 2 0 012-2h2V2zM5 5h10v10H5V5z"/>
+                        </svg>
+                        <span>8GB RAM</span>
+                    </div>
+                    <div class="spec-item">
+                        <svg class="spec-icon" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M9 4.804A7.968 7.968 0 005.5 4c-1.255 0-2.443.29-3.5.804v10A7.969 7.969 0 015.5 14c1.669 0 3.218.51 4.5 1.385A7.962 7.962 0 0114.5 14c1.255 0 2.443.29 3.5.804v-10A7.968 7.968 0 0014.5 4c-1.255 0-2.443.29-3.5.804V12a1 1 0 11-2 0V4.804z"/>
+                        </svg>
+                        <span>Better quality</span>
+                    </div>
+                </div>
+                <button class="install-button" onclick="installModel('llama3.2:7b')">
+                    Install Model
+                    <div class="progress-bar" style="width: 0%"></div>
+                </button>
+            </div>
+
+            <div class="model-card">
+                <div class="model-header">
+                    <h3 class="model-name">Mistral 7B</h3>
+                    <span class="model-size">4.1 GB</span>
+                </div>
+                <p class="model-description">
+                    High-quality open model with excellent performance across various tasks. Great for coding.
+                </p>
+                <div class="model-specs">
+                    <div class="spec-item">
+                        <svg class="spec-icon" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M13 7H7v6h6V7z"/>
+                            <path fill-rule="evenodd" d="M7 2a1 1 0 012 0v1h2V2a1 1 0 112 0v1h2a2 2 0 012 2v2h1a1 1 0 110 2h-1v2h1a1 1 0 110 2h-1v2a2 2 0 01-2 2h-2v1a1 1 0 11-2 0v-1H9v1a1 1 0 11-2 0v-1H5a2 2 0 01-2-2v-2H2a1 1 0 110-2h1V9H2a1 1 0 010-2h1V5a2 2 0 012-2h2V2zM5 5h10v10H5V5z"/>
+                        </svg>
+                        <span>8GB RAM</span>
+                    </div>
+                    <div class="spec-item">
+                        <svg class="spec-icon" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M12.316 3.051a1 1 0 01.633 1.265l-4 12a1 1 0 11-1.898-.632l4-12a1 1 0 011.265-.633zM5.707 6.293a1 1 0 010 1.414L3.414 10l2.293 2.293a1 1 0 11-1.414 1.414l-3-3a1 1 0 010-1.414l3-3a1 1 0 011.414 0zm8.586 0a1 1 0 011.414 0l3 3a1 1 0 010 1.414l-3 3a1 1 0 11-1.414-1.414L16.586 10l-2.293-2.293a1 1 0 010-1.414z"/>
+                        </svg>
+                        <span>Code optimized</span>
+                    </div>
+                </div>
+                <button class="install-button" onclick="installModel('mistral:7b')">
+                    Install Model
+                    <div class="progress-bar" style="width: 0%"></div>
+                </button>
+            </div>
+
+            <div class="model-card">
+                <div class="model-header">
+                    <h3 class="model-name">Gemma 2 9B</h3>
+                    <span class="model-size">5.5 GB</span>
+                </div>
+                <p class="model-description">
+                    Google's latest model with strong reasoning capabilities. Excellent for analysis and research.
+                </p>
+                <div class="model-specs">
+                    <div class="spec-item">
+                        <svg class="spec-icon" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M13 7H7v6h6V7z"/>
+                            <path fill-rule="evenodd" d="M7 2a1 1 0 012 0v1h2V2a1 1 0 112 0v1h2a2 2 0 012 2v2h1a1 1 0 110 2h-1v2h1a1 1 0 110 2h-1v2a2 2 0 01-2 2h-2v1a1 1 0 11-2 0v-1H9v1a1 1 0 11-2 0v-1H5a2 2 0 01-2-2v-2H2a1 1 0 110-2h1V9H2a1 1 0 010-2h1V5a2 2 0 012-2h2V2zM5 5h10v10H5V5z"/>
+                        </svg>
+                        <span>8GB RAM</span>
+                    </div>
+                    <div class="spec-item">
+                        <svg class="spec-icon" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z"/>
+                        </svg>
+                        <span>Research focused</span>
+                    </div>
+                </div>
+                <button class="install-button" onclick="installModel('gemma2:9b')">
+                    Install Model
+                    <div class="progress-bar" style="width: 0%"></div>
+                </button>
+            </div>
+        </div>
+
+        <div class="category-header">
+            <h2 class="category-title">Professional Models</h2>
+            <p class="category-description">Enterprise-grade models for demanding applications (16GB+ RAM required)</p>
+        </div>
+
+        <div class="model-grid">
+            <div class="model-card">
+                <div class="model-header">
+                    <h3 class="model-name">Llama 3.1 70B</h3>
+                    <span class="model-size">40 GB</span>
+                </div>
+                <p class="model-description">
+                    State-of-the-art large language model. Exceptional quality for professional applications.
+                </p>
+                <div class="model-specs">
+                    <div class="spec-item">
+                        <svg class="spec-icon" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M13 7H7v6h6V7z"/>
+                            <path fill-rule="evenodd" d="M7 2a1 1 0 012 0v1h2V2a1 1 0 112 0v1h2a2 2 0 012 2v2h1a1 1 0 110 2h-1v2h1a1 1 0 110 2h-1v2a2 2 0 01-2 2h-2v1a1 1 0 11-2 0v-1H9v1a1 1 0 11-2 0v-1H5a2 2 0 01-2-2v-2H2a1 1 0 110-2h1V9H2a1 1 0 010-2h1V5a2 2 0 012-2h2V2zM5 5h10v10H5V5z"/>
+                        </svg>
+                        <span>48GB RAM</span>
+                    </div>
+                    <div class="spec-item">
+                        <svg class="spec-icon" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                        </svg>
+                        <span>Professional</span>
+                    </div>
+                </div>
+                <button class="install-button" onclick="installModel('llama3.1:70b')">
+                    Install Model
+                    <div class="progress-bar" style="width: 0%"></div>
+                </button>
+            </div>
+
+            <div class="model-card">
+                <div class="model-header">
+                    <h3 class="model-name">Mixtral 8x7B</h3>
+                    <span class="model-size">26 GB</span>
+                </div>
+                <p class="model-description">
+                    Mixture of experts architecture. Combines multiple specialized models for superior performance.
+                </p>
+                <div class="model-specs">
+                    <div class="spec-item">
+                        <svg class="spec-icon" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M13 7H7v6h6V7z"/>
+                            <path fill-rule="evenodd" d="M7 2a1 1 0 012 0v1h2V2a1 1 0 112 0v1h2a2 2 0 012 2v2h1a1 1 0 110 2h-1v2h1a1 1 0 110 2h-1v2a2 2 0 01-2 2h-2v1a1 1 0 11-2 0v-1H9v1a1 1 0 11-2 0v-1H5a2 2 0 01-2-2v-2H2a1 1 0 110-2h1V9H2a1 1 0 010-2h1V5a2 2 0 012-2h2V2zM5 5h10v10H5V5z"/>
+                        </svg>
+                        <span>32GB RAM</span>
+                    </div>
+                    <div class="spec-item">
+                        <svg class="spec-icon" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M7 3a1 1 0 000 2h6a1 1 0 100-2H7zM4 7a1 1 0 011-1h10a1 1 0 110 2H5a1 1 0 01-1-1zM2 11a2 2 0 012-2h12a2 2 0 012 2v4a2 2 0 01-2 2H4a2 2 0 01-2-2v-4z"/>
+                        </svg>
+                        <span>MoE architecture</span>
+                    </div>
+                </div>
+                <button class="install-button" onclick="installModel('mixtral:8x7b')">
+                    Install Model
+                    <div class="progress-bar" style="width: 0%"></div>
+                </button>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Check system capabilities
+        async function checkSystem() {
+            const systemInfo = document.getElementById('system-info');
+            
+            // Simulate system check (in real app, would query backend)
+            const ram = navigator.deviceMemory || 8; // GB
+            const platform = navigator.platform;
+            
+            systemInfo.innerHTML = `
+                <div class="requirement-item">
+                    <span class="check-icon">✓</span>
+                    <span>Platform: ${platform}</span>
+                </div>
+                <div class="requirement-item">
+                    <span class="${ram >= 8 ? 'check-icon' : 'warning-icon'}">●</span>
+                    <span>RAM: ~${ram}GB detected</span>
+                </div>
+                <div class="requirement-item">
+                    <span class="check-icon">✓</span>
+                    <span>Ollama: Installed</span>
+                </div>
+            `;
+            
+            // Check installed models
+            checkInstalledModels();
+        }
+        
+        // Check which models are already installed
+        async function checkInstalledModels() {
+            // In real app, would query backend
+            // For demo, just check localStorage
+            const installed = JSON.parse(localStorage.getItem('installedModels') || '[]');
+            
+            installed.forEach(model => {
+                const button = document.querySelector(`button[onclick="installModel('${model}')"]`);
+                if (button) {
+                    button.textContent = 'Installed';
+                    button.disabled = true;
+                }
+            });
+        }
+        
+        // Install model
+        async function installModel(modelName) {
+            const button = event.target;
+            const progressBar = button.querySelector('.progress-bar');
+            
+            button.classList.add('installing');
+            button.disabled = true;
+            button.textContent = 'Installing...';
+            
+            // Simulate installation progress
+            let progress = 0;
+            const interval = setInterval(() => {
+                progress += Math.random() * 15;
+                if (progress > 100) progress = 100;
+                
+                progressBar.style.width = progress + '%';
+                
+                if (progress >= 100) {
+                    clearInterval(interval);
+                    
+                    // Mark as installed
+                    const installed = JSON.parse(localStorage.getItem('installedModels') || '[]');
+                    installed.push(modelName);
+                    localStorage.setItem('installedModels', JSON.stringify(installed));
+                    
+                    button.textContent = 'Installed';
+                    button.classList.remove('installing');
+                    
+                    // Show success message
+                    showNotification(`${modelName} installed successfully!`);
+                }
+            }, 500);
+        }
+        
+        // Show notification
+        function showNotification(message) {
+            const notification = document.createElement('div');
+            notification.className = 'notification';
+            notification.textContent = message;
+            notification.style.cssText = `
+                position: fixed;
+                bottom: 20px;
+                right: 20px;
+                background: #00d4ff;
+                color: #000;
+                padding: 15px 25px;
+                border-radius: 8px;
+                font-weight: 600;
+                animation: slideIn 0.3s ease;
+                z-index: 1000;
+            `;
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.style.animation = 'slideOut 0.3s ease';
+                setTimeout(() => notification.remove(), 300);
+            }, 3000);
+        }
+        
+        // Add animations
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes slideIn {
+                from { transform: translateX(100%); }
+                to { transform: translateX(0); }
+            }
+            @keyframes slideOut {
+                from { transform: translateX(0); }
+                to { transform: translateX(100%); }
+            }
+        `;
+        document.head.appendChild(style);
+        
+        // Initialize
+        checkSystem();
+    </script>
+</body>
+</html>

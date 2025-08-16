@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="ja">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>QUIVer Network - 分散型AI推論ネットワーク</title>
+    <title>QUIVer Network - Decentralized AI Inference Network</title>
     <link rel="stylesheet" href="style.css">
     <style>
         /* Additional styles specific to index page */
@@ -22,10 +22,12 @@
         <nav class="nav-container">
             <a href="/" class="logo">QUIVer Network</a>
             <ul class="nav-links">
-                <li><a href="/" class="active">ホーム</a></li>
-                <li><a href="/pricing.html">料金</a></li>
-                <li><a href="/technology.html">技術</a></li>
-                <li><a href="/docs.html">ドキュメント</a></li>
+                <li><a href="/" class="active">Home</a></li>
+                <li><a href="/models.html">Models</a></li>
+                <li><a href="/providers.html">Providers</a></li>
+                <li><a href="/pricing.html">Pricing</a></li>
+                <li><a href="/technology.html">Technology</a></li>
+                <li><a href="/docs.html">Docs</a></li>
                 <li><a href="https://github.com/yukihamada/quiver">GitHub</a></li>
             </ul>
         </nav>
@@ -35,33 +37,33 @@
         <div class="grid-bg"></div>
         <div class="container">
             <h1>QUIVer Network</h1>
-            <p class="subtitle">あなたのPCをAI推論プロバイダーに変えて収益化</p>
+            <p class="subtitle">Turn your GPU into an AI inference provider and earn rewards</p>
             
             <div class="cta-container" style="display: flex; gap: 2rem; justify-content: center; flex-wrap: wrap; margin-bottom: 4rem;">
                 <a href="#quick-start" class="btn btn-primary">
-                    今すぐProviderになる
+                    Become a Provider
                 </a>
                 <a href="/pricing.html" class="btn btn-secondary">
-                    料金プランを見る
+                    View Pricing Plans
                 </a>
             </div>
             
             <div class="stats">
                 <div class="stat-card">
                     <div class="stat-number pulse" id="active-nodes">7</div>
-                    <div class="stat-label">アクティブノード</div>
+                    <div class="stat-label">Active Nodes</div>
                 </div>
                 <div class="stat-card">
                     <div class="stat-number" id="inference-rate">2.3</div>
-                    <div class="stat-label">推論/秒</div>
+                    <div class="stat-label">Inferences/sec</div>
                 </div>
                 <div class="stat-card">
                     <div class="stat-number" id="total-tflops">29</div>
-                    <div class="stat-label">総計算力 (TFLOPS)</div>
+                    <div class="stat-label">Total Compute (TFLOPS)</div>
                 </div>
                 <div class="stat-card">
                     <div class="stat-number">P2P</div>
-                    <div class="stat-label">完全分散型</div>
+                    <div class="stat-label">Fully Decentralized</div>
                 </div>
             </div>
         </div>
@@ -69,45 +71,45 @@
     
     <section class="features">
         <div class="container">
-            <h2 class="section-title">なぜQUIVerを選ぶか</h2>
-            <p class="section-subtitle">最新のP2P技術で構築された次世代AI推論ネットワーク</p>
+            <h2 class="section-title">Why Choose QUIVer</h2>
+            <p class="section-subtitle">Next-generation AI inference network built with cutting-edge P2P technology</p>
             
             <div class="feature-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem; margin-top: 3rem;">
                 <div class="card">
                     <div class="feature-icon" style="font-size: 3rem; margin-bottom: 1rem;">💰</div>
-                    <h3 class="feature-title">収益化</h3>
-                    <p class="feature-desc">余っているGPU/CPUリソースを活用して、AI推論を提供することで収益を得られます。</p>
+                    <h3 class="feature-title">Monetization</h3>
+                    <p class="feature-desc">Earn rewards by providing AI inference with your idle GPU/CPU resources.</p>
                 </div>
                 <div class="card">
                     <div class="feature-icon" style="font-size: 3rem; margin-bottom: 1rem;">🔒</div>
-                    <h3 class="feature-title">プライバシー重視</h3>
-                    <p class="feature-desc">ローカルで動作するため、データが外部に送信されることはありません。</p>
+                    <h3 class="feature-title">Privacy First</h3>
+                    <p class="feature-desc">All processing happens locally - your data never leaves your device.</p>
                 </div>
                 <div class="card">
                     <div class="feature-icon" style="font-size: 3rem; margin-bottom: 1rem;">⚡</div>
-                    <h3 class="feature-title">高速・低遅延</h3>
-                    <p class="feature-desc">QUIC プロトコルによる高速通信と、近隣ノードへの自動ルーティング。</p>
+                    <h3 class="feature-title">Fast & Low Latency</h3>
+                    <p class="feature-desc">High-speed communication via QUIC protocol with automatic routing to nearby nodes.</p>
                 </div>
                 <div class="card">
                     <div class="feature-icon" style="font-size: 3rem; margin-bottom: 1rem;">🌐</div>
-                    <h3 class="feature-title">完全分散型</h3>
-                    <p class="feature-desc">中央サーバーに依存しない、真のP2Pネットワーク。</p>
+                    <h3 class="feature-title">Fully Decentralized</h3>
+                    <p class="feature-desc">True P2P network with no dependency on central servers.</p>
                 </div>
                 <div class="card">
                     <div class="feature-icon" style="font-size: 3rem; margin-bottom: 1rem;">📊</div>
-                    <h3 class="feature-title">透明な報酬</h3>
-                    <p class="feature-desc">Ed25519署名付きレシートで、すべての推論が記録・検証可能。</p>
+                    <h3 class="feature-title">Transparent Rewards</h3>
+                    <p class="feature-desc">Every inference is recorded and verifiable with Ed25519 signed receipts.</p>
                 </div>
                 <div class="card">
                     <div class="feature-icon" style="font-size: 3rem; margin-bottom: 1rem;">🚀</div>
-                    <h3 class="feature-title">簡単セットアップ</h3>
-                    <p class="feature-desc">ワンクリックで始められる、初心者にも優しい設計。</p>
+                    <h3 class="feature-title">Easy Setup</h3>
+                    <p class="feature-desc">Get started with one click - designed for beginners and experts alike.</p>
                 </div>
             </div>
             
             <div style="text-align: center; margin-top: 4rem;">
                 <a href="/technology.html" class="btn btn-primary">
-                    技術詳細を見る
+                    View Technical Details
                 </a>
             </div>
         </div>
@@ -115,41 +117,41 @@
     
     <section id="quick-start" class="section" style="background: #0f0f0f;">
         <div class="container">
-            <h2 class="section-title">3ステップで開始</h2>
-            <p class="section-subtitle">5分以内にProviderとして稼働開始</p>
+            <h2 class="section-title">Start in 3 Steps</h2>
+            <p class="section-subtitle">Become an active Provider in under 5 minutes</p>
             
             <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem; margin-top: 3rem;">
                 <div class="card text-center">
                     <div class="step-number" style="display: inline-block; width: 60px; height: 60px; line-height: 60px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 50%; font-size: 1.5rem; font-weight: 700; margin-bottom: 1rem;">1</div>
-                    <h3>インストール</h3>
+                    <h3>Install</h3>
                     <div class="code-example" style="background: #1a1a1a; padding: 1rem; border-radius: 8px; margin: 1rem 0;">
                         <code style="color: #4ade80;">curl -fsSL https://quiver.network/install.sh | bash</code>
                     </div>
-                    <p>ワンライナーで全て自動設定</p>
+                    <p>One-liner automatic setup</p>
                 </div>
                 
                 <div class="card text-center">
                     <div class="step-number" style="display: inline-block; width: 60px; height: 60px; line-height: 60px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 50%; font-size: 1.5rem; font-weight: 700; margin-bottom: 1rem;">2</div>
-                    <h3>モデル選択</h3>
+                    <h3>Select Model</h3>
                     <div class="code-example" style="background: #1a1a1a; padding: 1rem; border-radius: 8px; margin: 1rem 0;">
                         <code style="color: #4ade80;">quiver-provider select-model</code>
                     </div>
-                    <p>スペックに合わせて自動推奨</p>
+                    <p>Auto-recommended based on your specs</p>
                 </div>
                 
                 <div class="card text-center">
                     <div class="step-number" style="display: inline-block; width: 60px; height: 60px; line-height: 60px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 50%; font-size: 1.5rem; font-weight: 700; margin-bottom: 1rem;">3</div>
-                    <h3>稼働開始</h3>
+                    <h3>Start Running</h3>
                     <div class="code-example" style="background: #1a1a1a; padding: 1rem; border-radius: 8px; margin: 1rem 0;">
                         <code style="color: #4ade80;">quiver-provider start</code>
                     </div>
-                    <p>P2Pネットワークに自動接続</p>
+                    <p>Auto-connect to P2P network</p>
                 </div>
             </div>
             
             <div style="text-align: center; margin-top: 4rem;">
                 <a href="/docs.html" class="btn btn-secondary">
-                    詳細なドキュメントを読む
+                    Read Detailed Documentation
                 </a>
             </div>
         </div>

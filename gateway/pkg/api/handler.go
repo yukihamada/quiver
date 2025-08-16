@@ -16,17 +16,19 @@ import (
 
 // Handler handles HTTP requests and forwards them to the P2P network
 type Handler struct {
-	p2pClient  *p2p.Client
-	limiter    *ratelimit.Limiter
-	canaryRate float64
+	p2pClient      *p2p.Client
+	limiter        *ratelimit.Limiter
+	canaryRate     float64
+	statsCollector *StatsCollector
 }
 
 // NewHandler creates a new API handler
 func NewHandler(p2pClient *p2p.Client, limiter *ratelimit.Limiter, canaryRate float64) *Handler {
 	return &Handler{
-		p2pClient:  p2pClient,
-		limiter:    limiter,
-		canaryRate: canaryRate,
+		p2pClient:      p2pClient,
+		limiter:        limiter,
+		canaryRate:     canaryRate,
+		statsCollector: NewStatsCollector(),
 	}
 }
 
@@ -83,6 +85,7 @@ func (h *Handler) Generate(c *gin.Context) {
 	}
 
 	// Find an available provider
+	startTime := time.Now()
 	ctx, cancel := context.WithTimeout(c.Request.Context(), 30*time.Second)
 	defer cancel()
 
@@ -99,7 +102,8 @@ func (h *Handler) Generate(c *gin.Context) {
 			continue // Try next provider
 		}
 
-		// Success - return response
+		// Success - record stats and return response
+		h.statsCollector.RecordRequest(req.Model, time.Since(startTime).Milliseconds(), 100)
 		c.JSON(http.StatusOK, result)
 		return
 	}
