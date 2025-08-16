@@ -227,7 +227,7 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 ## Support
 
-- Documentation: https://docs.quiver.network
+- Documentation: https://quiver.network/docs.html
 - Discord: https://discord.gg/quiver
 - Twitter: @quivernetwork
 
