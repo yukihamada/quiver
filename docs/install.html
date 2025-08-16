@@ -352,8 +352,8 @@
             // カスタムURLスキームで直接インストーラーを起動
             const installerURL = 'quiver://install';
             
-            // フォールバック: PKGダウンロード（最新版）
-            const downloadURL = 'https://github.com/yukihamada/quiver/releases/latest/download/QUIVerProvider.pkg';
+            // フォールバック: PKGダウンロード（署名済み）
+            const downloadURL = './QUIVerProvider.pkg';
             
             // カスタムURLスキームを試す
             window.location.href = installerURL;

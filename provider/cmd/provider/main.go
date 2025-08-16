@@ -15,6 +15,7 @@ import (
 	"github.com/quiver/provider/pkg/p2p"
 	"github.com/quiver/provider/pkg/receipt"
 	"github.com/quiver/provider/pkg/stream"
+	"github.com/quiver/provider/pkg/updater"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/sirupsen/logrus"
 )
@@ -66,6 +67,10 @@ func main() {
 	)
 
 	host.SetStreamHandler(protocol.ID(protocolID), handler.HandleStream)
+
+	// Start auto-updater
+	updateChecker := updater.NewUpdateChecker("v1.1.0", logger)
+	go updateChecker.StartAutoUpdateCheck(ctx, 24*time.Hour) // Check daily
 
 	// Start health check and metrics endpoints
 	go func() {
