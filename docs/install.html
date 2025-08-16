@@ -286,7 +286,7 @@
                 <span class="feature-icon">🔒</span>
                 <div class="feature-text">
                     <h3>安全・安心</h3>
-                    <p>Apple公証済み。Gatekeeperの警告なし</p>
+                    <p>オープンソース。ローカル実行のみ</p>
                 </div>
             </div>
             <div class="feature">
@@ -326,13 +326,10 @@
                 updateStatus('ダウンロード中...', 20);
                 await downloadInstaller();
                 
-                // ステップ2: インストーラー起動
-                updateStatus('インストーラーを起動中...', 50);
-                await launchInstaller();
-                
-                // ステップ3: サービス開始確認
-                updateStatus('サービスを開始中...', 80);
-                await waitForService();
+                // ステップ2: インストール手順を表示
+                updateStatus('インストール手順を表示中...', 50);
+                showInstallInstructions();
+                return;
                 
                 // 完了
                 showSuccessScreen();
@@ -364,16 +361,8 @@
             // 3秒待ってもアプリが起動しない場合はダウンロード
             await new Promise(resolve => setTimeout(resolve, 3000));
             
-            const response = await fetch('/api/check-installation');
-            if (!response.ok) {
-                // 直接ダウンロード
-                const a = document.createElement('a');
-                a.href = downloadURL;
-                a.download = 'QUIVerProvider.pkg';
-                document.body.appendChild(a);
-                a.click();
-                document.body.removeChild(a);
-            }
+            // 直接ダウンロード
+            window.location.href = downloadURL;
         }
         
         async function launchInstaller() {
@@ -404,12 +393,93 @@
         }
         
         function showManualDownload() {
-            alert('手動ダウンロード:\nhttps://github.com/yukihamada/quiver/releases/latest');
+            window.open('https://github.com/yukihamada/quiver/releases/latest', '_blank');
+        }
+        
+        function showInstallInstructions() {
+            const container = document.querySelector('.container');
+            container.innerHTML = `
+                <div style="animation: fadeIn 0.5s ease">
+                    <div class="logo">Q</div>
+                    <h1>インストール手順</h1>
+                    <p class="subtitle">
+                        「開発元が未確認」の警告を回避する方法
+                    </p>
+                    
+                    <div class="status show" style="background: rgba(255, 159, 0, 0.1); border-color: rgba(255, 159, 0, 0.3);">
+                        <h3 style="font-size: 20px; margin-bottom: 20px;">📁 手順</h3>
+                        
+                        <div style="text-align: left; background: rgba(0,0,0,0.3); padding: 20px; border-radius: 10px; margin-bottom: 20px;">
+                            <ol style="line-height: 2.5; font-size: 16px;">
+                                <li>ダウンロードフォルダで <strong>QUIVerProvider.pkg</strong> を見つける</li>
+                                <li><strong>右クリック</strong>（またはControlキーを押しながらクリック）</li>
+                                <li>「<strong>開く</strong>」を選択</li>
+                                <li>警告ダイアログで「<strong>開く</strong>」をクリック</li>
+                                <li>インストーラーの指示に従ってインストール</li>
+                            </ol>
+                        </div>
+                        
+                        <div style="display: flex; align-items: center; gap: 10px; padding: 15px; background: rgba(52, 199, 89, 0.1); border-radius: 10px; margin-bottom: 20px;">
+                            <span style="font-size: 24px;">✅</span>
+                            <div>
+                                <strong>安全性:</strong> QUIVerはオープンソースで、ローカルでのみ動作します
+                            </div>
+                        </div>
+                        
+                        <div style="text-align: center;">
+                            <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9iMjAwIiB2aWV3Qm94PSIwIDAgMzAwIDIwMCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjMwMCIgaGVpZ2h0PSIyMDAiIGZpbGw9IiMxZDFkMWYiIHJ4PSIxMCIvPgo8Y2lyY2xlIGN4PSIxNTAiIGN5PSI4MCIgcj0iNDAiIGZpbGw9IiMwMDcxZTMiIG9wYWNpdHk9IjAuMiIvPgo8cGF0aCBkPSJNMTUwIDYwVjEwME0xMzAgODBIMTcwIiBzdHJva2U9IiMwMDcxZTMiIHN0cm9rZS13aWR0aD0iNCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIi8+Cjx0ZXh0IHg9IjE1MCIgeT0iMTQwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmaWxsPSIjODY4NjhiIiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtc2l6ZT0iMTQiPuWPs+OCr+ODquODg+OCr+OBp+mWi+OBjzwvdGV4dD4KPC9zdmc+" style="max-width: 300px; margin: 20px 0;" />
+                        </div>
+                    </div>
+                    
+                    <div style="margin-top: 30px;">
+                        <button class="install-button" onclick="openDownloadsFolder()" style="background: rgba(255, 255, 255, 0.1);">
+                            ダウンロードフォルダを開く
+                        </button>
+                    </div>
+                    
+                    <div class="alternative-methods">
+                        <p>または <a href="#" onclick="showTerminalInstall()">ターミナルでインストール</a></p>
+                    </div>
+                </div>
+            `;
+        }
+        
+        function openDownloadsFolder() {
+            // macOSのダウンロードフォルダを開く試み
+            window.open('file:///Users/' + (window.navigator.userAgent.includes('Mac') ? '' : '') + '~/Downloads');
         }
         
         function showTerminalInstall() {
-            const cmd = 'curl -fsSL https://quiver.network/install-unsigned.sh | bash';
-            alert('ターミナルでインストール:\n\n' + cmd + '\n\n※ 未署名パッケージのため管理者パスワードが必要です');
+            const container = document.querySelector('.container');
+            container.innerHTML = `
+                <div style="animation: fadeIn 0.5s ease">
+                    <div class="logo">Q</div>
+                    <h1>ターミナルインストール</h1>
+                    <p class="subtitle">
+                        ターミナルで以下のコマンドを実行してください
+                    </p>
+                    
+                    <div class="status show" style="background: rgba(0,0,0,0.3); padding: 20px; border-radius: 10px;">
+                        <pre style="color: var(--success); font-family: monospace; font-size: 14px; line-height: 1.6;">curl -fsSL https://quiver.network/install.sh | bash</pre>
+                    </div>
+                    
+                    <div style="margin-top: 30px;">
+                        <button class="install-button" onclick="copyToClipboard('curl -fsSL https://quiver.network/install.sh | bash')">
+                            コマンドをコピー
+                        </button>
+                    </div>
+                    
+                    <div class="alternative-methods">
+                        <p><a href="#" onclick="location.reload()">← 戻る</a></p>
+                    </div>
+                </div>
+            `;
+        }
+        
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text).then(() => {
+                alert('コマンドをコピーしました！');
+            });
         }
         
         function showSuccessScreen() {
