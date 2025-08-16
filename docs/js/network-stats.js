@@ -91,10 +91,13 @@ function getDayFactor(hour) {
 
 // Estimate number of countries based on node count
 function estimateCountries(nodeCount) {
-    if (nodeCount <= 5) return nodeCount;
-    if (nodeCount <= 10) return Math.floor(nodeCount * 0.8);
-    if (nodeCount <= 50) return Math.floor(nodeCount * 0.6);
-    return Math.floor(nodeCount * 0.4);
+    // More realistic country distribution
+    if (nodeCount <= 3) return 1;
+    if (nodeCount <= 5) return 2;
+    if (nodeCount <= 7) return 3;
+    if (nodeCount <= 10) return 4;
+    if (nodeCount <= 15) return 5;
+    return Math.min(Math.floor(nodeCount * 0.4), 10);
 }
 
 // Update UI with stats
