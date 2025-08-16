@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Install QUIVer Provider</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #333;
+        }
+        
+        .container {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+            padding: 48px;
+            max-width: 480px;
+            width: 90%;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .logo {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 24px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 36px;
+            color: white;
+            font-weight: bold;
+        }
+        
+        h1 {
+            font-size: 28px;
+            margin-bottom: 12px;
+            color: #1a202c;
+        }
+        
+        .subtitle {
+            color: #718096;
+            font-size: 16px;
+            margin-bottom: 32px;
+            line-height: 1.5;
+        }
+        
+        .install-button {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 16px 48px;
+            font-size: 18px;
+            font-weight: 600;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .install-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+        }
+        
+        .install-button:active {
+            transform: translateY(0);
+        }
+        
+        .install-button.installing {
+            background: #e2e8f0;
+            color: #718096;
+            cursor: not-allowed;
+        }
+        
+        .spinner {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 2px solid #718096;
+            border-radius: 50%;
+            border-top-color: transparent;
+            animation: spin 0.8s linear infinite;
+            margin-right: 8px;
+            vertical-align: middle;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        .status {
+            margin-top: 24px;
+            padding: 16px;
+            border-radius: 8px;
+            font-size: 14px;
+            line-height: 1.5;
+            display: none;
+        }
+        
+        .status.info {
+            background: #ebf8ff;
+            color: #2b6cb0;
+            border: 1px solid #bee3f8;
+        }
+        
+        .status.success {
+            background: #f0fdf4;
+            color: #166534;
+            border: 1px solid #86efac;
+        }
+        
+        .status.error {
+            background: #fef2f2;
+            color: #991b1b;
+            border: 1px solid #fecaca;
+        }
+        
+        .features {
+            margin-top: 40px;
+            padding-top: 32px;
+            border-top: 1px solid #e2e8f0;
+        }
+        
+        .feature {
+            display: flex;
+            align-items: center;
+            text-align: left;
+            margin-bottom: 16px;
+        }
+        
+        .feature-icon {
+            width: 40px;
+            height: 40px;
+            background: #f7fafc;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 16px;
+            flex-shrink: 0;
+        }
+        
+        .feature-text {
+            flex: 1;
+        }
+        
+        .feature-title {
+            font-weight: 600;
+            color: #2d3748;
+            margin-bottom: 2px;
+        }
+        
+        .feature-desc {
+            font-size: 14px;
+            color: #718096;
+        }
+        
+        .system-requirements {
+            margin-top: 24px;
+            padding: 12px;
+            background: #f7fafc;
+            border-radius: 8px;
+            font-size: 13px;
+            color: #4a5568;
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 4px;
+            background: #e2e8f0;
+            border-radius: 2px;
+            margin-top: 16px;
+            overflow: hidden;
+            display: none;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logo">Q</div>
+        <h1>Install QUIVer Provider</h1>
+        <p class="subtitle">One-click installation for macOS. Get started with P2P AI in seconds.</p>
+        
+        <button id="installBtn" class="install-button" onclick="startInstallation()">
+            Install Now
+        </button>
+        
+        <div id="status" class="status"></div>
+        <div class="progress-bar" id="progressBar">
+            <div class="progress-fill" id="progressFill"></div>
+        </div>
+        
+        <div class="features">
+            <div class="feature">
+                <div class="feature-icon">🚀</div>
+                <div class="feature-text">
+                    <div class="feature-title">Quick Setup</div>
+                    <div class="feature-desc">Automatic configuration and startup</div>
+                </div>
+            </div>
+            <div class="feature">
+                <div class="feature-icon">🔒</div>
+                <div class="feature-text">
+                    <div class="feature-title">Secure & Signed</div>
+                    <div class="feature-desc">Notarized by Apple for your safety</div>
+                </div>
+            </div>
+            <div class="feature">
+                <div class="feature-icon">🤖</div>
+                <div class="feature-text">
+                    <div class="feature-title">Local LLM Support</div>
+                    <div class="feature-desc">Works with Ollama and Jan-Nano</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="system-requirements">
+            <strong>System Requirements:</strong> macOS 10.15 or later
+        </div>
+    </div>
+    
+    <script>
+        // Configuration
+        const INSTALLER_URL = 'https://download.quiver.ai/mac/QUIVerProvider-latest.pkg';
+        const CHECK_INTERVAL = 2000;
+        const INSTALL_TIMEOUT = 300000; // 5 minutes
+        
+        let installationInProgress = false;
+        let statusCheckInterval = null;
+        let installTimeout = null;
+        
+        function updateStatus(message, type = 'info') {
+            const statusDiv = document.getElementById('status');
+            statusDiv.textContent = message;
+            statusDiv.className = `status ${type}`;
+            statusDiv.style.display = 'block';
+        }
+        
+        function updateProgress(percent) {
+            const progressBar = document.getElementById('progressBar');
+            const progressFill = document.getElementById('progressFill');
+            
+            if (percent > 0) {
+                progressBar.style.display = 'block';
+                progressFill.style.width = `${percent}%`;
+            } else {
+                progressBar.style.display = 'none';
+            }
+        }
+        
+        async function checkServiceStatus() {
+            try {
+                const response = await fetch('http://localhost:8081/health', {
+                    method: 'GET',
+                    mode: 'no-cors'
+                });
+                return true;
+            } catch (error) {
+                return false;
+            }
+        }
+        
+        async function downloadInstaller() {
+            updateStatus('Downloading installer...', 'info');
+            updateProgress(20);
+            
+            // Create a temporary link to trigger download
+            const link = document.createElement('a');
+            link.href = INSTALLER_URL;
+            link.download = 'QUIVerProvider-installer.pkg';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            
+            // Since we can't track actual download progress in browser,
+            // we'll simulate it and move to next step
+            setTimeout(() => {
+                updateProgress(50);
+                updateStatus('Installer downloaded. Please run the installer when prompted.', 'info');
+                monitorInstallation();
+            }, 3000);
+        }
+        
+        function monitorInstallation() {
+            updateProgress(60);
+            let checkCount = 0;
+            const maxChecks = 60; // Check for 2 minutes
+            
+            statusCheckInterval = setInterval(async () => {
+                checkCount++;
+                
+                // Update progress gradually
+                const progress = 60 + (checkCount / maxChecks) * 30;
+                updateProgress(Math.min(progress, 90));
+                
+                const isRunning = await checkServiceStatus();
+                
+                if (isRunning) {
+                    clearInterval(statusCheckInterval);
+                    clearTimeout(installTimeout);
+                    installationComplete();
+                } else if (checkCount >= maxChecks) {
+                    clearInterval(statusCheckInterval);
+                    updateStatus('Installation is taking longer than expected. Please check if the installer is running.', 'error');
+                    resetInstallButton();
+                }
+            }, CHECK_INTERVAL);
+        }
+        
+        function installationComplete() {
+            updateProgress(100);
+            updateStatus('Installation complete! QUIVer Provider is now running.', 'success');
+            
+            const button = document.getElementById('installBtn');
+            button.textContent = 'Open Dashboard';
+            button.classList.remove('installing');
+            button.onclick = () => {
+                window.open('http://localhost:8081', '_blank');
+            };
+            
+            setTimeout(() => {
+                updateProgress(0);
+            }, 2000);
+        }
+        
+        function resetInstallButton() {
+            const button = document.getElementById('installBtn');
+            button.innerHTML = 'Install Now';
+            button.classList.remove('installing');
+            installationInProgress = false;
+            updateProgress(0);
+        }
+        
+        async function startInstallation() {
+            if (installationInProgress) return;
+            
+            installationInProgress = true;
+            const button = document.getElementById('installBtn');
+            button.innerHTML = '<span class="spinner"></span> Installing...';
+            button.classList.add('installing');
+            
+            // Check if already installed
+            updateStatus('Checking installation status...', 'info');
+            updateProgress(10);
+            
+            const isAlreadyRunning = await checkServiceStatus();
+            if (isAlreadyRunning) {
+                updateStatus('QUIVer Provider is already installed and running!', 'success');
+                installationComplete();
+                return;
+            }
+            
+            // Set timeout for entire installation process
+            installTimeout = setTimeout(() => {
+                if (statusCheckInterval) {
+                    clearInterval(statusCheckInterval);
+                }
+                updateStatus('Installation timeout. Please try downloading manually.', 'error');
+                resetInstallButton();
+            }, INSTALL_TIMEOUT);
+            
+            // Start download
+            await downloadInstaller();
+        }
+        
+        // Check if already installed on page load
+        window.addEventListener('load', async () => {
+            const isRunning = await checkServiceStatus();
+            if (isRunning) {
+                const button = document.getElementById('installBtn');
+                button.textContent = 'Open Dashboard';
+                button.onclick = () => {
+                    window.open('http://localhost:8081', '_blank');
+                };
+                updateStatus('QUIVer Provider is already installed and running!', 'success');
+            }
+        });
+        
+        // Detect OS and show appropriate message
+        function detectOS() {
+            const platform = navigator.platform.toLowerCase();
+            if (!platform.includes('mac')) {
+                updateStatus('This installer is for macOS only. Please visit our website for other platforms.', 'error');
+                document.getElementById('installBtn').disabled = true;
+            }
+        }
+        
+        detectOS();
+    </script>
+</body>
+</html>

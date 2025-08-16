@@ -1,0 +1,731 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QUIVer - P2P AI Provider Network</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            line-height: 1.6;
+            color: #1a202c;
+            overflow-x: hidden;
+        }
+        
+        /* Navigation */
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+            padding: 16px 0;
+        }
+        
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            font-size: 24px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 32px;
+            align-items: center;
+        }
+        
+        .nav-links a {
+            color: #4a5568;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+        
+        .nav-links a:hover {
+            color: #667eea;
+        }
+        
+        /* Hero Section */
+        .hero {
+            padding: 120px 0 80px;
+            background: linear-gradient(135deg, #f7fafc 0%, #edf2f7 100%);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(102, 126, 234, 0.1) 0%, transparent 70%);
+            animation: float 20s ease-in-out infinite;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0) rotate(0deg); }
+            50% { transform: translate(-100px, -100px) rotate(180deg); }
+        }
+        
+        .hero-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 24px;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .hero-content {
+            text-align: center;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .hero h1 {
+            font-size: 56px;
+            font-weight: 800;
+            margin-bottom: 24px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            line-height: 1.2;
+        }
+        
+        .hero-subtitle {
+            font-size: 24px;
+            color: #4a5568;
+            margin-bottom: 48px;
+            font-weight: 400;
+        }
+        
+        .cta-buttons {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        .cta-primary {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 16px 40px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 18px;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        }
+        
+        .cta-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+        }
+        
+        .cta-secondary {
+            background: white;
+            color: #667eea;
+            padding: 16px 40px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 18px;
+            transition: all 0.3s;
+            border: 2px solid #667eea;
+        }
+        
+        .cta-secondary:hover {
+            background: #667eea;
+            color: white;
+        }
+        
+        /* Platform Detection */
+        .platform-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 24px;
+            padding: 8px 16px;
+            background: rgba(102, 126, 234, 0.1);
+            border-radius: 24px;
+            font-size: 14px;
+            color: #667eea;
+        }
+        
+        /* Features Section */
+        .features {
+            padding: 80px 0;
+            background: white;
+        }
+        
+        .features-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+        
+        .features-header {
+            text-align: center;
+            margin-bottom: 64px;
+        }
+        
+        .features h2 {
+            font-size: 40px;
+            font-weight: 700;
+            margin-bottom: 16px;
+            color: #1a202c;
+        }
+        
+        .features-subtitle {
+            font-size: 20px;
+            color: #718096;
+        }
+        
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 40px;
+        }
+        
+        .feature-card {
+            padding: 32px;
+            background: #f7fafc;
+            border-radius: 12px;
+            transition: all 0.3s;
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.1);
+        }
+        
+        .feature-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            margin-bottom: 24px;
+        }
+        
+        .feature-title {
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 12px;
+            color: #2d3748;
+        }
+        
+        .feature-description {
+            color: #718096;
+            line-height: 1.6;
+        }
+        
+        /* How it Works Section */
+        .how-it-works {
+            padding: 80px 0;
+            background: #f7fafc;
+        }
+        
+        .how-it-works-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+        
+        .steps {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 40px;
+            margin-top: 64px;
+        }
+        
+        .step {
+            text-align: center;
+            position: relative;
+        }
+        
+        .step-number {
+            width: 60px;
+            height: 60px;
+            background: white;
+            border: 3px solid #667eea;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            font-weight: 700;
+            color: #667eea;
+            margin: 0 auto 24px;
+        }
+        
+        .step-title {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 12px;
+            color: #2d3748;
+        }
+        
+        .step-description {
+            color: #718096;
+        }
+        
+        /* CTA Section */
+        .cta-section {
+            padding: 80px 0;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            text-align: center;
+        }
+        
+        .cta-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+        
+        .cta-section h2 {
+            font-size: 40px;
+            font-weight: 700;
+            margin-bottom: 24px;
+        }
+        
+        .cta-section p {
+            font-size: 20px;
+            margin-bottom: 40px;
+            opacity: 0.9;
+        }
+        
+        .cta-button-white {
+            background: white;
+            color: #667eea;
+            padding: 16px 48px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 20px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s;
+        }
+        
+        .cta-button-white:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+        }
+        
+        /* Footer */
+        footer {
+            padding: 40px 0;
+            background: #1a202c;
+            color: #a0aec0;
+            text-align: center;
+        }
+        
+        .footer-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+        
+        .footer-links {
+            display: flex;
+            gap: 32px;
+            justify-content: center;
+            margin-bottom: 24px;
+        }
+        
+        .footer-links a {
+            color: #a0aec0;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+        
+        .footer-links a:hover {
+            color: white;
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 36px;
+            }
+            
+            .hero-subtitle {
+                font-size: 18px;
+            }
+            
+            .cta-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .features h2, .cta-section h2 {
+                font-size: 32px;
+            }
+            
+            .nav-links {
+                display: none;
+            }
+        }
+        
+        /* Install Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .modal-content {
+            background: white;
+            border-radius: 16px;
+            padding: 48px;
+            max-width: 480px;
+            width: 90%;
+            text-align: center;
+            position: relative;
+        }
+        
+        .close-modal {
+            position: absolute;
+            top: 16px;
+            right: 16px;
+            font-size: 24px;
+            color: #718096;
+            cursor: pointer;
+            background: none;
+            border: none;
+        }
+        
+        .close-modal:hover {
+            color: #2d3748;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav>
+        <div class="nav-container">
+            <div class="logo">QUIVer</div>
+            <div class="nav-links">
+                <a href="#features">Features</a>
+                <a href="#how-it-works">How it Works</a>
+                <a href="https://github.com/quiver-network/quiver" target="_blank">GitHub</a>
+                <a href="/docs">Documentation</a>
+            </div>
+        </div>
+    </nav>
+    
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-container">
+            <div class="hero-content">
+                <h1>P2P AI Provider Network</h1>
+                <p class="hero-subtitle">
+                    Turn your local LLM into a decentralized AI service provider. 
+                    Earn rewards while contributing to the open AI ecosystem.
+                </p>
+                <div class="cta-buttons">
+                    <a href="#" class="cta-primary" id="installButton">
+                        <span>🚀</span> Install for macOS
+                    </a>
+                    <a href="https://github.com/quiver-network/quiver" class="cta-secondary">
+                        View on GitHub
+                    </a>
+                </div>
+                <div class="platform-badge" id="platformBadge">
+                    <span>🍎</span> Detected: macOS
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Features Section -->
+    <section class="features" id="features">
+        <div class="features-container">
+            <div class="features-header">
+                <h2>Why QUIVer?</h2>
+                <p class="features-subtitle">The simplest way to monetize your local AI models</p>
+            </div>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">⚡</div>
+                    <h3 class="feature-title">One-Click Setup</h3>
+                    <p class="feature-description">
+                        Install and start earning in minutes. No complex configuration or technical knowledge required.
+                    </p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🔒</div>
+                    <h3 class="feature-title">Secure & Private</h3>
+                    <p class="feature-description">
+                        Your models stay local. All communication is encrypted with QUIC protocol and signed receipts.
+                    </p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">💰</div>
+                    <h3 class="feature-title">Earn Rewards</h3>
+                    <p class="feature-description">
+                        Get paid for every AI request you process. Automatic settlement on-chain with verifiable receipts.
+                    </p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🤖</div>
+                    <h3 class="feature-title">Works with Ollama</h3>
+                    <p class="feature-description">
+                        Compatible with popular local LLM runners like Ollama and Jan-Nano. Use your existing setup.
+                    </p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🌐</div>
+                    <h3 class="feature-title">Decentralized Network</h3>
+                    <p class="feature-description">
+                        Join a global network of AI providers. No central authority, pure peer-to-peer connectivity.
+                    </p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">📊</div>
+                    <h3 class="feature-title">Real-time Dashboard</h3>
+                    <p class="feature-description">
+                        Monitor your earnings, request volume, and system health with our intuitive web interface.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- How it Works Section -->
+    <section class="how-it-works" id="how-it-works">
+        <div class="how-it-works-container">
+            <div class="features-header">
+                <h2>How It Works</h2>
+                <p class="features-subtitle">Start earning in three simple steps</p>
+            </div>
+            <div class="steps">
+                <div class="step">
+                    <div class="step-number">1</div>
+                    <h3 class="step-title">Install QUIVer</h3>
+                    <p class="step-description">
+                        Click the install button and run the installer. It automatically configures everything for you.
+                    </p>
+                </div>
+                <div class="step">
+                    <div class="step-number">2</div>
+                    <h3 class="step-title">Connect Your LLM</h3>
+                    <p class="step-description">
+                        QUIVer detects Ollama automatically. Just make sure your models are downloaded and ready.
+                    </p>
+                </div>
+                <div class="step">
+                    <div class="step-number">3</div>
+                    <h3 class="step-title">Start Earning</h3>
+                    <p class="step-description">
+                        Your provider goes live instantly. Watch requests come in and track your earnings in real-time.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- CTA Section -->
+    <section class="cta-section">
+        <div class="cta-container">
+            <h2>Ready to Join the Network?</h2>
+            <p>
+                Be part of the decentralized AI revolution. Start providing AI services from your computer today.
+            </p>
+            <a href="#" class="cta-button-white" id="installButtonBottom">
+                <span>🚀</span> Install QUIVer Now
+            </a>
+        </div>
+    </section>
+    
+    <!-- Footer -->
+    <footer>
+        <div class="footer-container">
+            <div class="footer-links">
+                <a href="https://github.com/quiver-network/quiver">GitHub</a>
+                <a href="/docs">Documentation</a>
+                <a href="/privacy">Privacy Policy</a>
+                <a href="/terms">Terms of Service</a>
+            </div>
+            <p>&copy; 2024 QUIVer Network. Open source under MIT License.</p>
+        </div>
+    </footer>
+    
+    <!-- Install Modal -->
+    <div class="modal" id="installModal">
+        <div class="modal-content">
+            <button class="close-modal" onclick="closeModal()">&times;</button>
+            <div class="logo" style="font-size: 48px; margin-bottom: 24px;">Q</div>
+            <h2>Choose Installation Method</h2>
+            <p style="margin: 24px 0; color: #718096;">
+                Select your preferred installation method for QUIVer Provider.
+            </p>
+            <div class="cta-buttons" style="justify-content: center; margin-top: 32px;">
+                <a href="/installer/web/install.html" class="cta-primary">
+                    Web Installer
+                </a>
+                <a href="https://download.quiver.ai/mac/QUIVerProvider-latest.pkg" class="cta-secondary">
+                    Direct Download
+                </a>
+            </div>
+            <p style="margin-top: 24px; font-size: 14px; color: #a0aec0;">
+                Both options are signed and notarized by Apple
+            </p>
+        </div>
+    </div>
+    
+    <script>
+        // Platform detection
+        function detectPlatform() {
+            const platform = navigator.platform.toLowerCase();
+            const userAgent = navigator.userAgent.toLowerCase();
+            
+            if (platform.includes('mac') || userAgent.includes('mac')) {
+                return 'macOS';
+            } else if (platform.includes('win') || userAgent.includes('win')) {
+                return 'Windows';
+            } else if (platform.includes('linux') || userAgent.includes('linux')) {
+                return 'Linux';
+            }
+            return 'Unknown';
+        }
+        
+        // Update UI based on platform
+        function updatePlatformUI() {
+            const platform = detectPlatform();
+            const platformBadge = document.getElementById('platformBadge');
+            const installButtons = document.querySelectorAll('#installButton, #installButtonBottom');
+            
+            let icon = '💻';
+            let buttonText = 'Install QUIVer';
+            let available = true;
+            
+            switch (platform) {
+                case 'macOS':
+                    icon = '🍎';
+                    buttonText = 'Install for macOS';
+                    break;
+                case 'Windows':
+                    icon = '🪟';
+                    buttonText = 'Coming Soon for Windows';
+                    available = false;
+                    break;
+                case 'Linux':
+                    icon = '🐧';
+                    buttonText = 'View Linux Instructions';
+                    break;
+                default:
+                    buttonText = 'View Installation Guide';
+            }
+            
+            platformBadge.innerHTML = `<span>${icon}</span> Detected: ${platform}`;
+            
+            installButtons.forEach(button => {
+                button.innerHTML = `<span>🚀</span> ${buttonText}`;
+                if (!available) {
+                    button.style.opacity = '0.6';
+                    button.style.cursor = 'not-allowed';
+                }
+            });
+            
+            return { platform, available };
+        }
+        
+        // Modal functions
+        function openModal() {
+            document.getElementById('installModal').style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+        }
+        
+        function closeModal() {
+            document.getElementById('installModal').style.display = 'none';
+            document.body.style.overflow = 'auto';
+        }
+        
+        // Install button handler
+        function handleInstallClick(e) {
+            e.preventDefault();
+            const { platform, available } = updatePlatformUI();
+            
+            if (platform === 'macOS' && available) {
+                openModal();
+            } else if (platform === 'Linux') {
+                window.open('https://github.com/quiver-network/quiver#linux-installation', '_blank');
+            } else if (!available) {
+                alert('QUIVer for ' + platform + ' is coming soon! Please check back later.');
+            } else {
+                window.open('https://github.com/quiver-network/quiver#installation', '_blank');
+            }
+        }
+        
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            updatePlatformUI();
+            
+            // Add click handlers
+            document.getElementById('installButton').addEventListener('click', handleInstallClick);
+            document.getElementById('installButtonBottom').addEventListener('click', handleInstallClick);
+            
+            // Close modal on outside click
+            document.getElementById('installModal').addEventListener('click', (e) => {
+                if (e.target.id === 'installModal') {
+                    closeModal();
+                }
+            });
+        });
+        
+        // Smooth scrolling
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+    </script>
+</body>
+</html>

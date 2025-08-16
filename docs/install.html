@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QUIVer Provider - ワンクリックインストール</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #333;
+        }
+        
+        .container {
+            background: white;
+            border-radius: 20px;
+            padding: 60px;
+            max-width: 600px;
+            width: 90%;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+        
+        .logo {
+            width: 120px;
+            height: 120px;
+            margin: 0 auto 30px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 60px;
+            color: white;
+        }
+        
+        h1 {
+            font-size: 32px;
+            margin-bottom: 20px;
+            color: #333;
+        }
+        
+        .subtitle {
+            font-size: 18px;
+            color: #666;
+            margin-bottom: 40px;
+            line-height: 1.6;
+        }
+        
+        .install-button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 20px 60px;
+            font-size: 20px;
+            font-weight: 600;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-block;
+            text-decoration: none;
+            margin-bottom: 20px;
+        }
+        
+        .install-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+        }
+        
+        .install-button:active {
+            transform: translateY(0);
+        }
+        
+        .install-button.installing {
+            background: #ddd;
+            color: #999;
+            cursor: not-allowed;
+        }
+        
+        .status {
+            margin-top: 30px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            display: none;
+        }
+        
+        .status.show {
+            display: block;
+        }
+        
+        .status-icon {
+            font-size: 24px;
+            margin-right: 10px;
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #e9ecef;
+            border-radius: 4px;
+            margin: 20px 0;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 4px;
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+        
+        .features {
+            text-align: left;
+            margin-top: 40px;
+            padding-top: 40px;
+            border-top: 1px solid #e9ecef;
+        }
+        
+        .feature {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 20px;
+        }
+        
+        .feature-icon {
+            font-size: 24px;
+            margin-right: 15px;
+            color: #667eea;
+        }
+        
+        .feature-text h3 {
+            font-size: 16px;
+            margin-bottom: 5px;
+        }
+        
+        .feature-text p {
+            font-size: 14px;
+            color: #666;
+        }
+        
+        .alternative-methods {
+            margin-top: 30px;
+            padding-top: 30px;
+            border-top: 1px solid #e9ecef;
+            font-size: 14px;
+            color: #666;
+        }
+        
+        .alternative-methods a {
+            color: #667eea;
+            text-decoration: none;
+        }
+        
+        .alternative-methods a:hover {
+            text-decoration: underline;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(0,0,0,.1);
+            border-radius: 50%;
+            border-top-color: #667eea;
+            animation: spin 1s linear infinite;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logo">Q</div>
+        
+        <h1>QUIVer Provider</h1>
+        <p class="subtitle">
+            AIの力を世界中でシェアして収益化<br>
+            ワンクリックでインストール
+        </p>
+        
+        <button id="installBtn" class="install-button" onclick="startInstallation()">
+            今すぐインストール
+        </button>
+        
+        <div id="status" class="status">
+            <div id="statusContent">
+                <span class="status-icon">⏳</span>
+                <span id="statusText">インストールを準備中...</span>
+            </div>
+            <div class="progress-bar">
+                <div id="progressFill" class="progress-fill"></div>
+            </div>
+        </div>
+        
+        <div class="features">
+            <div class="feature">
+                <span class="feature-icon">🚀</span>
+                <div class="feature-text">
+                    <h3>簡単セットアップ</h3>
+                    <p>複雑な設定は不要。ワンクリックで完了</p>
+                </div>
+            </div>
+            <div class="feature">
+                <span class="feature-icon">🔒</span>
+                <div class="feature-text">
+                    <h3>安全・安心</h3>
+                    <p>Apple公証済み。Gatekeeperの警告なし</p>
+                </div>
+            </div>
+            <div class="feature">
+                <span class="feature-icon">💰</span>
+                <div class="feature-text">
+                    <h3>すぐに収益化</h3>
+                    <p>インストール後すぐにAI推論の提供開始</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="alternative-methods">
+            <p>その他のインストール方法：
+                <a href="#" onclick="showManualDownload()">手動ダウンロード</a> |
+                <a href="#" onclick="showTerminalInstall()">ターミナル</a>
+            </p>
+        </div>
+    </div>
+    
+    <script>
+        async function startInstallation() {
+            const btn = document.getElementById('installBtn');
+            const status = document.getElementById('status');
+            const statusText = document.getElementById('statusText');
+            const progressFill = document.getElementById('progressFill');
+            
+            // ボタンを無効化
+            btn.textContent = 'インストール中...';
+            btn.classList.add('installing');
+            btn.disabled = true;
+            
+            // ステータス表示
+            status.classList.add('show');
+            
+            try {
+                // ステップ1: ダウンロード
+                updateStatus('ダウンロード中...', 20);
+                await downloadInstaller();
+                
+                // ステップ2: インストーラー起動
+                updateStatus('インストーラーを起動中...', 50);
+                await launchInstaller();
+                
+                // ステップ3: サービス開始確認
+                updateStatus('サービスを開始中...', 80);
+                await waitForService();
+                
+                // 完了
+                updateStatus('✅ インストール完了！', 100);
+                btn.textContent = 'ダッシュボードを開く';
+                btn.classList.remove('installing');
+                btn.disabled = false;
+                btn.onclick = () => window.open('http://localhost:8090', '_blank');
+                
+            } catch (error) {
+                updateStatus('❌ エラーが発生しました', 0);
+                statusText.textContent += ': ' + error.message;
+                btn.textContent = '再試行';
+                btn.classList.remove('installing');
+                btn.disabled = false;
+            }
+        }
+        
+        function updateStatus(text, progress) {
+            document.getElementById('statusText').textContent = text;
+            document.getElementById('progressFill').style.width = progress + '%';
+        }
+        
+        async function downloadInstaller() {
+            // カスタムURLスキームで直接インストーラーを起動
+            const installerURL = 'quiver://install';
+            
+            // フォールバック: PKGダウンロード
+            const downloadURL = 'https://github.com/yukihamada/quiver/releases/latest/download/QUIVerProvider.pkg';
+            
+            // カスタムURLスキームを試す
+            window.location.href = installerURL;
+            
+            // 3秒待ってもアプリが起動しない場合はダウンロード
+            await new Promise(resolve => setTimeout(resolve, 3000));
+            
+            const response = await fetch('/api/check-installation');
+            if (!response.ok) {
+                // 直接ダウンロード
+                const a = document.createElement('a');
+                a.href = downloadURL;
+                a.download = 'QUIVerProvider.pkg';
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+            }
+        }
+        
+        async function launchInstaller() {
+            // インストーラーの起動を待つ
+            await new Promise(resolve => setTimeout(resolve, 5000));
+        }
+        
+        async function waitForService() {
+            // サービスの起動を確認
+            let attempts = 0;
+            const maxAttempts = 30;
+            
+            while (attempts < maxAttempts) {
+                try {
+                    const response = await fetch('http://localhost:8090/health');
+                    if (response.ok) {
+                        return;
+                    }
+                } catch (e) {
+                    // サービスがまだ起動していない
+                }
+                
+                await new Promise(resolve => setTimeout(resolve, 1000));
+                attempts++;
+            }
+            
+            throw new Error('サービスの起動がタイムアウトしました');
+        }
+        
+        function showManualDownload() {
+            alert('手動ダウンロード:\nhttps://github.com/yukihamada/quiver/releases/latest');
+        }
+        
+        function showTerminalInstall() {
+            alert('ターミナルでインストール:\ncurl -fsSL https://quiver.network/install.sh | bash');
+        }
+        
+        // プラットフォーム検出
+        window.onload = function() {
+            const platform = navigator.platform.toLowerCase();
+            if (!platform.includes('mac')) {
+                document.getElementById('installBtn').textContent = 'macOS専用です';
+                document.getElementById('installBtn').disabled = true;
+                document.getElementById('installBtn').style.background = '#ccc';
+            }
+        };
+    </script>
+</body>
+</html>

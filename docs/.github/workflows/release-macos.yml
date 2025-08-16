@@ -1,0 +1,124 @@
+name: Release macOS Installer
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version to release (e.g., 1.0.0)'
+        required: true
+        default: '1.0.0'
+
+env:
+  GO_VERSION: '1.21'
+
+jobs:
+  build-and-release:
+    runs-on: macos-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Setup Go
+      uses: actions/setup-go@v4
+      with:
+        go-version: ${{ env.GO_VERSION }}
+    
+    - name: Import Apple Developer Certificate
+      env:
+        APPLE_CERT_BASE64: ${{ secrets.APPLE_CERT_BASE64 }}
+        APPLE_CERT_PASSWORD: ${{ secrets.APPLE_CERT_PASSWORD }}
+      run: |
+        # Create temporary keychain
+        KEYCHAIN_NAME="build.keychain"
+        KEYCHAIN_PASSWORD="$(openssl rand -base64 32)"
+        
+        # Decode certificate
+        echo "$APPLE_CERT_BASE64" | base64 --decode > certificate.p12
+        
+        # Create keychain
+        security create-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN_NAME"
+        security set-keychain-settings -lut 21600 "$KEYCHAIN_NAME"
+        security unlock-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN_NAME"
+        
+        # Import certificate
+        security import certificate.p12 -P "$APPLE_CERT_PASSWORD" -A -t cert -f pkcs12 -k "$KEYCHAIN_NAME"
+        security list-keychain -d user -s "$KEYCHAIN_NAME"
+        
+        # Allow codesign to access keychain
+        security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k "$KEYCHAIN_PASSWORD" "$KEYCHAIN_NAME"
+        
+        # Clean up
+        rm certificate.p12
+    
+    - name: Build Provider Binary
+      run: |
+        cd provider
+        go build -o build/provider -ldflags="-s -w" ./cmd/provider
+    
+    - name: Build Gateway Binary
+      run: |
+        cd gateway
+        go build -o build/gateway -ldflags="-s -w" ./cmd/gateway
+    
+    - name: Set Version
+      run: |
+        if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+          echo "VERSION=${{ github.event.inputs.version }}" >> $GITHUB_ENV
+        else
+          echo "VERSION=${GITHUB_REF#refs/tags/v}" >> $GITHUB_ENV
+        fi
+    
+    - name: Build PKG Installer
+      env:
+        APPLE_DEVELOPER_ID: ${{ secrets.APPLE_DEVELOPER_ID }}
+        APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+        APPLE_ID: ${{ secrets.APPLE_ID }}
+        APP_PASSWORD: ${{ secrets.APP_PASSWORD }}
+      run: |
+        cd docs/installer/macos
+        ./build-pkg.sh
+    
+    - name: Upload Installer
+      uses: actions/upload-artifact@v3
+      with:
+        name: macos-installer
+        path: docs/installer/macos/dist/QUIVerProvider-*.pkg
+    
+    - name: Create Release
+      if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/')
+      uses: softprops/action-gh-release@v1
+      with:
+        files: docs/installer/macos/dist/QUIVerProvider-*.pkg
+        generate_release_notes: true
+        prerelease: false
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    
+    - name: Deploy to CDN
+      if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/')
+      env:
+        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        AWS_REGION: us-east-1
+      run: |
+        # Install AWS CLI
+        brew install awscli
+        
+        # Upload to S3
+        aws s3 cp docs/installer/macos/dist/QUIVerProvider-$VERSION.pkg \
+          s3://download.quiver.ai/mac/QUIVerProvider-$VERSION.pkg \
+          --acl public-read
+        
+        # Also upload as latest
+        aws s3 cp docs/installer/macos/dist/QUIVerProvider-$VERSION.pkg \
+          s3://download.quiver.ai/mac/QUIVerProvider-latest.pkg \
+          --acl public-read
+        
+        # Invalidate CloudFront cache
+        aws cloudfront create-invalidation \
+          --distribution-id ${{ secrets.CLOUDFRONT_DISTRIBUTION_ID }} \
+          --paths "/mac/*"
