@@ -49,3 +49,9 @@ func (l *Limiter) CleanupOldLimiters() {
 		l.mu.Unlock()
 	}
 }
+
+// Allow checks if a request from the given token is allowed
+func (l *Limiter) Allow(token string) bool {
+	limiter := l.GetLimiter(token)
+	return limiter.Allow()
+}

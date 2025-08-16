@@ -5,7 +5,7 @@ import (
 	"crypto/rand"
 	"encoding/json"
 	"fmt"
-	"net"
+	"strings"
 	"time"
 
 	"github.com/libp2p/go-libp2p"
@@ -53,9 +53,18 @@ func NewClient(ctx context.Context, listenAddr string, bootstrapPeers []string) 
 		return nil, err
 	}
 
+	// Extract port from multiaddr
+	portStr := "4002"
+	parts := strings.Split(listenAddr, "/")
+	for i, part := range parts {
+		if part == "tcp" && i+1 < len(parts) {
+			portStr = parts[i+1]
+			break
+		}
+	}
+	
 	// Create additional QUIC listen address
-	_, port, _ := net.SplitHostPort(listen.String())
-	quicAddr, _ := multiaddr.NewMultiaddr(fmt.Sprintf("/ip4/0.0.0.0/udp/%s/quic-v1", port))
+	quicAddr, _ := multiaddr.NewMultiaddr(fmt.Sprintf("/ip4/0.0.0.0/udp/%s/quic-v1", portStr))
 	
 	h, err := libp2p.New(
 		libp2p.Identity(priv),

@@ -31,7 +31,10 @@ func main() {
 	limiter := ratelimit.NewLimiter(cfg.RateLimitPerToken)
 	go limiter.CleanupOldLimiters()
 
+	// Initialize stats collector
+	statsCollector := api.NewStatsCollector()
 	handler := api.NewHandler(p2pClient, limiter, cfg.CanaryRate)
+	handler.SetStatsCollector(statsCollector)
 
 	// Initialize authenticator
 	authConfig := auth.AuthConfig{
@@ -63,13 +66,14 @@ func main() {
 	// Public endpoints
 	router.GET("/health", handler.Health)
 	router.GET("/stats", handler.StatsHandler)
+	router.GET("/providers", handler.ListProviders)
 	router.OPTIONS("/generate", func(c *gin.Context) {
 		c.Status(204)
 	})
 	router.OPTIONS("/stats", func(c *gin.Context) {
 		c.Status(204)
 	})
-
+	
 	// Protected endpoints
 	protected := router.Group("")
 	if cfg.EnableAuth {

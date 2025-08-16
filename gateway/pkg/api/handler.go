@@ -32,6 +32,11 @@ func NewHandler(p2pClient *p2p.Client, limiter *ratelimit.Limiter, canaryRate fl
 	}
 }
 
+// SetStatsCollector sets the stats collector
+func (h *Handler) SetStatsCollector(sc *StatsCollector) {
+	h.statsCollector = sc
+}
+
 // InferenceRequest represents an inference request
 type InferenceRequest struct {
 	Prompt    string `json:"prompt"`
@@ -103,7 +108,7 @@ func (h *Handler) Generate(c *gin.Context) {
 		}
 
 		// Success - record stats and return response
-		h.statsCollector.RecordRequest(req.Model, time.Since(startTime).Milliseconds(), 100)
+		h.statsCollector.RecordRequest(req.Model, float64(time.Since(startTime).Milliseconds()), 100)
 		c.JSON(http.StatusOK, result)
 		return
 	}
@@ -175,5 +180,23 @@ func (h *Handler) Health(c *gin.Context) {
 		"providers":      len(providers),
 		"p2p_connected":  h.p2pClient.IsConnected(),
 		"peers":          h.p2pClient.PeerCount(),
+	})
+}
+
+// ListProviders returns the list of available providers
+func (h *Handler) ListProviders(c *gin.Context) {
+	ctx, cancel := context.WithTimeout(c.Request.Context(), 5*time.Second)
+	defer cancel()
+
+	providers := h.p2pClient.GetProviders(ctx)
+	
+	// Record active nodes
+	h.statsCollector.RecordNode("", true)
+	
+	c.Header("Access-Control-Allow-Origin", "*")
+	c.JSON(http.StatusOK, gin.H{
+		"providers": providers,
+		"count":     len(providers),
+		"timestamp": time.Now().Unix(),
 	})
 }

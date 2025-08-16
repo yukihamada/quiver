@@ -1,7 +1,7 @@
 // QUIVer Network Real-time Statistics
 // Fetches actual network data from the gateway API
 
-const STATS_API = 'https://api.quiver.network/stats';
+const STATS_API = 'http://localhost:8080/stats';
 const FALLBACK_API = 'http://localhost:8080/stats';
 
 // Cache for stats
@@ -62,16 +62,16 @@ function getEstimatedStats() {
         return statsCache;
     }
     
-    // Otherwise, return realistic estimates
+    // Otherwise, return current realistic estimates based on actual network
     const hour = new Date().getHours();
     const dayFactor = getDayFactor(hour);
     
     return {
-        activeNodes: Math.floor(7 * dayFactor),
-        inferencePerSec: (2.3 * dayFactor).toFixed(1),
-        totalTFLOPS: Math.floor(29 * dayFactor),
-        totalRequests: Math.floor(Math.random() * 10000 + 50000),
-        countries: Math.floor(Math.random() * 5 + 12)
+        activeNodes: 3,
+        inferencePerSec: 0.0,
+        totalTFLOPS: 2.9,
+        totalRequests: 0,
+        countries: 1
     };
 }
 
@@ -81,11 +81,11 @@ function getDayFactor(hour) {
     const jstHour = (hour + 9) % 24;
     
     if (jstHour >= 9 && jstHour <= 17) {
-        return 1.2 + Math.random() * 0.2; // 120-140%
+        return 1.0; // Normal operation
     } else if (jstHour >= 22 || jstHour <= 6) {
-        return 0.6 + Math.random() * 0.2; // 60-80%
+        return 0.8; // Night time
     } else {
-        return 0.9 + Math.random() * 0.2; // 90-110%
+        return 0.9; // Evening/morning
     }
 }
 

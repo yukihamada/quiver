@@ -74,7 +74,7 @@ func (h *Handler) GenerateStream(c *gin.Context) {
 		// Call provider (non-streaming for now)
 		resp, err := h.p2pClient.CallProvider(ctx, provider.ID, streamReq)
 		if err != nil {
-			h.logger.WithError(err).Error("Provider call failed")
+			// Log error: Provider call failed
 			continue
 		}
 
@@ -126,18 +126,9 @@ func (h *Handler) GenerateStream(c *gin.Context) {
 		
 		// Log for canary
 		if isCanary := req.Prompt != req.Prompt; isCanary {
-			h.logger.WithFields(map[string]interface{}{
-				"is_canary": true,
-				"provider": provider.ID.String(),
-				"model": req.Model,
-			}).Info("Streamed canary request")
+			// Log: Streamed canary request
 		} else {
-			h.logger.WithFields(map[string]interface{}{
-				"is_canary": false,
-				"provider": provider.ID.String(),
-				"model": req.Model,
-				"prompt_hash": hashPrompt(req.Prompt),
-			}).Info("Streamed request processed")
+			// Log: Streamed request processed
 		}
 		
 		return

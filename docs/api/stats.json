@@ -1,14 +1,14 @@
 {
-  "activeNodes": 7,
-  "inferencePerSec": 2.3,
-  "totalTFLOPS": 29.4,
-  "totalRequests": 156789,
-  "avgLatency": 87.5,
-  "node_count": 7,
-  "online_nodes": 7,
-  "countries": 5,
-  "total_capacity": 29.4,
-  "throughput": 2.3,
+  "activeNodes": 3,
+  "inferencePerSec": 0.2,
+  "totalTFLOPS": 2.9,
+  "totalRequests": 47,
+  "avgLatency": 187.5,
+  "node_count": 3,
+  "online_nodes": 3,
+  "countries": 1,
+  "total_capacity": 2.9,
+  "throughput": 0.2,
   "last_update": "2025-01-16T13:20:00Z",
   "network_health": "excellent",
   "network_type": "mainnet",
@@ -42,24 +42,24 @@
   },
   "regions": {
     "local": 0,
-    "asia": 7,
-    "north_america": 3,
-    "europe": 2,
-    "other": 1
+    "asia": 3,
+    "north_america": 0,
+    "europe": 0,
+    "other": 0
   },
   "providers": [
     {
-      "id": "12D3KooWLjvJznPvHRuH2KNhgF7z2v2RRoZLvT7bUbYXCdXPmiBF",
+      "id": "12D3KooWGyMRNnx6Y1szEEYg3L81ihsZdFGQDzFH3Mb5332AZVwn",
       "location": "Tokyo, Japan",
-      "gpu": "RTX 4090",
-      "models": ["llama3.2:3b", "phi3:mini"],
-      "uptime": 0.99
+      "gpu": "Apple M2",
+      "models": ["llama3.2:3b"],
+      "uptime": 0.95
     },
     {
-      "id": "12D3KooWDVNd5wPRYZb3JYdszYW3QaHZnqJDNZ9w2oqST8TGYnJF",
-      "location": "San Francisco, USA",
-      "gpu": "A100 40GB",
-      "models": ["llama3.2:7b", "mistral:7b"],
+      "id": "12D3KooWNFmgqVZJdWNkBAShVJEugVdBUwvZNexWMkiqp9ayDatb",
+      "location": "Tokyo, Japan",
+      "gpu": "Apple M1",
+      "models": ["llama3.2:3b"],
       "uptime": 0.98
     }
   ],
