@@ -56,10 +56,15 @@ jobs:
               print(f"Failed to get existing records: {response.text}")
               sys.exit(1)
           
-          existing_records = {
-              (r['type'], r['name'].replace(f'.{config["domain"]}', '')): r 
-              for r in response.json()['result']
-          }
+          existing_records = {}
+          for r in response.json()['result']:
+              # Handle root domain
+              name = r['name']
+              if name == config['domain']:
+                  name = '@'
+              else:
+                  name = name.replace(f'.{config["domain"]}', '')
+              existing_records[(r['type'], name)] = r
           
           # Process all records
           all_records = []
