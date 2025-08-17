@@ -1,32 +1,34 @@
-# Cloudflare Pages Redirects
-# This file configures subdomain routing for quiver.network
+# Cloudflare Pages Redirects for subdomains
+
+# Root domain serves from root
+/ /index.html 200
 
 # API subdomain
-https://api.quiver.network/* https://quiver-network.pages.dev/api/:splat 200!
+/api/* /api/:splat 200
 
-# Blog subdomain
-https://blog.quiver.network/* https://quiver-network.pages.dev/blog/:splat 200!
+# Blog subdomain  
+/blog/* /blog/:splat 200
 
 # Community subdomain
-https://community.quiver.network/* https://quiver-network.pages.dev/community/:splat 200!
+/community/* /community/:splat 200
 
 # Dashboard subdomain
-https://dashboard.quiver.network/* https://quiver-network.pages.dev/dashboard/:splat 200!
+/dashboard/* /dashboard/:splat 200
 
 # Docs subdomain
-https://docs.quiver.network/* https://quiver-network.pages.dev/docs/:splat 200!
+/docs/* /docs/:splat 200
 
 # Explorer subdomain
-https://explorer.quiver.network/* https://quiver-network.pages.dev/explorer/:splat 200!
+/explorer/* /explorer/:splat 200
 
 # Playground subdomain
-https://playground.quiver.network/* https://quiver-network.pages.dev/playground/:splat 200!
+/playground/* /playground/:splat 200
 
 # QuicPair subdomain
-https://quicpair.quiver.network/* https://quiver-network.pages.dev/quicpair/:splat 200!
+/quicpair/* /quicpair/:splat 200
 
 # Security subdomain
-https://security.quiver.network/* https://quiver-network.pages.dev/security/:splat 200!
+/security/* /security/:splat 200
 
 # Status subdomain
-https://status.quiver.network/* https://quiver-network.pages.dev/status/:splat 200!
+/status/* /status/:splat 200
