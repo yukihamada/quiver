@@ -126,6 +126,17 @@ jobs:
       - name: Install Wrangler
         run: npm install -g wrangler
       
+      - name: Create Cloudflare Pages project if not exists
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          # Check if project exists
+          if ! wrangler pages project list | grep -q "quiver-network"; then
+            echo "Creating Cloudflare Pages project..."
+            wrangler pages project create quiver-network --production-branch=main || true
+          fi
+      
       - name: Deploy to Cloudflare Pages
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
