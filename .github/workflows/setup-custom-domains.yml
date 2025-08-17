@@ -15,6 +15,43 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
       
+      - name: Create Cloudflare Pages project if not exists
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          echo "🔍 Checking if project exists..."
+          
+          PROJECT_NAME="quiver-network"
+          API_URL="https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/pages/projects/${PROJECT_NAME}"
+          
+          # Check if project exists
+          response=$(curl -s -X GET "${API_URL}" \
+            -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" \
+            -H "Content-Type: application/json")
+          
+          if echo "$response" | jq -e '.success' > /dev/null 2>&1 && [ "$(echo "$response" | jq -r '.success')" = "true" ]; then
+            echo "✅ Project already exists: ${PROJECT_NAME}"
+          else
+            echo "📦 Creating project: ${PROJECT_NAME}"
+            
+            # Create the project
+            create_response=$(curl -s -X POST "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/pages/projects" \
+              -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" \
+              -H "Content-Type: application/json" \
+              -d '{
+                "name": "'${PROJECT_NAME}'",
+                "production_branch": "main"
+              }')
+            
+            if echo "$create_response" | jq -e '.success' > /dev/null 2>&1 && [ "$(echo "$create_response" | jq -r '.success')" = "true" ]; then
+              echo "✅ Project created successfully!"
+            else
+              echo "❌ Failed to create project:"
+              echo "$create_response" | jq '.'
+            fi
+          fi
+      
       - name: Setup custom domains via Cloudflare API
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
