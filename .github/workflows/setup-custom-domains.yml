@@ -1,0 +1,126 @@
+name: Setup Cloudflare Pages Custom Domains
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - '.github/workflows/setup-custom-domains.yml'
+
+jobs:
+  setup-domains:
+    name: Setup Custom Domains
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Setup custom domains via Cloudflare API
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          # List of domains to add
+          domains=(
+            "quiver.network"
+            "www.quiver.network"
+            "api.quiver.network"
+            "blog.quiver.network"
+            "community.quiver.network"
+            "dashboard.quiver.network"
+            "docs.quiver.network"
+            "explorer.quiver.network"
+            "playground.quiver.network"
+            "quicpair.quiver.network"
+            "security.quiver.network"
+            "status.quiver.network"
+          )
+          
+          # API endpoint
+          PROJECT_NAME="quiver-network"
+          BASE_URL="https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/pages/projects/${PROJECT_NAME}/domains"
+          
+          echo "🔍 Checking existing custom domains..."
+          
+          # Get existing domains
+          existing_domains=$(curl -s -X GET "${BASE_URL}" \
+            -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" \
+            -H "Content-Type: application/json" | jq -r '.result[].domain' 2>/dev/null || echo "")
+          
+          echo "Existing domains:"
+          echo "${existing_domains}"
+          echo ""
+          
+          # Add each domain
+          for domain in "${domains[@]}"; do
+            # Check if domain already exists
+            if echo "${existing_domains}" | grep -q "^${domain}$"; then
+              echo "✅ Domain already configured: ${domain}"
+            else
+              echo "➕ Adding domain: ${domain}"
+              
+              response=$(curl -s -X POST "${BASE_URL}" \
+                -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" \
+                -H "Content-Type: application/json" \
+                -d "{\"domain\": \"${domain}\"}")
+              
+              success=$(echo "$response" | jq -r '.success' 2>/dev/null || echo "false")
+              
+              if [ "$success" = "true" ]; then
+                echo "✅ Successfully added: ${domain}"
+              else
+                error_message=$(echo "$response" | jq -r '.errors[0].message' 2>/dev/null || echo "Unknown error")
+                echo "❌ Failed to add ${domain}: ${error_message}"
+                echo "Full response: $response"
+              fi
+            fi
+            
+            # Small delay to avoid rate limiting
+            sleep 1
+          done
+          
+          echo ""
+          echo "📋 Summary:"
+          echo "All domains have been processed. Check above for any errors."
+          
+      - name: Verify SSL certificates
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ZONE_ID: ${{ secrets.CLOUDFLARE_ZONE_ID }}
+        run: |
+          echo "🔍 Checking SSL certificate status..."
+          
+          # Check SSL verification status
+          response=$(curl -s -X GET "https://api.cloudflare.com/client/v4/zones/${CLOUDFLARE_ZONE_ID}/ssl/verification" \
+            -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" \
+            -H "Content-Type: application/json")
+          
+          echo "$response" | jq -r '.result[] | "\(.hostname): \(.validation_method) - \(.status)"' 2>/dev/null || echo "Unable to fetch SSL status"
+          
+      - name: Test domain accessibility
+        run: |
+          echo "🌐 Testing domain accessibility (may take a few minutes for propagation)..."
+          echo ""
+          
+          domains=(
+            "quiver.network"
+            "api.quiver.network"
+            "docs.quiver.network"
+            "explorer.quiver.network"
+          )
+          
+          for domain in "${domains[@]}"; do
+            echo -n "Testing https://${domain} ... "
+            status=$(curl -s -o /dev/null -w "%{http_code}" -L "https://${domain}" --max-time 10 || echo "000")
+            
+            if [ "$status" = "200" ]; then
+              echo "✅ OK (HTTP $status)"
+            elif [ "$status" = "000" ]; then
+              echo "⏳ Not ready yet (connection failed)"
+            else
+              echo "⚠️  HTTP $status"
+            fi
+          done
+          
+          echo ""
+          echo "💡 Note: It may take up to 10 minutes for SSL certificates to be issued and domains to become accessible."
