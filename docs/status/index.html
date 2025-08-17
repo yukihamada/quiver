@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="QUIVer Network Status - サービス稼働状況とシステムステータス">
+    <title>QUIVer Status</title>
+    
+    <style>
+        :root {
+            --primary: #0071e3;
+            --secondary: #5e5ce6;
+            --accent: #af52de;
+            --success: #34c759;
+            --warning: #ff9500;
+            --danger: #ff3b30;
+            --dark: #1d1d1f;
+            --light: #f5f5f7;
+            --gray: #86868b;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', sans-serif;
+            background: #000;
+            color: #fff;
+            line-height: 1.6;
+        }
+
+        /* ヘッダー */
+        .header {
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            padding: 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            background: linear-gradient(45deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-decoration: none;
+        }
+
+        /* ステータスサマリー */
+        .status-summary {
+            padding: 60px 20px;
+            text-align: center;
+            background: linear-gradient(135deg, rgba(52, 199, 89, 0.1) 0%, rgba(52, 199, 89, 0.05) 100%);
+        }
+
+        .overall-status {
+            font-size: 3rem;
+            margin-bottom: 10px;
+        }
+
+        .status-message {
+            font-size: 1.5rem;
+            color: var(--success);
+            margin-bottom: 10px;
+        }
+
+        .last-updated {
+            color: var(--gray);
+            font-size: 0.9rem;
+        }
+
+        /* サービスステータス */
+        .services-section {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 60px 20px;
+        }
+
+        .section-title {
+            font-size: 2rem;
+            margin-bottom: 40px;
+            text-align: center;
+        }
+
+        .service-grid {
+            display: grid;
+            gap: 20px;
+        }
+
+        .service-item {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 25px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.3s;
+        }
+
+        .service-item:hover {
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        .service-info {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .service-name {
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        .service-description {
+            color: var(--gray);
+            font-size: 0.9rem;
+            margin-top: 5px;
+        }
+
+        .status-indicator {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .status-indicator.operational {
+            background: rgba(52, 199, 89, 0.2);
+            color: var(--success);
+        }
+
+        .status-indicator.degraded {
+            background: rgba(255, 149, 0, 0.2);
+            color: var(--warning);
+        }
+
+        .status-indicator.outage {
+            background: rgba(255, 59, 48, 0.2);
+            color: var(--danger);
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            background: currentColor;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+
+        /* メトリクス */
+        .metrics-section {
+            background: rgba(255, 255, 255, 0.03);
+            padding: 60px 20px;
+        }
+
+        .metrics-grid {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+        }
+
+        .metric-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .metric-value {
+            font-size: 2.5rem;
+            font-weight: 300;
+            color: var(--primary);
+            margin-bottom: 10px;
+        }
+
+        .metric-label {
+            color: var(--gray);
+            font-size: 0.95rem;
+        }
+
+        /* インシデント履歴 */
+        .incidents-section {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 60px 20px;
+        }
+
+        .incident-list {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 30px;
+        }
+
+        .incident-item {
+            padding: 20px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .incident-item:last-child {
+            border-bottom: none;
+        }
+
+        .incident-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 10px;
+        }
+
+        .incident-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        .incident-date {
+            color: var(--gray);
+            font-size: 0.9rem;
+        }
+
+        .incident-description {
+            color: var(--gray);
+            line-height: 1.6;
+        }
+
+        .incident-resolved {
+            display: inline-block;
+            margin-top: 10px;
+            padding: 4px 12px;
+            background: rgba(52, 199, 89, 0.2);
+            color: var(--success);
+            border-radius: 12px;
+            font-size: 0.85rem;
+        }
+
+        /* レスポンシブ */
+        @media (max-width: 768px) {
+            .service-item {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+            }
+
+            .metrics-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- ヘッダー -->
+    <header class="header">
+        <div class="header-content">
+            <a href="https://quiver.network" class="logo">QUIVer Status</a>
+            <span class="last-updated">最終更新: <span id="updateTime">2025年1月28日 12:00 JST</span></span>
+        </div>
+    </header>
+
+    <!-- ステータスサマリー -->
+    <section class="status-summary">
+        <div class="overall-status">✅</div>
+        <h1 class="status-message">すべてのシステムは正常に稼働しています</h1>
+        <p class="last-updated">リアルタイム監視中</p>
+    </section>
+
+    <!-- サービスステータス -->
+    <section class="services-section">
+        <h2 class="section-title">サービス稼働状況</h2>
+        
+        <div class="service-grid">
+            <!-- API Gateway -->
+            <div class="service-item">
+                <div class="service-info">
+                    <div>
+                        <div class="service-name">API Gateway</div>
+                        <div class="service-description">APIエンドポイントとプロキシサービス</div>
+                    </div>
+                </div>
+                <div class="status-indicator operational">
+                    <span class="status-dot"></span>
+                    稼働中
+                </div>
+            </div>
+
+            <!-- P2P Network -->
+            <div class="service-item">
+                <div class="service-info">
+                    <div>
+                        <div class="service-name">P2P Network</div>
+                        <div class="service-description">分散ノードネットワーク</div>
+                    </div>
+                </div>
+                <div class="status-indicator operational">
+                    <span class="status-dot"></span>
+                    稼働中
+                </div>
+            </div>
+
+            <!-- WebRTC Signaling -->
+            <div class="service-item">
+                <div class="service-info">
+                    <div>
+                        <div class="service-name">WebRTC Signaling</div>
+                        <div class="service-description">シグナリングサーバー</div>
+                    </div>
+                </div>
+                <div class="status-indicator operational">
+                    <span class="status-dot"></span>
+                    稼働中
+                </div>
+            </div>
+
+            <!-- Web Services -->
+            <div class="service-item">
+                <div class="service-info">
+                    <div>
+                        <div class="service-name">Web Services</div>
+                        <div class="service-description">Webサイトとドキュメント</div>
+                    </div>
+                </div>
+                <div class="status-indicator operational">
+                    <span class="status-dot"></span>
+                    稼働中
+                </div>
+            </div>
+
+            <!-- QuicPair Integration -->
+            <div class="service-item">
+                <div class="service-info">
+                    <div>
+                        <div class="service-name">QuicPair Integration</div>
+                        <div class="service-description">QuicPairアプリとの連携</div>
+                    </div>
+                </div>
+                <div class="status-indicator operational">
+                    <span class="status-dot"></span>
+                    稼働中
+                </div>
+            </div>
+
+            <!-- Provider Registry -->
+            <div class="service-item">
+                <div class="service-info">
+                    <div>
+                        <div class="service-name">Provider Registry</div>
+                        <div class="service-description">プロバイダー登録サービス</div>
+                    </div>
+                </div>
+                <div class="status-indicator degraded">
+                    <span class="status-dot"></span>
+                    開発中
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- メトリクス -->
+    <section class="metrics-section">
+        <h2 class="section-title">システムメトリクス</h2>
+        
+        <div class="metrics-grid">
+            <div class="metric-card">
+                <div class="metric-value">99.95%</div>
+                <div class="metric-label">稼働率（過去30日）</div>
+            </div>
+            
+            <div class="metric-card">
+                <div class="metric-value">42ms</div>
+                <div class="metric-label">平均レスポンスタイム</div>
+            </div>
+            
+            <div class="metric-card">
+                <div class="metric-value">156</div>
+                <div class="metric-label">アクティブノード数</div>
+            </div>
+            
+            <div class="metric-card">
+                <div class="metric-value">0</div>
+                <div class="metric-label">現在のインシデント</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- インシデント履歴 -->
+    <section class="incidents-section">
+        <h2 class="section-title">インシデント履歴</h2>
+        
+        <div class="incident-list">
+            <div class="incident-item">
+                <div class="incident-header">
+                    <h3 class="incident-title">定期メンテナンス完了</h3>
+                    <span class="incident-date">2025年1月25日</span>
+                </div>
+                <p class="incident-description">
+                    システムアップデートのための計画的メンテナンスを実施しました。
+                    すべてのサービスは正常に稼働しています。
+                </p>
+                <span class="incident-resolved">解決済み</span>
+            </div>
+            
+            <div class="incident-item">
+                <div class="incident-header">
+                    <h3 class="incident-title">P2Pネットワーク接続遅延</h3>
+                    <span class="incident-date">2025年1月20日</span>
+                </div>
+                <p class="incident-description">
+                    一部のリージョンでP2P接続に遅延が発生しました。
+                    ブートストラップノードの追加により解決しました。
+                </p>
+                <span class="incident-resolved">解決済み</span>
+            </div>
+            
+            <div class="incident-item">
+                <div class="incident-header">
+                    <h3 class="incident-title">サービス開始</h3>
+                    <span class="incident-date">2025年1月1日</span>
+                </div>
+                <p class="incident-description">
+                    QUIVerネットワークの正式サービスを開始しました。
+                </p>
+                <span class="incident-resolved">完了</span>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        // 現在時刻を更新
+        function updateTime() {
+            const now = new Date();
+            const options = { 
+                year: 'numeric', 
+                month: 'numeric', 
+                day: 'numeric', 
+                hour: 'numeric', 
+                minute: 'numeric',
+                timeZone: 'Asia/Tokyo',
+                hour12: false
+            };
+            const timeString = now.toLocaleString('ja-JP', options) + ' JST';
+            document.getElementById('updateTime').textContent = timeString;
+        }
+
+        // 初回実行と1分ごとに更新
+        updateTime();
+        setInterval(updateTime, 60000);
+
+        // メトリクスのランダム更新（デモ用）
+        function updateMetrics() {
+            // 実際の実装では、APIから実データを取得
+            const responseTime = document.querySelector('.metric-value');
+            if (responseTime && responseTime.textContent.includes('ms')) {
+                const baseTime = 42;
+                const variation = Math.random() * 10 - 5;
+                responseTime.textContent = Math.round(baseTime + variation) + 'ms';
+            }
+        }
+
+        // 5秒ごとにメトリクスを更新
+        setInterval(updateMetrics, 5000);
+    </script>
+</body>
+</html>

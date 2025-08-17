@@ -1,33 +1,46 @@
 name = "quiver-network"
-compatibility_date = "2024-01-28"
+main = "src/index.js"
+compatibility_date = "2024-01-01"
 
 [site]
 bucket = "./docs"
 
-# ルーティング設定
 [[routes]]
-pattern = "quiver.network/*"
+pattern = "api.quiver.network/*"
 zone_name = "quiver.network"
 
 [[routes]]
-pattern = "*.quiver.network/*"
+pattern = "blog.quiver.network/*"
 zone_name = "quiver.network"
 
-# 静的アセット設定
-[build]
-command = ""
-watch_paths = ["docs/**/*"]
+[[routes]]
+pattern = "community.quiver.network/*"
+zone_name = "quiver.network"
 
-# 環境変数（必要に応じて）
-[vars]
-ENVIRONMENT = "production"
+[[routes]]
+pattern = "dashboard.quiver.network/*"
+zone_name = "quiver.network"
 
-# Workers設定（将来のAPI用）
-# [[kv_namespaces]]
-# binding = "QUIVER_KV"
-# id = "your-kv-namespace-id"
+[[routes]]
+pattern = "docs.quiver.network/*"
+zone_name = "quiver.network"
 
-# カスタムドメイン設定
-[env.production.routes]
-pattern = ["quiver.network", "*.quiver.network"]
+[[routes]]
+pattern = "explorer.quiver.network/*"
+zone_name = "quiver.network"
+
+[[routes]]
+pattern = "playground.quiver.network/*"
+zone_name = "quiver.network"
+
+[[routes]]
+pattern = "quicpair.quiver.network/*"
+zone_name = "quiver.network"
+
+[[routes]]
+pattern = "security.quiver.network/*"
+zone_name = "quiver.network"
+
+[[routes]]
+pattern = "status.quiver.network/*"
 zone_name = "quiver.network"

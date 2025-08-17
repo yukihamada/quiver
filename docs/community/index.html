@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="QUIVer Community - コミュニティ、フォーラム、イベント情報">
+    <title>QUIVer Community</title>
+    
+    <style>
+        :root {
+            --primary: #0071e3;
+            --secondary: #5e5ce6;
+            --accent: #af52de;
+            --success: #34c759;
+            --warning: #ff9500;
+            --danger: #ff3b30;
+            --dark: #1d1d1f;
+            --light: #f5f5f7;
+            --gray: #86868b;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', sans-serif;
+            background: #000;
+            color: #fff;
+            line-height: 1.6;
+        }
+
+        /* ヘッダー */
+        .header {
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            padding: 20px;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            background: linear-gradient(45deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-decoration: none;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 30px;
+            list-style: none;
+        }
+
+        .nav-links a {
+            color: #fff;
+            text-decoration: none;
+            opacity: 0.8;
+            transition: opacity 0.3s;
+        }
+
+        .nav-links a:hover {
+            opacity: 1;
+        }
+
+        /* メイン */
+        .main {
+            padding-top: 100px;
+            min-height: 100vh;
+        }
+
+        /* ヒーロー */
+        .hero {
+            text-align: center;
+            padding: 80px 20px;
+            background: linear-gradient(135deg, rgba(94, 92, 230, 0.1) 0%, rgba(175, 82, 222, 0.1) 100%);
+        }
+
+        .hero h1 {
+            font-size: 3rem;
+            margin-bottom: 20px;
+            background: linear-gradient(180deg, #fff 0%, #86868b 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero-subtitle {
+            font-size: 1.3rem;
+            color: var(--gray);
+        }
+
+        /* コミュニティチャンネル */
+        .channels-section {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 60px 20px;
+        }
+
+        .section-title {
+            font-size: 2rem;
+            margin-bottom: 40px;
+            text-align: center;
+        }
+
+        .channels-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 30px;
+        }
+
+        .channel-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 40px;
+            text-align: center;
+            transition: all 0.3s;
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .channel-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--primary);
+        }
+
+        .channel-icon {
+            font-size: 3rem;
+            margin-bottom: 20px;
+        }
+
+        .channel-name {
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+        }
+
+        .channel-description {
+            color: var(--gray);
+            margin-bottom: 20px;
+        }
+
+        .join-button {
+            display: inline-block;
+            padding: 12px 24px;
+            background: var(--primary);
+            color: #fff;
+            border-radius: 12px;
+            text-decoration: none;
+            font-weight: 500;
+            transition: opacity 0.3s;
+        }
+
+        .join-button:hover {
+            opacity: 0.8;
+        }
+
+        /* イベント */
+        .events-section {
+            background: rgba(255, 255, 255, 0.03);
+            padding: 60px 20px;
+        }
+
+        .events-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .event-list {
+            display: grid;
+            gap: 20px;
+        }
+
+        .event-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 30px;
+            display: grid;
+            grid-template-columns: auto 1fr auto;
+            gap: 30px;
+            align-items: center;
+        }
+
+        .event-date {
+            text-align: center;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 12px;
+        }
+
+        .event-month {
+            font-size: 0.9rem;
+            color: var(--gray);
+        }
+
+        .event-day {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .event-info h3 {
+            font-size: 1.3rem;
+            margin-bottom: 10px;
+        }
+
+        .event-details {
+            color: var(--gray);
+        }
+
+        .event-type {
+            display: inline-block;
+            padding: 6px 12px;
+            background: rgba(94, 92, 230, 0.2);
+            color: var(--secondary);
+            border-radius: 20px;
+            font-size: 0.85rem;
+        }
+
+        /* コントリビュート */
+        .contribute-section {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 60px 20px;
+            text-align: center;
+        }
+
+        .contribute-card {
+            background: linear-gradient(135deg, rgba(0, 113, 227, 0.1) 0%, rgba(94, 92, 230, 0.1) 100%);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+            padding: 60px;
+        }
+
+        .contribute-buttons {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            margin-top: 30px;
+        }
+
+        /* レスポンシブ */
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+
+            .hero h1 {
+                font-size: 2rem;
+            }
+
+            .channels-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .event-card {
+                grid-template-columns: 1fr;
+                text-align: center;
+            }
+
+            .contribute-buttons {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- ヘッダー -->
+    <header class="header">
+        <div class="header-content">
+            <a href="https://quiver.network" class="logo">QUIVer Community</a>
+            <nav>
+                <ul class="nav-links">
+                    <li><a href="https://quiver.network">ホーム</a></li>
+                    <li><a href="https://docs.quiver.network">ドキュメント</a></li>
+                    <li><a href="https://blog.quiver.network">ブログ</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <!-- メイン -->
+    <main class="main">
+        <!-- ヒーロー -->
+        <section class="hero">
+            <h1>QUIVer Community</h1>
+            <p class="hero-subtitle">
+                開発者、プロバイダー、ユーザーが集まるコミュニティ
+            </p>
+        </section>
+
+        <!-- コミュニティチャンネル -->
+        <section class="channels-section">
+            <h2 class="section-title">コミュニティチャンネル</h2>
+            
+            <div class="channels-grid">
+                <!-- Discord -->
+                <a href="https://discord.gg/quiver" class="channel-card">
+                    <div class="channel-icon">💬</div>
+                    <h3 class="channel-name">Discord</h3>
+                    <p class="channel-description">
+                        リアルタイムでの技術討論、質問、最新情報の共有
+                    </p>
+                    <span class="join-button">参加する</span>
+                </a>
+
+                <!-- GitHub Discussions -->
+                <a href="https://github.com/yukihamada/quiver/discussions" class="channel-card">
+                    <div class="channel-icon">🗣️</div>
+                    <h3 class="channel-name">GitHub Discussions</h3>
+                    <p class="channel-description">
+                        機能提案、技術的な議論、長期的な開発計画
+                    </p>
+                    <span class="join-button">ディスカッションへ</span>
+                </a>
+
+                <!-- Twitter/X -->
+                <a href="https://twitter.com/quivernetwork" class="channel-card">
+                    <div class="channel-icon">🐦</div>
+                    <h3 class="channel-name">Twitter/X</h3>
+                    <p class="channel-description">
+                        最新ニュース、リリース情報、コミュニティハイライト
+                    </p>
+                    <span class="join-button">フォローする</span>
+                </a>
+            </div>
+        </section>
+
+        <!-- イベント -->
+        <section class="events-section">
+            <div class="events-container">
+                <h2 class="section-title">今後のイベント</h2>
+                
+                <div class="event-list">
+                    <!-- イベント1 -->
+                    <div class="event-card">
+                        <div class="event-date">
+                            <div class="event-month">MAR</div>
+                            <div class="event-day">15</div>
+                        </div>
+                        <div class="event-info">
+                            <h3>QUIVer Global Hackathon 2025</h3>
+                            <p class="event-details">
+                                48時間のオンラインハッカソン。QUIVerプラットフォームを使った革新的なアプリケーション開発
+                            </p>
+                        </div>
+                        <span class="event-type">ハッカソン</span>
+                    </div>
+
+                    <!-- イベント2 -->
+                    <div class="event-card">
+                        <div class="event-date">
+                            <div class="event-month">FEB</div>
+                            <div class="event-day">28</div>
+                        </div>
+                        <div class="event-info">
+                            <h3>Provider Meetup Tokyo</h3>
+                            <p class="event-details">
+                                東京でのオフラインミートアップ。プロバイダー向けの技術セッションとネットワーキング
+                            </p>
+                        </div>
+                        <span class="event-type">ミートアップ</span>
+                    </div>
+
+                    <!-- イベント3 -->
+                    <div class="event-card">
+                        <div class="event-date">
+                            <div class="event-month">FEB</div>
+                            <div class="event-day">10</div>
+                        </div>
+                        <div class="event-info">
+                            <h3>Technical Deep Dive: P2P Architecture</h3>
+                            <p class="event-details">
+                                オンラインウェビナー。QUIVerのP2Pアーキテクチャについての技術解説
+                            </p>
+                        </div>
+                        <span class="event-type">ウェビナー</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- コントリビュート -->
+        <section class="contribute-section">
+            <h2 class="section-title">プロジェクトに貢献する</h2>
+            
+            <div class="contribute-card">
+                <h3 style="font-size: 1.5rem; margin-bottom: 20px;">
+                    QUIVerはオープンソースプロジェクトです
+                </h3>
+                <p style="color: var(--gray); margin-bottom: 30px;">
+                    コード、ドキュメント、アイデア、フィードバックなど、<br>
+                    様々な形での貢献を歓迎しています
+                </p>
+                
+                <div class="contribute-buttons">
+                    <a href="https://github.com/yukihamada/quiver" class="join-button">
+                        GitHubリポジトリ
+                    </a>
+                    <a href="https://github.com/yukihamada/quiver/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22" class="join-button" style="background: var(--secondary);">
+                        Good First Issues
+                    </a>
+                    <a href="https://docs.quiver.network/contributing" class="join-button" style="background: var(--accent);">
+                        貢献ガイド
+                    </a>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        // イベントカードのクリック
+        document.querySelectorAll('.event-card').forEach(card => {
+            card.style.cursor = 'pointer';
+            card.addEventListener('click', () => {
+                // 実際の実装では、イベント詳細ページへ遷移
+                console.log('Navigate to event details');
+            });
+        });
+    </script>
+</body>
+</html>

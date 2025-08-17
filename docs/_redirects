@@ -1,18 +1,32 @@
-# Cloudflare Pages リダイレクト設定
+# Cloudflare Pages Redirects
+# This file configures subdomain routing for quiver.network
 
-# サブドメインのリダイレクト
-https://explorer.quiver.network/* /explorer/:splat 200
-https://api.quiver.network/* /api/:splat 200
-https://dashboard.quiver.network/* /dashboard/:splat 200
-https://security.quiver.network/* /security/:splat 200
-https://quicpair.quiver.network/* /quicpair/:splat 200
-https://playground.quiver.network/* /playground-stream.html 200
+# API subdomain
+https://api.quiver.network/* https://quiver-network.pages.dev/api/:splat 200!
 
-# セキュリティ関連
-/.well-known/security.txt /.well-known/security.txt 200
+# Blog subdomain
+https://blog.quiver.network/* https://quiver-network.pages.dev/blog/:splat 200!
 
-# APIのCORS対応
-/api/* /api/:splat 200 Access-Control-Allow-Origin=*
+# Community subdomain
+https://community.quiver.network/* https://quiver-network.pages.dev/community/:splat 200!
 
-# 404ページ（オプション）
-/* /index.html 404
+# Dashboard subdomain
+https://dashboard.quiver.network/* https://quiver-network.pages.dev/dashboard/:splat 200!
+
+# Docs subdomain
+https://docs.quiver.network/* https://quiver-network.pages.dev/docs/:splat 200!
+
+# Explorer subdomain
+https://explorer.quiver.network/* https://quiver-network.pages.dev/explorer/:splat 200!
+
+# Playground subdomain
+https://playground.quiver.network/* https://quiver-network.pages.dev/playground/:splat 200!
+
+# QuicPair subdomain
+https://quicpair.quiver.network/* https://quiver-network.pages.dev/quicpair/:splat 200!
+
+# Security subdomain
+https://security.quiver.network/* https://quiver-network.pages.dev/security/:splat 200!
+
+# Status subdomain
+https://status.quiver.network/* https://quiver-network.pages.dev/status/:splat 200!

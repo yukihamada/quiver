@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="QUIVer Documentation - 完全プライベートAIネットワークの技術ドキュメント">
+    <title>QUIVer Documentation</title>
+    
+    <style>
+        :root {
+            --primary: #0071e3;
+            --secondary: #5e5ce6;
+            --accent: #af52de;
+            --success: #34c759;
+            --warning: #ff9500;
+            --danger: #ff3b30;
+            --dark: #1d1d1f;
+            --light: #f5f5f7;
+            --gray: #86868b;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', sans-serif;
+            background: #000;
+            color: #fff;
+            line-height: 1.6;
+        }
+
+        /* ヘッダー */
+        .header {
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            padding: 20px;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+        }
+
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            background: linear-gradient(45deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-decoration: none;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 30px;
+            list-style: none;
+        }
+
+        .nav-links a {
+            color: #fff;
+            text-decoration: none;
+            opacity: 0.8;
+            transition: opacity 0.3s;
+        }
+
+        .nav-links a:hover {
+            opacity: 1;
+        }
+
+        /* メイン */
+        .main {
+            padding-top: 100px;
+            min-height: 100vh;
+        }
+
+        .hero {
+            text-align: center;
+            padding: 80px 20px;
+            background: linear-gradient(135deg, rgba(0, 113, 227, 0.1) 0%, rgba(94, 92, 230, 0.1) 100%);
+        }
+
+        .hero h1 {
+            font-size: 3rem;
+            margin-bottom: 20px;
+            background: linear-gradient(180deg, #fff 0%, #86868b 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero-subtitle {
+            font-size: 1.3rem;
+            color: var(--gray);
+            margin-bottom: 40px;
+        }
+
+        /* ドキュメントカテゴリ */
+        .doc-categories {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 60px 20px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 30px;
+        }
+
+        .doc-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 40px;
+            transition: all 0.3s;
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .doc-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--primary);
+        }
+
+        .doc-icon {
+            font-size: 3rem;
+            margin-bottom: 20px;
+        }
+
+        .doc-title {
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+            color: #fff;
+        }
+
+        .doc-description {
+            color: var(--gray);
+            margin-bottom: 20px;
+        }
+
+        .doc-links {
+            list-style: none;
+        }
+
+        .doc-links li {
+            padding: 8px 0;
+        }
+
+        .doc-links a {
+            color: var(--primary);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .doc-links a:hover {
+            text-decoration: underline;
+        }
+
+        /* Coming Soon */
+        .coming-soon {
+            background: rgba(255, 149, 0, 0.1);
+            border: 1px solid rgba(255, 149, 0, 0.3);
+            border-radius: 10px;
+            padding: 15px;
+            text-align: center;
+            color: var(--warning);
+            margin: 40px auto;
+            max-width: 600px;
+        }
+
+        /* レスポンシブ */
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+
+            .hero h1 {
+                font-size: 2rem;
+            }
+
+            .doc-categories {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- ヘッダー -->
+    <header class="header">
+        <div class="header-content">
+            <a href="https://quiver.network" class="logo">QUIVer Docs</a>
+            <nav>
+                <ul class="nav-links">
+                    <li><a href="https://quiver.network">ホーム</a></li>
+                    <li><a href="https://api.quiver.network">API</a></li>
+                    <li><a href="https://github.com/yukihamada/quiver">GitHub</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <!-- メイン -->
+    <main class="main">
+        <!-- ヒーロー -->
+        <section class="hero">
+            <h1>QUIVer Documentation</h1>
+            <p class="hero-subtitle">
+                完全プライベートAIネットワークの構築ガイド
+            </p>
+        </section>
+
+        <!-- ドキュメントカテゴリ -->
+        <div class="doc-categories">
+            <!-- Getting Started -->
+            <a href="#getting-started" class="doc-card">
+                <div class="doc-icon">🚀</div>
+                <h2 class="doc-title">Getting Started</h2>
+                <p class="doc-description">
+                    QUIVerプラットフォームの概要と基本的な使い方
+                </p>
+                <ul class="doc-links">
+                    <li><a href="#overview">→ プラットフォーム概要</a></li>
+                    <li><a href="#architecture">→ アーキテクチャ</a></li>
+                    <li><a href="#quickstart">→ クイックスタート</a></li>
+                </ul>
+            </a>
+
+            <!-- For Developers -->
+            <a href="#developers" class="doc-card">
+                <div class="doc-icon">👨‍💻</div>
+                <h2 class="doc-title">For Developers</h2>
+                <p class="doc-description">
+                    API、SDK、アプリケーション開発ガイド
+                </p>
+                <ul class="doc-links">
+                    <li><a href="https://api.quiver.network">→ API リファレンス</a></li>
+                    <li><a href="#sdk">→ SDK ドキュメント</a></li>
+                    <li><a href="#examples">→ サンプルコード</a></li>
+                </ul>
+            </a>
+
+            <!-- For Providers -->
+            <a href="#providers" class="doc-card">
+                <div class="doc-icon">⚡</div>
+                <h2 class="doc-title">For Providers</h2>
+                <p class="doc-description">
+                    計算リソース提供者向けセットアップガイド
+                </p>
+                <ul class="doc-links">
+                    <li><a href="#provider-setup">→ Provider設定</a></li>
+                    <li><a href="#hardware">→ 推奨ハードウェア</a></li>
+                    <li><a href="#earnings">→ 収益モデル</a></li>
+                </ul>
+            </a>
+
+            <!-- QuicPair Integration -->
+            <a href="https://quicpair.quiver.network" class="doc-card">
+                <div class="doc-icon">📱</div>
+                <h2 class="doc-title">QuicPair アプリ</h2>
+                <p class="doc-description">
+                    QUIVer上で動作する最初のアプリケーション
+                </p>
+                <ul class="doc-links">
+                    <li><a href="https://github.com/yukihamada/QuicPair">→ QuicPair GitHub</a></li>
+                    <li><a href="#quicpair-api">→ 統合ガイド</a></li>
+                    <li><a href="#e2e-encryption">→ E2E暗号化仕様</a></li>
+                </ul>
+            </a>
+
+            <!-- Protocol Specs -->
+            <a href="#protocol" class="doc-card">
+                <div class="doc-icon">📋</div>
+                <h2 class="doc-title">Protocol Specifications</h2>
+                <p class="doc-description">
+                    P2P通信プロトコルと暗号化仕様
+                </p>
+                <ul class="doc-links">
+                    <li><a href="#quic">→ QUIC/UDP通信</a></li>
+                    <li><a href="#noise">→ NoiseIK暗号化</a></li>
+                    <li><a href="#receipts">→ 計算レシート仕様</a></li>
+                </ul>
+            </a>
+
+            <!-- Operations -->
+            <a href="#operations" class="doc-card">
+                <div class="doc-icon">🔧</div>
+                <h2 class="doc-title">Operations</h2>
+                <p class="doc-description">
+                    運用、監視、トラブルシューティング
+                </p>
+                <ul class="doc-links">
+                    <li><a href="https://dashboard.quiver.network">→ ダッシュボード</a></li>
+                    <li><a href="https://status.quiver.network">→ ステータス</a></li>
+                    <li><a href="#monitoring">→ 監視設定</a></li>
+                </ul>
+            </a>
+        </div>
+
+        <!-- Coming Soon Notice -->
+        <div class="coming-soon">
+            <p>
+                📚 本格的なドキュメントサイトは準備中です。<br>
+                近日中にDocusaurusベースの詳細なドキュメントを公開予定です。
+            </p>
+        </div>
+
+        <!-- プラットフォーム説明 -->
+        <section style="max-width: 800px; margin: 60px auto; padding: 0 20px;">
+            <h2 style="font-size: 2rem; margin-bottom: 30px; text-align: center;">
+                QUIVerプラットフォームの構成
+            </h2>
+            
+            <div style="background: rgba(255, 255, 255, 0.05); border-radius: 20px; padding: 40px; margin-bottom: 40px;">
+                <h3 style="font-size: 1.5rem; margin-bottom: 20px;">🌐 QUIVer = プラットフォーム全体</h3>
+                <p style="color: var(--gray); line-height: 1.8;">
+                    QUIVerは「完全プライベートAIネットワーク」を実現するための基盤プロジェクトです。
+                    P2P通信、暗号化、計算レシート、決済などの仕様を定義し、
+                    その上で様々なアプリケーションが動作します。
+                </p>
+            </div>
+
+            <div style="background: rgba(255, 255, 255, 0.05); border-radius: 20px; padding: 40px;">
+                <h3 style="font-size: 1.5rem; margin-bottom: 20px;">📱 QuicPair = 最初のアプリ</h3>
+                <p style="color: var(--gray); line-height: 1.8;">
+                    QuicPairはQUIVerプラットフォーム上で動作する最初のアプリケーションです。
+                    Mac ↔ iPhoneの超高速ペアリングと完全ローカルAIチャットを提供します。
+                    WebRTC/QUIC/NoiseIKによるE2E暗号化通信を実装しています。
+                </p>
+            </div>
+        </section>
+    </main>
+</body>
+</html>
