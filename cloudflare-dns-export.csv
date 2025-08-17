@@ -1,0 +1,9 @@
+type,name,content,ttl,priority,proxied
+CNAME,@,quiver-network.pages.dev,Auto,,true
+CNAME,explorer,quiver-network.pages.dev,Auto,,true
+CNAME,api,quiver-network.pages.dev,Auto,,true
+CNAME,dashboard,quiver-network.pages.dev,Auto,,true
+CNAME,security,quiver-network.pages.dev,Auto,,true
+CNAME,quicpair,quiver-network.pages.dev,Auto,,true
+CNAME,playground,quiver-network.pages.dev,Auto,,true
+CNAME,www,quiver-network.pages.dev,Auto,,true

@@ -1,0 +1,166 @@
+# QUIVer DNS Records Configuration
+# This file is the source of truth for all DNS records
+# Changes here will be automatically synced to Cloudflare
+
+domain: quiver.network
+ttl: auto  # Cloudflare will manage TTL
+
+# Frontend records (Cloudflare Pages)
+frontend:
+  - name: "@"
+    type: CNAME
+    content: quiver-network.pages.dev
+    proxied: true
+    
+  - name: www
+    type: CNAME
+    content: quiver-network.pages.dev
+    proxied: true
+    
+  - name: explorer
+    type: CNAME
+    content: quiver-network.pages.dev
+    proxied: true
+    
+  - name: api
+    type: CNAME
+    content: quiver-network.pages.dev
+    proxied: true
+    
+  - name: dashboard
+    type: CNAME
+    content: quiver-network.pages.dev
+    proxied: true
+    
+  - name: security
+    type: CNAME
+    content: quiver-network.pages.dev
+    proxied: true
+    
+  - name: quicpair
+    type: CNAME
+    content: quiver-network.pages.dev
+    proxied: true
+    
+  - name: playground
+    type: CNAME
+    content: quiver-network.pages.dev
+    proxied: true
+    
+  - name: docs
+    type: CNAME
+    content: quiver-network.pages.dev
+    proxied: true
+    
+  - name: status
+    type: CNAME
+    content: quiver-network.pages.dev
+    proxied: true
+    
+  - name: blog
+    type: CNAME
+    content: quiver-network.pages.dev
+    proxied: true
+    
+  - name: community
+    type: CNAME
+    content: quiver-network.pages.dev
+    proxied: true
+    
+  - name: cdn
+    type: CNAME
+    content: quiver-network.pages.dev
+    proxied: true
+
+# Backend services (to be updated when deployed)
+backend:
+  # Gateway API
+  - name: gateway
+    type: CNAME
+    content: quiver-network.pages.dev  # Placeholder until deployed
+    proxied: true
+    comment: "Gateway API - Update to actual IP when deployed"
+    
+  - name: gw
+    type: CNAME
+    content: gateway.quiver.network
+    proxied: true
+    
+  - name: api-gw
+    type: CNAME
+    content: gateway.quiver.network
+    proxied: true
+  
+  # WebRTC Signaling
+  - name: signal
+    type: CNAME
+    content: quiver-network.pages.dev  # Placeholder until deployed
+    proxied: true
+    comment: "WebRTC Signaling - Update to actual IP when deployed"
+    
+  - name: signaling
+    type: CNAME
+    content: signal.quiver.network
+    proxied: true
+    
+  - name: ws
+    type: CNAME
+    content: signal.quiver.network
+    proxied: true
+    
+  - name: wss
+    type: CNAME
+    content: signal.quiver.network
+    proxied: true
+  
+  # Registry Service
+  - name: registry
+    type: CNAME
+    content: quiver-network.pages.dev  # Placeholder until deployed
+    proxied: true
+    comment: "Provider Registry - Update when deployed"
+  
+  # Metrics
+  - name: metrics
+    type: CNAME
+    content: quiver-network.pages.dev  # Placeholder until deployed
+    proxied: true
+    comment: "Metrics Dashboard - Update when deployed"
+    
+  - name: grafana
+    type: CNAME
+    content: metrics.quiver.network
+    proxied: true
+
+# Bootstrap nodes (to be added when deployed)
+# bootstrap:
+#   - name: bootstrap
+#     type: A
+#     content: "1.2.3.4"  # Replace with actual IP
+#     proxied: false
+#   
+#   - name: bootstrap1
+#     type: A
+#     content: "1.2.3.5"  # Replace with actual IP
+#     proxied: false
+#   
+#   - name: bootstrap2
+#     type: A
+#     content: "1.2.3.6"  # Replace with actual IP
+#     proxied: false
+
+# SRV records for service discovery (uncomment when services are deployed)
+# srv:
+#   - name: "_signal._tcp"
+#     type: SRV
+#     priority: 10
+#     weight: 10
+#     port: 8081
+#     target: signal.quiver.network
+#   
+#   - name: "_gateway._tcp"
+#     type: SRV
+#     priority: 10
+#     weight: 10
+#     port: 8080
+#     target: gateway.quiver.network

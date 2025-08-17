@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="QUIVer Explorer - ネットワークの現在地。ノード、ジョブ、レイテンシ、コストを可視化。">
+    <title>QUIVer Explorer - ネットワーク可視化</title>
+    
+    <link rel="stylesheet" href="https://unpkg.com/maplibre-gl@3.1.0/dist/maplibre-gl.css">
+    
+    <style>
+        :root {
+            --primary: #0071e3;
+            --secondary: #5e5ce6;
+            --accent: #af52de;
+            --success: #34c759;
+            --warning: #ff9500;
+            --danger: #ff3b30;
+            --dark: #1d1d1f;
+            --light: #f5f5f7;
+            --gray: #86868b;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', sans-serif;
+            background: #000;
+            color: #fff;
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* ヘッダー */
+        .header {
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            padding: 20px;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+        }
+
+        .header-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            background: linear-gradient(45deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-decoration: none;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 30px;
+            list-style: none;
+        }
+
+        .nav-links a {
+            color: #fff;
+            text-decoration: none;
+            opacity: 0.8;
+            transition: opacity 0.3s;
+        }
+
+        .nav-links a:hover {
+            opacity: 1;
+        }
+
+        /* メインコンテンツ */
+        .main-container {
+            display: grid;
+            grid-template-columns: 1fr 400px;
+            height: 100vh;
+            padding-top: 80px;
+        }
+
+        /* マップエリア */
+        .map-container {
+            position: relative;
+            background: #111;
+        }
+
+        #map {
+            width: 100%;
+            height: 100%;
+        }
+
+        .map-overlay {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(10px);
+            border-radius: 12px;
+            padding: 20px;
+            min-width: 300px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+        }
+
+        .stat-box {
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 1.8rem;
+            font-weight: 300;
+            color: var(--primary);
+        }
+
+        .stat-label {
+            font-size: 0.85rem;
+            color: var(--gray);
+        }
+
+        /* サイドバー */
+        .sidebar {
+            background: rgba(255, 255, 255, 0.05);
+            overflow-y: auto;
+            padding: 20px;
+        }
+
+        .sidebar-section {
+            margin-bottom: 30px;
+        }
+
+        .section-title {
+            font-size: 1.2rem;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .section-title .badge {
+            background: var(--primary);
+            color: #fff;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+        }
+
+        /* ノードリスト */
+        .node-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .node-item {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            padding: 12px;
+            display: grid;
+            grid-template-columns: 1fr auto;
+            gap: 10px;
+            transition: all 0.3s;
+        }
+
+        .node-item:hover {
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        .node-info {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .node-id {
+            font-family: 'SF Mono', monospace;
+            font-size: 0.85rem;
+            color: var(--primary);
+        }
+
+        .node-specs {
+            font-size: 0.8rem;
+            color: var(--gray);
+        }
+
+        .node-status {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--success);
+        }
+
+        .status-dot.inactive {
+            background: var(--gray);
+        }
+
+        /* ジョブフィード */
+        .job-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .job-item {
+            background: rgba(255, 255, 255, 0.03);
+            border-left: 3px solid var(--primary);
+            border-radius: 4px;
+            padding: 10px;
+            font-size: 0.85rem;
+        }
+
+        .job-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 5px;
+        }
+
+        .job-model {
+            color: var(--primary);
+            font-weight: 600;
+        }
+
+        .job-time {
+            color: var(--gray);
+        }
+
+        .job-details {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            font-size: 0.75rem;
+            color: var(--gray);
+        }
+
+        /* フィルター */
+        .filters {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .filter-btn {
+            padding: 6px 12px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 6px;
+            color: #fff;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .filter-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .filter-btn.active {
+            background: var(--primary);
+            border-color: var(--primary);
+        }
+
+        /* ランキング */
+        .ranking-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .ranking-item {
+            display: grid;
+            grid-template-columns: 30px 1fr auto;
+            gap: 10px;
+            align-items: center;
+            padding: 8px;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 6px;
+        }
+
+        .ranking-position {
+            font-weight: 600;
+            text-align: center;
+        }
+
+        .ranking-node {
+            font-family: 'SF Mono', monospace;
+            font-size: 0.85rem;
+        }
+
+        .ranking-value {
+            color: var(--primary);
+            font-weight: 500;
+        }
+
+        /* レスポンシブ */
+        @media (max-width: 1024px) {
+            .main-container {
+                grid-template-columns: 1fr;
+            }
+
+            .sidebar {
+                display: none;
+            }
+
+            .map-overlay {
+                right: 20px;
+                left: auto;
+            }
+        }
+
+        /* 免責事項 */
+        .disclaimer {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(10px);
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            color: var(--gray);
+            z-index: 100;
+        }
+    </style>
+</head>
+<body>
+    <!-- ヘッダー -->
+    <header class="header">
+        <div class="header-content">
+            <a href="/" class="logo">QUIVer Explorer</a>
+            <nav>
+                <ul class="nav-links">
+                    <li><a href="/">ホーム</a></li>
+                    <li><a href="/docs/">ドキュメント</a></li>
+                    <li><a href="/api/">API</a></li>
+                    <li><a href="/dashboard/">ダッシュボード</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <!-- メインコンテンツ -->
+    <div class="main-container">
+        <!-- マップエリア -->
+        <div class="map-container">
+            <div id="map"></div>
+            
+            <!-- 統計オーバーレイ -->
+            <div class="map-overlay">
+                <div class="stats-grid">
+                    <div class="stat-box">
+                        <div class="stat-value" id="activeNodes">7</div>
+                        <div class="stat-label">アクティブノード</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-value" id="totalJobs">342</div>
+                        <div class="stat-label">本日のジョブ</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-value" id="avgLatency">243ms</div>
+                        <div class="stat-label">平均レイテンシ</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-value" id="totalTFLOPS">29.3</div>
+                        <div class="stat-label">総TFLOPS</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- サイドバー -->
+        <aside class="sidebar">
+            <!-- フィルター -->
+            <div class="sidebar-section">
+                <div class="filters">
+                    <button class="filter-btn active">すべて</button>
+                    <button class="filter-btn">GPU対応</button>
+                    <button class="filter-btn">高稼働率</button>
+                </div>
+            </div>
+
+            <!-- アクティブノード -->
+            <div class="sidebar-section">
+                <h3 class="section-title">
+                    アクティブノード
+                    <span class="badge">Live</span>
+                </h3>
+                <div class="node-list" id="nodeList">
+                    <!-- 動的に生成 -->
+                </div>
+            </div>
+
+            <!-- 最新ジョブ -->
+            <div class="sidebar-section">
+                <h3 class="section-title">最新ジョブ</h3>
+                <div class="job-list" id="jobList">
+                    <!-- 動的に生成 -->
+                </div>
+            </div>
+
+            <!-- ランキング -->
+            <div class="sidebar-section">
+                <h3 class="section-title">トップProviders（24h）</h3>
+                <div class="ranking-list" id="rankingList">
+                    <!-- 動的に生成 -->
+                </div>
+            </div>
+        </aside>
+    </div>
+
+    <!-- 免責事項 -->
+    <div class="disclaimer">
+        ※ 位置情報は概算です。プライバシー保護のため、正確な位置は表示されません。
+    </div>
+
+    <script src="https://unpkg.com/maplibre-gl@3.1.0/dist/maplibre-gl.js"></script>
+    <script>
+        // マップ初期化
+        const map = new maplibregl.Map({
+            container: 'map',
+            style: {
+                version: 8,
+                sources: {
+                    'osm': {
+                        type: 'raster',
+                        tiles: ['https://tile.openstreetmap.org/{z}/{x}/{y}.png'],
+                        tileSize: 256,
+                        attribution: '© OpenStreetMap Contributors'
+                    }
+                },
+                layers: [{
+                    id: 'osm',
+                    type: 'raster',
+                    source: 'osm'
+                }],
+                glyphs: 'https://cdn.jsdelivr.net/gh/openmaptiles/fonts@2024-09-18/{fontstack}/{range}.pbf'
+            },
+            center: [139.6917, 35.6895], // 東京
+            zoom: 3,
+            attributionControl: false
+        });
+
+        // ダークモードスタイルを適用
+        map.on('load', () => {
+            map.setPaintProperty('osm', 'raster-brightness-max', 0.3);
+            map.setPaintProperty('osm', 'raster-contrast', 0.8);
+            
+            // ノードを追加
+            addNodes();
+        });
+
+        // サンプルノードデータ
+        const sampleNodes = [
+            { id: '12D3KooW...xyz1', coords: [139.6917, 35.6895], specs: 'RTX 4090, 64GB', status: 'active', location: '東京' },
+            { id: '12D3KooW...xyz2', coords: [126.9780, 37.5665], specs: 'RTX 3080, 32GB', status: 'active', location: 'ソウル' },
+            { id: '12D3KooW...xyz3', coords: [121.4737, 31.2304], specs: 'A100, 128GB', status: 'active', location: '上海' },
+            { id: '12D3KooW...xyz4', coords: [103.8198, 1.3521], specs: 'RTX 4070, 32GB', status: 'active', location: 'シンガポール' },
+            { id: '12D3KooW...xyz5', coords: [-122.4194, 37.7749], specs: 'M2 Ultra, 192GB', status: 'active', location: 'サンフランシスコ' },
+            { id: '12D3KooW...xyz6', coords: [2.3522, 48.8566], specs: 'RTX 3090, 64GB', status: 'inactive', location: 'パリ' },
+            { id: '12D3KooW...xyz7', coords: [151.2093, -33.8688], specs: 'RTX 4080, 48GB', status: 'active', location: 'シドニー' }
+        ];
+
+        // ノードをマップに追加
+        function addNodes() {
+            sampleNodes.forEach(node => {
+                // マーカー作成
+                const el = document.createElement('div');
+                el.className = 'marker';
+                el.style.width = '20px';
+                el.style.height = '20px';
+                el.style.borderRadius = '50%';
+                el.style.background = node.status === 'active' ? '#34c759' : '#86868b';
+                el.style.border = '3px solid rgba(52, 199, 89, 0.3)';
+                el.style.boxShadow = '0 0 20px rgba(52, 199, 89, 0.5)';
+                
+                new maplibregl.Marker({ element: el })
+                    .setLngLat(node.coords)
+                    .setPopup(new maplibregl.Popup().setHTML(`
+                        <div style="color: #000; font-size: 14px;">
+                            <strong>${node.location}</strong><br>
+                            <code style="font-size: 12px;">${node.id}</code><br>
+                            <span style="color: #666;">${node.specs}</span>
+                        </div>
+                    `))
+                    .addTo(map);
+            });
+        }
+
+        // ノードリスト更新
+        function updateNodeList() {
+            const nodeList = document.getElementById('nodeList');
+            nodeList.innerHTML = sampleNodes.map(node => `
+                <div class="node-item">
+                    <div class="node-info">
+                        <div class="node-id">${node.id}</div>
+                        <div class="node-specs">${node.specs}</div>
+                    </div>
+                    <div class="node-status">
+                        <div class="status-dot ${node.status === 'inactive' ? 'inactive' : ''}"></div>
+                        <span>${node.location}</span>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // ジョブリスト更新
+        function updateJobList() {
+            const jobs = [
+                { model: 'llama3.2:3b', time: '2分前', duration: '1.2s', cost: '0.002 QUIV', size: '512 tokens' },
+                { model: 'stable-diffusion', time: '5分前', duration: '3.8s', cost: '0.015 QUIV', size: '1024x1024' },
+                { model: 'qwen2.5:3b', time: '8分前', duration: '0.9s', cost: '0.001 QUIV', size: '256 tokens' },
+                { model: 'whisper-large', time: '12分前', duration: '5.2s', cost: '0.008 QUIV', size: '3.2MB audio' }
+            ];
+
+            const jobList = document.getElementById('jobList');
+            jobList.innerHTML = jobs.map(job => `
+                <div class="job-item">
+                    <div class="job-header">
+                        <span class="job-model">${job.model}</span>
+                        <span class="job-time">${job.time}</span>
+                    </div>
+                    <div class="job-details">
+                        <span>⏱ ${job.duration}</span>
+                        <span>💰 ${job.cost}</span>
+                        <span>📊 ${job.size}</span>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // ランキング更新
+        function updateRanking() {
+            const ranking = [
+                { position: 1, id: '12D3KooW...abc1', value: '847 jobs' },
+                { position: 2, id: '12D3KooW...def2', value: '623 jobs' },
+                { position: 3, id: '12D3KooW...ghi3', value: '589 jobs' }
+            ];
+
+            const rankingList = document.getElementById('rankingList');
+            rankingList.innerHTML = ranking.map(item => `
+                <div class="ranking-item">
+                    <div class="ranking-position">#${item.position}</div>
+                    <div class="ranking-node">${item.id}</div>
+                    <div class="ranking-value">${item.value}</div>
+                </div>
+            `).join('');
+        }
+
+        // 初期化
+        updateNodeList();
+        updateJobList();
+        updateRanking();
+
+        // リアルタイム更新シミュレーション
+        setInterval(() => {
+            // 統計値を微小に変動
+            const activeNodes = document.getElementById('activeNodes');
+            const currentNodes = parseInt(activeNodes.textContent);
+            activeNodes.textContent = currentNodes + Math.floor(Math.random() * 3 - 1);
+
+            const totalJobs = document.getElementById('totalJobs');
+            totalJobs.textContent = parseInt(totalJobs.textContent) + Math.floor(Math.random() * 2);
+
+            // ジョブリストを更新
+            if (Math.random() > 0.7) {
+                updateJobList();
+            }
+        }, 5000);
+    </script>
+</body>
+</html>

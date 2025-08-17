@@ -1,0 +1,63 @@
+; Cloudflare DNS Records for quiver.network (Complete)
+; BIND format (RFC 1035)
+; Import this file in Cloudflare Dashboard: DNS > Advanced > Import DNS Records
+
+$ORIGIN quiver.network.
+$TTL 1 ; Auto TTL in Cloudflare
+
+; === Frontend (Cloudflare Pages) ===
+; Root domain
+@           IN  CNAME   quiver-network.pages.dev.
+
+; Frontend subdomains
+explorer    IN  CNAME   quiver-network.pages.dev.
+api         IN  CNAME   quiver-network.pages.dev.
+dashboard   IN  CNAME   quiver-network.pages.dev.
+security    IN  CNAME   quiver-network.pages.dev.
+quicpair    IN  CNAME   quiver-network.pages.dev.
+playground  IN  CNAME   quiver-network.pages.dev.
+www         IN  CNAME   quiver-network.pages.dev.
+docs        IN  CNAME   quiver-network.pages.dev.
+status      IN  CNAME   quiver-network.pages.dev.
+blog        IN  CNAME   quiver-network.pages.dev.
+community   IN  CNAME   quiver-network.pages.dev.
+
+; === Backend Services (実際のサーバーIP/CNAMEに置き換えてください) ===
+; Gateway API (Port 8080)
+gateway     IN  A       YOUR_GATEWAY_SERVER_IP
+gw          IN  CNAME   gateway.quiver.network.
+api-gw      IN  CNAME   gateway.quiver.network.
+
+; WebRTC Signaling Server (Port 8081)
+signal      IN  A       YOUR_SIGNAL_SERVER_IP
+signaling   IN  CNAME   signal.quiver.network.
+ws          IN  CNAME   signal.quiver.network.
+wss         IN  CNAME   signal.quiver.network.
+
+; Provider Registry
+registry    IN  A       YOUR_REGISTRY_SERVER_IP
+
+; Bootstrap nodes for P2P
+bootstrap   IN  A       YOUR_BOOTSTRAP_IP
+bootstrap1  IN  A       YOUR_BOOTSTRAP1_IP
+bootstrap2  IN  A       YOUR_BOOTSTRAP2_IP
+bootstrap3  IN  A       YOUR_BOOTSTRAP3_IP
+
+; CDN for static assets
+cdn         IN  CNAME   quiver-network.pages.dev.
+
+; Monitoring and metrics
+metrics     IN  A       YOUR_METRICS_SERVER_IP
+grafana     IN  CNAME   metrics.quiver.network.
+
+; === SRV Records for service discovery ===
+; WebRTC signaling
+_signal._tcp        IN  SRV  10 10 8081 signal.quiver.network.
+_signal._wss._tcp   IN  SRV  10 10 443  signal.quiver.network.
+
+; Gateway API
+_gateway._tcp       IN  SRV  10 10 8080 gateway.quiver.network.
+
+; P2P bootstrap
+_p2p._tcp          IN  SRV  10 10 4001 bootstrap.quiver.network.
+_p2p._udp          IN  SRV  10 10 4001 bootstrap.quiver.network.

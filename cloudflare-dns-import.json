@@ -1,0 +1,60 @@
+{
+  "records": [
+    {
+      "type": "CNAME",
+      "name": "@",
+      "content": "quiver-network.pages.dev",
+      "proxied": true,
+      "ttl": 1
+    },
+    {
+      "type": "CNAME",
+      "name": "explorer",
+      "content": "quiver-network.pages.dev",
+      "proxied": true,
+      "ttl": 1
+    },
+    {
+      "type": "CNAME",
+      "name": "api",
+      "content": "quiver-network.pages.dev",
+      "proxied": true,
+      "ttl": 1
+    },
+    {
+      "type": "CNAME",
+      "name": "dashboard",
+      "content": "quiver-network.pages.dev",
+      "proxied": true,
+      "ttl": 1
+    },
+    {
+      "type": "CNAME",
+      "name": "security",
+      "content": "quiver-network.pages.dev",
+      "proxied": true,
+      "ttl": 1
+    },
+    {
+      "type": "CNAME",
+      "name": "quicpair",
+      "content": "quiver-network.pages.dev",
+      "proxied": true,
+      "ttl": 1
+    },
+    {
+      "type": "CNAME",
+      "name": "playground",
+      "content": "quiver-network.pages.dev",
+      "proxied": true,
+      "ttl": 1
+    },
+    {
+      "type": "CNAME",
+      "name": "www",
+      "content": "quiver-network.pages.dev",
+      "proxied": true,
+      "ttl": 1
+    }
+  ]
+}

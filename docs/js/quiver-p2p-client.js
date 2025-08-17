@@ -13,9 +13,26 @@ class QUIVerP2PClient {
     // Connect to P2P network via WebRTC
     async connect() {
         try {
-            // First, try to get bootstrap nodes
-            const bootstrapResponse = await fetch('https://yukihamada.github.io/quiver/bootstrap/public-bootstrap.json');
-            const bootstrapData = await bootstrapResponse.json();
+            // First, try to get bootstrap nodes from multiple sources
+            let bootstrapData = null;
+            const bootstrapUrls = [
+                'https://quiver.network/bootstrap/public-bootstrap.json',
+                'https://raw.githubusercontent.com/yukihamada/quiver/main/docs/bootstrap/public-bootstrap.json',
+                './bootstrap/public-bootstrap.json'
+            ];
+            
+            for (const url of bootstrapUrls) {
+                try {
+                    const bootstrapResponse = await fetch(url);
+                    if (bootstrapResponse.ok) {
+                        bootstrapData = await bootstrapResponse.json();
+                        console.log('Loaded bootstrap data from:', url);
+                        break;
+                    }
+                } catch (e) {
+                    console.log('Failed to load from:', url);
+                }
+            }
             
             // Connect to signalling server
             await this.connectSignalling();
@@ -33,13 +50,13 @@ class QUIVerP2PClient {
     // Connect to signalling server for WebRTC negotiation
     async connectSignalling() {
         return new Promise((resolve, reject) => {
-            // Try multiple signalling servers
+            // Try multiple signalling servers (local first for development)
             const signallingUrls = [
-                'wss://signal.localhost/signal',
+                'ws://localhost:8444/signal',
+                'ws://192.168.0.194:8444/signal',
                 'wss://signal.quiver.network/signal',
                 'wss://signal-asia.quiver.network/signal',
-                'wss://34.146.216.182:8444/signal',  // GCP signalling server
-                'wss://localhost:8444/signal'
+                'wss://34.146.216.182:8444/signal'  // GCP signalling server
             ];
 
             let connected = false;

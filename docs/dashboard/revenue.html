@@ -1,0 +1,731 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="QUIVer Provider Dashboard - 収益管理と出金">
+    <title>収益・請求 - QUIVer Provider Dashboard</title>
+    
+    <style>
+        :root {
+            --primary: #0071e3;
+            --secondary: #5e5ce6;
+            --accent: #af52de;
+            --success: #34c759;
+            --warning: #ff9500;
+            --danger: #ff3b30;
+            --dark: #1d1d1f;
+            --light: #f5f5f7;
+            --gray: #86868b;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', sans-serif;
+            background: #000;
+            color: #fff;
+            line-height: 1.6;
+        }
+
+        /* レイアウト（ダッシュボードと共通） */
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 30px;
+        }
+
+        /* ヘッダー */
+        .page-header {
+            margin-bottom: 40px;
+        }
+
+        .page-title {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        .page-subtitle {
+            color: var(--gray);
+            font-size: 1.1rem;
+        }
+
+        /* 収益サマリー */
+        .revenue-summary {
+            background: linear-gradient(135deg, rgba(0, 113, 227, 0.1) 0%, rgba(94, 92, 230, 0.1) 100%);
+            border-radius: 20px;
+            padding: 40px;
+            margin-bottom: 40px;
+            text-align: center;
+        }
+
+        .total-revenue {
+            font-size: 4rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            background: linear-gradient(180deg, #fff 0%, #86868b 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .revenue-period {
+            color: var(--gray);
+            font-size: 1.1rem;
+            margin-bottom: 30px;
+        }
+
+        .revenue-actions {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 12px 30px;
+            background: var(--primary);
+            color: #fff;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(0, 113, 227, 0.4);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.2);
+            box-shadow: none;
+        }
+
+        /* タブ */
+        .tabs {
+            display: flex;
+            gap: 30px;
+            margin-bottom: 40px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .tab {
+            padding: 15px 0;
+            color: var(--gray);
+            cursor: pointer;
+            transition: all 0.3s;
+            border-bottom: 2px solid transparent;
+            font-weight: 500;
+        }
+
+        .tab.active {
+            color: #fff;
+            border-bottom-color: var(--primary);
+        }
+
+        /* 収益詳細 */
+        .revenue-details {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 30px;
+        }
+
+        .revenue-chart-section {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 30px;
+        }
+
+        .chart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .chart-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+        }
+
+        .chart-controls {
+            display: flex;
+            gap: 10px;
+        }
+
+        .chart-btn {
+            padding: 8px 16px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            color: #fff;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 0.9rem;
+        }
+
+        .chart-btn.active {
+            background: var(--primary);
+            border-color: var(--primary);
+        }
+
+        /* 収益内訳 */
+        .revenue-breakdown {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 30px;
+        }
+
+        .breakdown-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 25px;
+        }
+
+        .breakdown-list {
+            list-style: none;
+        }
+
+        .breakdown-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .breakdown-item:last-child {
+            border-bottom: none;
+        }
+
+        .breakdown-label {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .breakdown-icon {
+            width: 40px;
+            height: 40px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+        }
+
+        .breakdown-value {
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        /* 取引履歴 */
+        .transaction-section {
+            margin-top: 40px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 30px;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        .section-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+        }
+
+        .transaction-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .transaction-table th {
+            text-align: left;
+            padding: 15px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            color: var(--gray);
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+
+        .transaction-table td {
+            padding: 15px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .transaction-type {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+
+        .transaction-type.earning {
+            background: rgba(52, 199, 89, 0.2);
+            color: var(--success);
+        }
+
+        .transaction-type.withdrawal {
+            background: rgba(0, 113, 227, 0.2);
+            color: var(--primary);
+        }
+
+        .transaction-type.pending {
+            background: rgba(255, 149, 0, 0.2);
+            color: var(--warning);
+        }
+
+        /* 出金モーダル */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.open {
+            display: flex;
+        }
+
+        .modal-content {
+            background: var(--dark);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 500px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            margin-bottom: 30px;
+        }
+
+        .modal-title {
+            font-size: 1.8rem;
+            margin-bottom: 10px;
+        }
+
+        .modal-subtitle {
+            color: var(--gray);
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: 500;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            color: #fff;
+            font-size: 1rem;
+            transition: all 0.3s;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        .form-select {
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg width='12' height='8' viewBox='0 0 12 8' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1L6 6L11 1' stroke='white' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 15px center;
+            padding-right: 40px;
+        }
+
+        .available-balance {
+            background: rgba(52, 199, 89, 0.1);
+            border: 1px solid rgba(52, 199, 89, 0.3);
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 25px;
+            text-align: center;
+        }
+
+        .available-balance-label {
+            color: var(--gray);
+            font-size: 0.9rem;
+            margin-bottom: 5px;
+        }
+
+        .available-balance-value {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--success);
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+        }
+
+        .modal-actions .btn {
+            flex: 1;
+        }
+
+        /* レスポンシブ */
+        @media (max-width: 1024px) {
+            .revenue-details {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .total-revenue {
+                font-size: 3rem;
+            }
+
+            .revenue-actions {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .tabs {
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+            }
+
+            .transaction-table {
+                font-size: 0.85rem;
+            }
+
+            .transaction-table th,
+            .transaction-table td {
+                padding: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- ページヘッダー -->
+        <header class="page-header">
+            <h1 class="page-title">収益・請求</h1>
+            <p class="page-subtitle">収益の確認と出金管理</p>
+        </header>
+
+        <!-- 収益サマリー -->
+        <section class="revenue-summary">
+            <div class="total-revenue">$12,345.67</div>
+            <div class="revenue-period">利用可能残高</div>
+            
+            <div class="revenue-actions">
+                <button class="btn" onclick="openWithdrawModal()">
+                    💸 出金申請
+                </button>
+                <button class="btn btn-secondary">
+                    📄 明細書をダウンロード
+                </button>
+                <button class="btn btn-secondary">
+                    ⚙️ 出金設定
+                </button>
+            </div>
+        </section>
+
+        <!-- タブ -->
+        <div class="tabs">
+            <div class="tab active" onclick="switchTab('overview')">概要</div>
+            <div class="tab" onclick="switchTab('transactions')">取引履歴</div>
+            <div class="tab" onclick="switchTab('invoices')">請求書</div>
+            <div class="tab" onclick="switchTab('tax')">税務情報</div>
+        </div>
+
+        <!-- 収益詳細 -->
+        <div class="revenue-details">
+            <!-- チャートセクション -->
+            <section class="revenue-chart-section">
+                <div class="chart-header">
+                    <h2 class="chart-title">収益推移</h2>
+                    <div class="chart-controls">
+                        <button class="chart-btn">日次</button>
+                        <button class="chart-btn active">週次</button>
+                        <button class="chart-btn">月次</button>
+                        <button class="chart-btn">年次</button>
+                    </div>
+                </div>
+                
+                <!-- チャート（簡易表現） -->
+                <div style="height: 300px; display: flex; align-items: flex-end; gap: 10px;">
+                    <div style="flex: 1; height: 70%; background: linear-gradient(to top, var(--primary), var(--secondary)); border-radius: 4px 4px 0 0;"></div>
+                    <div style="flex: 1; height: 85%; background: linear-gradient(to top, var(--primary), var(--secondary)); border-radius: 4px 4px 0 0;"></div>
+                    <div style="flex: 1; height: 60%; background: linear-gradient(to top, var(--primary), var(--secondary)); border-radius: 4px 4px 0 0;"></div>
+                    <div style="flex: 1; height: 90%; background: linear-gradient(to top, var(--primary), var(--secondary)); border-radius: 4px 4px 0 0;"></div>
+                    <div style="flex: 1; height: 75%; background: linear-gradient(to top, var(--primary), var(--secondary)); border-radius: 4px 4px 0 0;"></div>
+                    <div style="flex: 1; height: 95%; background: linear-gradient(to top, var(--primary), var(--secondary)); border-radius: 4px 4px 0 0;"></div>
+                    <div style="flex: 1; height: 80%; background: linear-gradient(to top, var(--primary), var(--secondary)); border-radius: 4px 4px 0 0;"></div>
+                </div>
+            </section>
+
+            <!-- 収益内訳 -->
+            <section class="revenue-breakdown">
+                <h2 class="breakdown-title">収益内訳（今月）</h2>
+                
+                <ul class="breakdown-list">
+                    <li class="breakdown-item">
+                        <div class="breakdown-label">
+                            <div class="breakdown-icon">🤖</div>
+                            <div>
+                                <div>推論処理</div>
+                                <div style="font-size: 0.85rem; color: var(--gray);">8,456 ジョブ</div>
+                            </div>
+                        </div>
+                        <div class="breakdown-value">$892.34</div>
+                    </li>
+                    
+                    <li class="breakdown-item">
+                        <div class="breakdown-label">
+                            <div class="breakdown-icon">🖼️</div>
+                            <div>
+                                <div>画像生成</div>
+                                <div style="font-size: 0.85rem; color: var(--gray);">342 ジョブ</div>
+                            </div>
+                        </div>
+                        <div class="breakdown-value">$234.56</div>
+                    </li>
+                    
+                    <li class="breakdown-item">
+                        <div class="breakdown-label">
+                            <div class="breakdown-icon">💎</div>
+                            <div>
+                                <div>優先処理ボーナス</div>
+                                <div style="font-size: 0.85rem; color: var(--gray);">高速応答</div>
+                            </div>
+                        </div>
+                        <div class="breakdown-value">$78.90</div>
+                    </li>
+                    
+                    <li class="breakdown-item">
+                        <div class="breakdown-label">
+                            <div class="breakdown-icon">🏆</div>
+                            <div>
+                                <div>パフォーマンスボーナス</div>
+                                <div style="font-size: 0.85rem; color: var(--gray);">99.9% 稼働率</div>
+                            </div>
+                        </div>
+                        <div class="breakdown-value">$28.76</div>
+                    </li>
+                </ul>
+            </section>
+        </div>
+
+        <!-- 取引履歴 -->
+        <section class="transaction-section">
+            <div class="section-header">
+                <h2 class="section-title">最近の取引</h2>
+                <button class="btn btn-secondary">
+                    すべて表示
+                </button>
+            </div>
+
+            <table class="transaction-table">
+                <thead>
+                    <tr>
+                        <th>日時</th>
+                        <th>タイプ</th>
+                        <th>詳細</th>
+                        <th>金額</th>
+                        <th>ステータス</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>2024-01-28 14:32</td>
+                        <td>
+                            <span class="transaction-type earning">
+                                ↓ 収益
+                            </span>
+                        </td>
+                        <td>ジョブ #8456 完了</td>
+                        <td style="color: var(--success);">+$12.34</td>
+                        <td>確定</td>
+                    </tr>
+                    <tr>
+                        <td>2024-01-28 09:15</td>
+                        <td>
+                            <span class="transaction-type earning">
+                                ↓ 収益
+                            </span>
+                        </td>
+                        <td>バッチ処理 15件</td>
+                        <td style="color: var(--success);">+$45.67</td>
+                        <td>確定</td>
+                    </tr>
+                    <tr>
+                        <td>2024-01-27 18:00</td>
+                        <td>
+                            <span class="transaction-type withdrawal">
+                                ↑ 出金
+                            </span>
+                        </td>
+                        <td>銀行振込</td>
+                        <td>-$500.00</td>
+                        <td>完了</td>
+                    </tr>
+                    <tr>
+                        <td>2024-01-27 15:22</td>
+                        <td>
+                            <span class="transaction-type earning">
+                                ↓ 収益
+                            </span>
+                        </td>
+                        <td>優先処理ボーナス</td>
+                        <td style="color: var(--success);">+$8.90</td>
+                        <td>確定</td>
+                    </tr>
+                    <tr>
+                        <td>2024-01-26 12:00</td>
+                        <td>
+                            <span class="transaction-type pending">
+                                ⏳ 保留
+                            </span>
+                        </td>
+                        <td>週次集計</td>
+                        <td>$234.56</td>
+                        <td>処理中</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+    </div>
+
+    <!-- 出金モーダル -->
+    <div class="modal" id="withdrawModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">出金申請</h2>
+                <p class="modal-subtitle">利用可能残高から出金します</p>
+            </div>
+
+            <div class="available-balance">
+                <div class="available-balance-label">利用可能残高</div>
+                <div class="available-balance-value">$12,345.67</div>
+            </div>
+
+            <form onsubmit="handleWithdraw(event)">
+                <div class="form-group">
+                    <label class="form-label">出金方法</label>
+                    <select class="form-input form-select" required>
+                        <option value="">選択してください</option>
+                        <option value="bank">銀行振込（手数料: $2.50）</option>
+                        <option value="paypal">PayPal（手数料: 2.9%）</option>
+                        <option value="crypto">暗号通貨（手数料: $1.00）</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">出金額（USD）</label>
+                    <input type="number" class="form-input" placeholder="0.00" min="10" max="12345.67" step="0.01" required>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">メモ（任意）</label>
+                    <input type="text" class="form-input" placeholder="出金の目的など">
+                </div>
+
+                <div class="modal-actions">
+                    <button type="submit" class="btn">
+                        申請する
+                    </button>
+                    <button type="button" class="btn btn-secondary" onclick="closeWithdrawModal()">
+                        キャンセル
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // タブ切り替え
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            // 実際の実装では、タブに応じたコンテンツを表示
+            console.log('Switching to tab:', tabName);
+        }
+
+        // 出金モーダル
+        function openWithdrawModal() {
+            document.getElementById('withdrawModal').classList.add('open');
+        }
+
+        function closeWithdrawModal() {
+            document.getElementById('withdrawModal').classList.remove('open');
+        }
+
+        function handleWithdraw(event) {
+            event.preventDefault();
+            // 実際の実装では、出金処理を実行
+            alert('出金申請を受け付けました。2-3営業日で処理されます。');
+            closeWithdrawModal();
+        }
+
+        // モーダル外クリックで閉じる
+        document.getElementById('withdrawModal').addEventListener('click', (e) => {
+            if (e.target === e.currentTarget) {
+                closeWithdrawModal();
+            }
+        });
+
+        // チャート期間切り替え
+        document.querySelectorAll('.chart-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                document.querySelectorAll('.chart-btn').forEach(b => b.classList.remove('active'));
+                e.target.classList.add('active');
+                // 実際の実装では、期間に応じたデータを表示
+            });
+        });
+    </script>
+</body>
+</html>

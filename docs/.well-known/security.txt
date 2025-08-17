@@ -1,0 +1,22 @@
+Contact: mailto:security@quiver.network
+Expires: 2026-01-01T00:00:00.000Z
+Encryption: https://quiver.network/keys/security-pgp.asc
+Acknowledgments: https://quiver.network/security/hall-of-fame
+Preferred-Languages: en, ja
+Canonical: https://quiver.network/.well-known/security.txt
+Policy: https://quiver.network/security/
+
+# QUIVer Security Contact
+# 
+# We take security seriously. If you discover a vulnerability,
+# please report it responsibly to our security team.
+#
+# For critical vulnerabilities, please encrypt your report
+# using our PGP key.
+#
+# Response time:
+# - Acknowledgment: Within 72 hours
+# - Initial assessment: Within 7 days
+# - Resolution timeline: Depends on severity
+#
+# Thank you for helping keep QUIVer secure!

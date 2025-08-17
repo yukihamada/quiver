@@ -1,0 +1,711 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="QUIVer API - 分散AI推論のためのシンプルなAPI。OpenAPI仕様、SDK、サンプルコード。">
+    <title>QUIVer API Documentation</title>
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/5.10.3/swagger-ui.css">
+    
+    <style>
+        :root {
+            --primary: #0071e3;
+            --secondary: #5e5ce6;
+            --accent: #af52de;
+            --success: #34c759;
+            --warning: #ff9500;
+            --danger: #ff3b30;
+            --dark: #1d1d1f;
+            --light: #f5f5f7;
+            --gray: #86868b;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', sans-serif;
+            background: #000;
+            color: #fff;
+            line-height: 1.6;
+        }
+
+        /* ヘッダー */
+        .header {
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            padding: 20px;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+        }
+
+        .header-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            background: linear-gradient(45deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-decoration: none;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 30px;
+            list-style: none;
+        }
+
+        .nav-links a {
+            color: #fff;
+            text-decoration: none;
+            opacity: 0.8;
+            transition: opacity 0.3s;
+        }
+
+        .nav-links a:hover {
+            opacity: 1;
+        }
+
+        /* メインコンテンツ */
+        .main {
+            padding-top: 80px;
+        }
+
+        /* ヒーロー */
+        .hero {
+            background: linear-gradient(135deg, rgba(0, 113, 227, 0.1) 0%, rgba(94, 92, 230, 0.1) 100%);
+            padding: 80px 20px;
+            text-align: center;
+        }
+
+        .hero h1 {
+            font-size: 3rem;
+            margin-bottom: 20px;
+            background: linear-gradient(180deg, #fff 0%, #86868b 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero-subtitle {
+            font-size: 1.3rem;
+            color: var(--gray);
+            margin-bottom: 40px;
+        }
+
+        .quick-links {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .quick-link {
+            padding: 12px 24px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            color: #fff;
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+
+        .quick-link:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+
+        /* APIキーセクション */
+        .api-key-section {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 60px 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .section-title {
+            font-size: 2rem;
+            margin-bottom: 40px;
+            text-align: center;
+        }
+
+        .api-key-box {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 40px;
+            text-align: center;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .api-key-input {
+            width: 100%;
+            padding: 15px;
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            color: #fff;
+            font-family: 'SF Mono', Monaco, monospace;
+            font-size: 1rem;
+            margin: 20px 0;
+        }
+
+        .btn {
+            padding: 12px 30px;
+            background: var(--primary);
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(0, 113, 227, 0.4);
+        }
+
+        /* コードサンプル */
+        .code-section {
+            padding: 60px 20px;
+        }
+
+        .code-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .code-tab {
+            padding: 10px 20px;
+            background: none;
+            border: none;
+            color: var(--gray);
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 1rem;
+            border-bottom: 2px solid transparent;
+        }
+
+        .code-tab.active {
+            color: #fff;
+            border-bottom-color: var(--primary);
+        }
+
+        .code-content {
+            display: none;
+        }
+
+        .code-content.active {
+            display: block;
+        }
+
+        .code-block {
+            background: #1d1d1f;
+            border-radius: 12px;
+            padding: 25px;
+            overflow-x: auto;
+            margin-bottom: 20px;
+        }
+
+        .code-block pre {
+            margin: 0;
+            font-family: 'SF Mono', Monaco, monospace;
+            font-size: 0.9rem;
+            line-height: 1.6;
+        }
+
+        .code-comment {
+            color: #6c6c70;
+        }
+
+        .code-string {
+            color: #fc6a5d;
+        }
+
+        .code-keyword {
+            color: #fc5fa3;
+        }
+
+        .code-function {
+            color: #67b7a4;
+        }
+
+        /* SDK セクション */
+        .sdk-section {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 60px 20px;
+        }
+
+        .sdk-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-top: 40px;
+        }
+
+        .sdk-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 30px;
+            text-align: center;
+            transition: all 0.3s;
+        }
+
+        .sdk-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--primary);
+        }
+
+        .sdk-icon {
+            font-size: 3rem;
+            margin-bottom: 20px;
+        }
+
+        .sdk-name {
+            font-size: 1.3rem;
+            margin-bottom: 10px;
+        }
+
+        .sdk-version {
+            color: var(--gray);
+            margin-bottom: 20px;
+        }
+
+        .sdk-links {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+        }
+
+        .sdk-link {
+            color: var(--primary);
+            text-decoration: none;
+            font-size: 0.9rem;
+        }
+
+        /* 料金セクション */
+        .pricing-section {
+            padding: 60px 20px;
+        }
+
+        .pricing-table {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            overflow: hidden;
+            max-width: 800px;
+            margin: 40px auto;
+        }
+
+        .pricing-table table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .pricing-table th,
+        .pricing-table td {
+            padding: 20px;
+            text-align: left;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .pricing-table th {
+            background: rgba(255, 255, 255, 0.05);
+            font-weight: 600;
+        }
+
+        .pricing-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        /* Swagger UI カスタマイズ */
+        .swagger-section {
+            background: #fff;
+            color: #000;
+            padding: 40px 20px;
+            min-height: 800px;
+        }
+
+        .swagger-ui .topbar {
+            display: none;
+        }
+
+        /* レスポンシブ */
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2rem;
+            }
+
+            .code-tabs {
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+            }
+
+            .sdk-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .nav-links {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- ヘッダー -->
+    <header class="header">
+        <div class="header-content">
+            <a href="/" class="logo">QUIVer API</a>
+            <nav>
+                <ul class="nav-links">
+                    <li><a href="#quickstart">クイックスタート</a></li>
+                    <li><a href="#reference">APIリファレンス</a></li>
+                    <li><a href="#sdks">SDK</a></li>
+                    <li><a href="#pricing">料金</a></li>
+                    <li><a href="/docs/">ドキュメント</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main class="main">
+        <!-- ヒーロー -->
+        <section class="hero">
+            <h1>QUIVer API</h1>
+            <p class="hero-subtitle">
+                分散AI推論をシンプルなAPIで。<br>
+                署名付きレシートで結果を検証可能。
+            </p>
+            <div class="quick-links">
+                <a href="#quickstart" class="quick-link">5分で始める</a>
+                <a href="#reference" class="quick-link">API仕様を見る</a>
+                <a href="https://github.com/yukihamada/quiver/tree/main/examples" class="quick-link">サンプルコード</a>
+            </div>
+        </section>
+
+        <!-- APIキー -->
+        <section class="api-key-section" id="quickstart">
+            <div class="container">
+                <h2 class="section-title">クイックスタート</h2>
+                
+                <div class="api-key-box">
+                    <h3 style="margin-bottom: 20px;">テスト用APIキー</h3>
+                    <input type="text" class="api-key-input" value="test_pk_quiver_1234567890abcdef" readonly>
+                    <button class="btn" onclick="copyApiKey()">コピー</button>
+                    <p style="margin-top: 20px; color: var(--gray); font-size: 0.9rem;">
+                        このキーはテスト用です。本番利用には<a href="/dashboard/" style="color: var(--primary);">ダッシュボード</a>から発行してください。
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- コードサンプル -->
+        <section class="code-section">
+            <div class="container">
+                <h2 class="section-title">コードサンプル</h2>
+                
+                <div class="code-tabs">
+                    <button class="code-tab active" onclick="showTab('javascript')">JavaScript</button>
+                    <button class="code-tab" onclick="showTab('python')">Python</button>
+                    <button class="code-tab" onclick="showTab('go')">Go</button>
+                    <button class="code-tab" onclick="showTab('curl')">cURL</button>
+                </div>
+
+                <!-- JavaScript -->
+                <div class="code-content active" id="javascript">
+                    <div class="code-block">
+                        <pre><code><span class="code-comment">// QUIVer API クライアントの初期化</span>
+<span class="code-keyword">import</span> { QUIVerClient } <span class="code-keyword">from</span> <span class="code-string">'@quiver/sdk'</span>;
+
+<span class="code-keyword">const</span> client = <span class="code-keyword">new</span> <span class="code-function">QUIVerClient</span>({
+  apiKey: <span class="code-string">'test_pk_quiver_1234567890abcdef'</span>
+});
+
+<span class="code-comment">// 推論の実行</span>
+<span class="code-keyword">const</span> response = <span class="code-keyword">await</span> client.inference.<span class="code-function">create</span>({
+  model: <span class="code-string">'llama3.2:3b'</span>,
+  prompt: <span class="code-string">'量子コンピューターについて200文字で説明してください'</span>,
+  maxTokens: 256,
+  temperature: 0.7
+});
+
+<span class="code-comment">// 結果と計算レシートの確認</span>
+console.<span class="code-function">log</span>(<span class="code-string">'結果:'</span>, response.completion);
+console.<span class="code-function">log</span>(<span class="code-string">'レシート:'</span>, response.receipt);
+console.<span class="code-function">log</span>(<span class="code-string">'署名:'</span>, response.receipt.signature);</code></pre>
+                    </div>
+                    
+                    <div class="code-block">
+                        <pre><code><span class="code-comment">// ストリーミングレスポンス</span>
+<span class="code-keyword">const</span> stream = <span class="code-keyword">await</span> client.inference.<span class="code-function">stream</span>({
+  model: <span class="code-string">'llama3.2:3b'</span>,
+  prompt: <span class="code-string">'長い物語を書いてください'</span>,
+  stream: <span class="code-keyword">true</span>
+});
+
+<span class="code-keyword">for await</span> (<span class="code-keyword">const</span> chunk <span class="code-keyword">of</span> stream) {
+  process.stdout.<span class="code-function">write</span>(chunk.text);
+}</code></pre>
+                    </div>
+                </div>
+
+                <!-- Python -->
+                <div class="code-content" id="python">
+                    <div class="code-block">
+                        <pre><code><span class="code-comment"># QUIVer API クライアントの初期化</span>
+<span class="code-keyword">from</span> quiver <span class="code-keyword">import</span> QUIVerClient
+
+client = <span class="code-function">QUIVerClient</span>(
+    api_key=<span class="code-string">'test_pk_quiver_1234567890abcdef'</span>
+)
+
+<span class="code-comment"># 推論の実行</span>
+response = client.inference.<span class="code-function">create</span>(
+    model=<span class="code-string">'llama3.2:3b'</span>,
+    prompt=<span class="code-string">'量子コンピューターについて200文字で説明してください'</span>,
+    max_tokens=256,
+    temperature=0.7
+)
+
+<span class="code-comment"># 結果と計算レシートの確認</span>
+<span class="code-function">print</span>(<span class="code-string">f'結果: {response.completion}'</span>)
+<span class="code-function">print</span>(<span class="code-string">f'レシート: {response.receipt}'</span>)
+<span class="code-function">print</span>(<span class="code-string">f'署名: {response.receipt.signature}'</span>)</code></pre>
+                    </div>
+                </div>
+
+                <!-- Go -->
+                <div class="code-content" id="go">
+                    <div class="code-block">
+                        <pre><code><span class="code-comment">// QUIVer API クライアントの初期化</span>
+<span class="code-keyword">package</span> main
+
+<span class="code-keyword">import</span> (
+    <span class="code-string">"fmt"</span>
+    <span class="code-string">"github.com/quiver/go-sdk"</span>
+)
+
+<span class="code-keyword">func</span> <span class="code-function">main</span>() {
+    client := quiver.<span class="code-function">NewClient</span>(<span class="code-string">"test_pk_quiver_1234567890abcdef"</span>)
+    
+    <span class="code-comment">// 推論の実行</span>
+    resp, err := client.Inference.<span class="code-function">Create</span>(&quiver.InferenceRequest{
+        Model:     <span class="code-string">"llama3.2:3b"</span>,
+        Prompt:    <span class="code-string">"量子コンピューターについて200文字で説明してください"</span>,
+        MaxTokens: 256,
+        Temperature: 0.7,
+    })
+    
+    <span class="code-keyword">if</span> err != <span class="code-keyword">nil</span> {
+        <span class="code-function">panic</span>(err)
+    }
+    
+    <span class="code-comment">// 結果と計算レシートの確認</span>
+    fmt.<span class="code-function">Printf</span>(<span class="code-string">"結果: %s\n"</span>, resp.Completion)
+    fmt.<span class="code-function">Printf</span>(<span class="code-string">"署名: %s\n"</span>, resp.Receipt.Signature)
+}</code></pre>
+                    </div>
+                </div>
+
+                <!-- cURL -->
+                <div class="code-content" id="curl">
+                    <div class="code-block">
+                        <pre><code><span class="code-comment"># 基本的な推論リクエスト</span>
+curl -X POST https://api.quiver.network/v1/inference \
+  -H <span class="code-string">"Authorization: Bearer test_pk_quiver_1234567890abcdef"</span> \
+  -H <span class="code-string">"Content-Type: application/json"</span> \
+  -d '{
+    "model": "llama3.2:3b",
+    "prompt": "量子コンピューターについて200文字で説明してください",
+    "max_tokens": 256,
+    "temperature": 0.7
+  }'
+
+<span class="code-comment"># ストリーミングレスポンス</span>
+curl -X POST https://api.quiver.network/v1/inference \
+  -H <span class="code-string">"Authorization: Bearer test_pk_quiver_1234567890abcdef"</span> \
+  -H <span class="code-string">"Content-Type: application/json"</span> \
+  -H <span class="code-string">"Accept: text/event-stream"</span> \
+  -d '{
+    "model": "llama3.2:3b",
+    "prompt": "長い物語を書いてください",
+    "stream": true
+  }'</code></pre>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SDK -->
+        <section class="sdk-section" id="sdks">
+            <div class="container">
+                <h2 class="section-title">SDK & ライブラリ</h2>
+                
+                <div class="sdk-grid">
+                    <div class="sdk-card">
+                        <div class="sdk-icon">🟨</div>
+                        <h3 class="sdk-name">JavaScript / TypeScript</h3>
+                        <p class="sdk-version">v1.2.0</p>
+                        <div class="sdk-links">
+                            <a href="https://www.npmjs.com/package/@quiver/sdk" class="sdk-link">npm</a>
+                            <a href="https://github.com/yukihamada/quiver/tree/main/sdk/js" class="sdk-link">GitHub</a>
+                            <a href="/docs/sdk/javascript" class="sdk-link">Docs</a>
+                        </div>
+                    </div>
+
+                    <div class="sdk-card">
+                        <div class="sdk-icon">🐍</div>
+                        <h3 class="sdk-name">Python</h3>
+                        <p class="sdk-version">v1.2.0</p>
+                        <div class="sdk-links">
+                            <a href="https://pypi.org/project/quiver/" class="sdk-link">PyPI</a>
+                            <a href="https://github.com/yukihamada/quiver/tree/main/sdk/python" class="sdk-link">GitHub</a>
+                            <a href="/docs/sdk/python" class="sdk-link">Docs</a>
+                        </div>
+                    </div>
+
+                    <div class="sdk-card">
+                        <div class="sdk-icon">🔵</div>
+                        <h3 class="sdk-name">Go</h3>
+                        <p class="sdk-version">v1.2.0</p>
+                        <div class="sdk-links">
+                            <a href="https://pkg.go.dev/github.com/quiver/go-sdk" class="sdk-link">pkg.go.dev</a>
+                            <a href="https://github.com/yukihamada/quiver/tree/main/sdk/go" class="sdk-link">GitHub</a>
+                            <a href="/docs/sdk/go" class="sdk-link">Docs</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 料金 -->
+        <section class="pricing-section" id="pricing">
+            <div class="container">
+                <h2 class="section-title">料金体系</h2>
+                
+                <div class="pricing-table">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>モデル</th>
+                                <th>入力料金</th>
+                                <th>出力料金</th>
+                                <th>最小料金</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>llama3.2:1b</td>
+                                <td>$0.0001 / 1K tokens</td>
+                                <td>$0.0002 / 1K tokens</td>
+                                <td>$0.00001</td>
+                            </tr>
+                            <tr>
+                                <td>llama3.2:3b</td>
+                                <td>$0.0002 / 1K tokens</td>
+                                <td>$0.0004 / 1K tokens</td>
+                                <td>$0.00002</td>
+                            </tr>
+                            <tr>
+                                <td>qwen2.5:3b</td>
+                                <td>$0.0002 / 1K tokens</td>
+                                <td>$0.0004 / 1K tokens</td>
+                                <td>$0.00002</td>
+                            </tr>
+                            <tr>
+                                <td>stable-diffusion</td>
+                                <td>$0.002 / 画像</td>
+                                <td>-</td>
+                                <td>$0.002</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                
+                <p style="text-align: center; color: var(--gray); margin-top: 20px;">
+                    料金は需要と供給により変動します。上記は参考価格です。<br>
+                    事前見積もりAPIで実際の料金を確認できます。
+                </p>
+            </div>
+        </section>
+
+        <!-- Swagger UI -->
+        <section class="swagger-section" id="reference">
+            <div class="container">
+                <h2 class="section-title" style="color: #000; margin-bottom: 40px;">APIリファレンス</h2>
+                <div id="swagger-ui"></div>
+            </div>
+        </section>
+    </main>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/5.10.3/swagger-ui-bundle.js"></script>
+    <script>
+        // タブ切り替え
+        function showTab(lang) {
+            document.querySelectorAll('.code-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            document.querySelectorAll('.code-content').forEach(content => {
+                content.classList.remove('active');
+            });
+            
+            event.target.classList.add('active');
+            document.getElementById(lang).classList.add('active');
+        }
+
+        // APIキーコピー
+        function copyApiKey() {
+            const input = document.querySelector('.api-key-input');
+            input.select();
+            document.execCommand('copy');
+            
+            const btn = event.target;
+            const originalText = btn.textContent;
+            btn.textContent = 'コピーしました！';
+            setTimeout(() => {
+                btn.textContent = originalText;
+            }, 2000);
+        }
+
+        // Swagger UI初期化
+        window.onload = function() {
+            SwaggerUIBundle({
+                url: "/api/openapi.yaml",
+                dom_id: '#swagger-ui',
+                deepLinking: true,
+                presets: [
+                    SwaggerUIBundle.presets.apis,
+                    SwaggerUIBundle.SwaggerUIStandalonePreset
+                ],
+                plugins: [
+                    SwaggerUIBundle.plugins.DownloadUrl
+                ],
+                layout: "BaseLayout"
+            });
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,498 @@
+openapi: 3.0.3
+info:
+  title: QUIVer API
+  description: |
+    分散AI推論ネットワークQUIVerのAPI仕様。
+    
+    ## 特徴
+    - 署名付き計算レシートによる検証可能な推論
+    - リアルタイムストリーミング対応
+    - 自動負荷分散とフェイルオーバー
+    - 事前見積もりAPIで料金を確認
+    
+    ## 認証
+    すべてのリクエストにAPIキーが必要です。
+    `Authorization: Bearer YOUR_API_KEY`
+  version: 1.0.0
+  contact:
+    email: api@quiver.network
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+
+servers:
+  - url: https://api.quiver.network/v1
+    description: Production
+  - url: https://api-staging.quiver.network/v1
+    description: Staging
+  - url: http://localhost:8080/v1
+    description: Local development
+
+security:
+  - bearerAuth: []
+
+paths:
+  /inference:
+    post:
+      summary: 推論の実行
+      description: 指定されたモデルでプロンプトを処理し、結果を返します
+      operationId: createInference
+      tags:
+        - Inference
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/InferenceRequest'
+            examples:
+              basic:
+                summary: 基本的な推論
+                value:
+                  model: "llama3.2:3b"
+                  prompt: "量子コンピューターについて説明してください"
+                  max_tokens: 256
+              streaming:
+                summary: ストリーミング推論
+                value:
+                  model: "llama3.2:3b"
+                  prompt: "長い物語を書いてください"
+                  stream: true
+                  max_tokens: 1024
+      responses:
+        '200':
+          description: 推論成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InferenceResponse'
+            text/event-stream:
+              schema:
+                $ref: '#/components/schemas/StreamEvent'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '429':
+          $ref: '#/components/responses/RateLimited'
+        '500':
+          $ref: '#/components/responses/InternalError'
+
+  /estimate:
+    post:
+      summary: 料金見積もり
+      description: 推論実行前に料金を見積もります
+      operationId: estimateCost
+      tags:
+        - Billing
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EstimateRequest'
+      responses:
+        '200':
+          description: 見積もり成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EstimateResponse'
+
+  /receipts/{receipt_id}:
+    get:
+      summary: レシート詳細取得
+      description: 計算レシートの詳細情報を取得します
+      operationId: getReceipt
+      tags:
+        - Receipts
+      parameters:
+        - name: receipt_id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: レシートID
+      responses:
+        '200':
+          description: レシート詳細
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Receipt'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /receipts/{receipt_id}/verify:
+    post:
+      summary: レシート検証
+      description: 計算レシートの署名と内容を検証します
+      operationId: verifyReceipt
+      tags:
+        - Receipts
+      parameters:
+        - name: receipt_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: 検証結果
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VerificationResult'
+
+  /models:
+    get:
+      summary: 利用可能モデル一覧
+      description: 現在利用可能なモデルの一覧を取得します
+      operationId: listModels
+      tags:
+        - Models
+      responses:
+        '200':
+          description: モデル一覧
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  models:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Model'
+
+  /usage:
+    get:
+      summary: 使用量取得
+      description: APIの使用量と請求情報を取得します
+      operationId: getUsage
+      tags:
+        - Billing
+      parameters:
+        - name: start_date
+          in: query
+          schema:
+            type: string
+            format: date
+          description: 開始日
+        - name: end_date
+          in: query
+          schema:
+            type: string
+            format: date
+          description: 終了日
+      responses:
+        '200':
+          description: 使用量情報
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UsageResponse'
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: API Key
+
+  schemas:
+    InferenceRequest:
+      type: object
+      required:
+        - model
+        - prompt
+      properties:
+        model:
+          type: string
+          description: 使用するモデルID
+          example: "llama3.2:3b"
+        prompt:
+          type: string
+          description: 入力プロンプト
+          example: "量子コンピューターについて説明してください"
+        max_tokens:
+          type: integer
+          description: 最大生成トークン数
+          default: 256
+          minimum: 1
+          maximum: 4096
+        temperature:
+          type: number
+          description: 生成の多様性（0-2）
+          default: 0.7
+          minimum: 0
+          maximum: 2
+        top_p:
+          type: number
+          description: トップPサンプリング
+          default: 1
+          minimum: 0
+          maximum: 1
+        stream:
+          type: boolean
+          description: ストリーミングレスポンスを有効化
+          default: false
+        seed:
+          type: integer
+          description: 再現性のためのシード値
+        metadata:
+          type: object
+          description: 追加メタデータ
+          additionalProperties: true
+
+    InferenceResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          description: 推論ID
+        completion:
+          type: string
+          description: 生成されたテキスト
+        model:
+          type: string
+          description: 使用されたモデル
+        usage:
+          $ref: '#/components/schemas/Usage'
+        receipt:
+          $ref: '#/components/schemas/Receipt'
+        created_at:
+          type: string
+          format: date-time
+
+    StreamEvent:
+      type: object
+      properties:
+        event:
+          type: string
+          enum: [chunk, done, error]
+        data:
+          type: object
+          properties:
+            text:
+              type: string
+            finish_reason:
+              type: string
+              enum: [stop, length, error]
+            receipt:
+              $ref: '#/components/schemas/Receipt'
+
+    Receipt:
+      type: object
+      description: 計算レシート
+      properties:
+        id:
+          type: string
+          description: レシートID
+        provider_id:
+          type: string
+          description: 実行したProviderのID
+        timestamp:
+          type: string
+          format: date-time
+        signature:
+          type: string
+          description: Ed25519署名
+        hash:
+          type: string
+          description: 計算内容のハッシュ
+        usage:
+          $ref: '#/components/schemas/Usage'
+        cost:
+          type: number
+          description: 実際のコスト（USD）
+        merkle_proof:
+          type: array
+          items:
+            type: string
+          description: Merkle Tree証明（オプション）
+
+    Usage:
+      type: object
+      properties:
+        prompt_tokens:
+          type: integer
+          description: 入力トークン数
+        completion_tokens:
+          type: integer
+          description: 出力トークン数
+        total_tokens:
+          type: integer
+          description: 合計トークン数
+
+    EstimateRequest:
+      type: object
+      required:
+        - model
+        - prompt
+      properties:
+        model:
+          type: string
+        prompt:
+          type: string
+        max_tokens:
+          type: integer
+          default: 256
+
+    EstimateResponse:
+      type: object
+      properties:
+        estimated_cost:
+          type: number
+          description: 推定コスト（USD）
+        estimated_time:
+          type: number
+          description: 推定処理時間（秒）
+        available_providers:
+          type: integer
+          description: 利用可能なProvider数
+
+    Model:
+      type: object
+      properties:
+        id:
+          type: string
+          description: モデルID
+        name:
+          type: string
+          description: モデル名
+        description:
+          type: string
+        capabilities:
+          type: array
+          items:
+            type: string
+            enum: [text, code, vision, audio]
+        pricing:
+          type: object
+          properties:
+            input:
+              type: number
+              description: 入力料金（USD/1K tokens）
+            output:
+              type: number
+              description: 出力料金（USD/1K tokens）
+
+    UsageResponse:
+      type: object
+      properties:
+        period:
+          type: object
+          properties:
+            start:
+              type: string
+              format: date
+            end:
+              type: string
+              format: date
+        total_requests:
+          type: integer
+        total_tokens:
+          type: integer
+        total_cost:
+          type: number
+        breakdown:
+          type: array
+          items:
+            type: object
+            properties:
+              model:
+                type: string
+              requests:
+                type: integer
+              tokens:
+                type: integer
+              cost:
+                type: number
+
+    VerificationResult:
+      type: object
+      properties:
+        valid:
+          type: boolean
+        message:
+          type: string
+        details:
+          type: object
+          properties:
+            signature_valid:
+              type: boolean
+            hash_valid:
+              type: boolean
+            merkle_valid:
+              type: boolean
+
+    Error:
+      type: object
+      properties:
+        error:
+          type: object
+          properties:
+            code:
+              type: string
+            message:
+              type: string
+            details:
+              type: object
+
+  responses:
+    BadRequest:
+      description: 不正なリクエスト
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            error:
+              code: "invalid_request"
+              message: "プロンプトは必須です"
+
+    Unauthorized:
+      description: 認証エラー
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            error:
+              code: "unauthorized"
+              message: "無効なAPIキーです"
+
+    NotFound:
+      description: リソースが見つかりません
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+
+    RateLimited:
+      description: レート制限
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            error:
+              code: "rate_limited"
+              message: "レート制限に達しました。しばらく待ってから再試行してください"
+
+    InternalError:
+      description: 内部エラー
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+
+tags:
+  - name: Inference
+    description: AI推論の実行
+  - name: Receipts
+    description: 計算レシートの管理と検証
+  - name: Models
+    description: 利用可能なモデル
+  - name: Billing
+    description: 料金と使用量

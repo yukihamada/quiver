@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="QuicPair × QUIVer - Private first. Scale when you choose. 端末内で完結、必要な時だけ世界へ。">
+    <title>QuicPair × QUIVer - プライベートファーストのAI体験</title>
+    
+    <style>
+        :root {
+            --primary: #0071e3;
+            --secondary: #5e5ce6;
+            --accent: #af52de;
+            --success: #34c759;
+            --warning: #ff9500;
+            --danger: #ff3b30;
+            --dark: #1d1d1f;
+            --light: #f5f5f7;
+            --gray: #86868b;
+            --quicpair-blue: #007AFF;
+            --quicpair-purple: #5856D6;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', sans-serif;
+            background: #000;
+            color: #fff;
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* ヒーロー */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: radial-gradient(ellipse at center, rgba(0, 122, 255, 0.1) 0%, transparent 70%);
+            padding: 20px;
+        }
+
+        .hero-content {
+            max-width: 1000px;
+            text-align: center;
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+
+        .logo {
+            font-size: 3rem;
+            font-weight: 700;
+        }
+
+        .logo-quicpair {
+            background: linear-gradient(45deg, var(--quicpair-blue), var(--quicpair-purple));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .logo-x {
+            color: var(--gray);
+            font-weight: 300;
+        }
+
+        .logo-quiver {
+            background: linear-gradient(45deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        h1 {
+            font-size: clamp(2rem, 5vw, 3.5rem);
+            font-weight: 700;
+            margin-bottom: 20px;
+            background: linear-gradient(180deg, #fff 0%, #86868b 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .subtitle {
+            font-size: 1.5rem;
+            color: var(--gray);
+            margin-bottom: 60px;
+        }
+
+        /* スコープスイッチ */
+        .scope-demo {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 24px;
+            padding: 40px;
+            margin: 40px auto;
+            max-width: 800px;
+        }
+
+        .scope-title {
+            font-size: 1.3rem;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .scope-switch {
+            display: flex;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 4px;
+            margin-bottom: 30px;
+        }
+
+        .scope-option {
+            flex: 1;
+            padding: 12px 20px;
+            border-radius: 12px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 600;
+        }
+
+        .scope-option.active {
+            background: linear-gradient(45deg, var(--quicpair-blue), var(--quicpair-purple));
+            color: #fff;
+        }
+
+        .scope-description {
+            text-align: center;
+            color: var(--gray);
+            font-size: 1.1rem;
+            min-height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* フロー図 */
+        .flow-section {
+            padding: 80px 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .flow-title {
+            font-size: 2.5rem;
+            text-align: center;
+            margin-bottom: 60px;
+        }
+
+        .flow-diagram {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 40px;
+            margin-bottom: 60px;
+        }
+
+        .flow-step {
+            text-align: center;
+            position: relative;
+        }
+
+        .flow-icon {
+            width: 120px;
+            height: 120px;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
+            border-radius: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            margin: 0 auto 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .flow-step h3 {
+            font-size: 1.3rem;
+            margin-bottom: 10px;
+        }
+
+        .flow-step p {
+            color: var(--gray);
+        }
+
+        /* 機能比較 */
+        .features-section {
+            padding: 80px 20px;
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        .features-container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-top: 40px;
+        }
+
+        .feature-card {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+            padding: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .feature-card h3 {
+            font-size: 1.3rem;
+            margin-bottom: 20px;
+            color: var(--quicpair-blue);
+        }
+
+        .feature-list {
+            list-style: none;
+        }
+
+        .feature-list li {
+            padding: 10px 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: var(--gray);
+        }
+
+        .feature-check {
+            color: var(--success);
+            flex-shrink: 0;
+        }
+
+        /* CTA */
+        .cta-section {
+            padding: 100px 20px;
+            text-align: center;
+        }
+
+        .cta-title {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+        }
+
+        .cta-subtitle {
+            font-size: 1.2rem;
+            color: var(--gray);
+            margin-bottom: 40px;
+        }
+
+        .cta-buttons {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 16px 32px;
+            border-radius: 12px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1.1rem;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(45deg, var(--quicpair-blue), var(--quicpair-purple));
+            color: #fff;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(0, 122, 255, 0.4);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        /* 統合説明 */
+        .integration-section {
+            padding: 80px 20px;
+            background: rgba(255, 255, 255, 0.03);
+        }
+
+        .integration-container {
+            max-width: 800px;
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        .integration-box {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+            padding: 40px;
+            margin-top: 40px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .code-example {
+            background: #1d1d1f;
+            border-radius: 12px;
+            padding: 20px;
+            margin: 20px 0;
+            text-align: left;
+            font-family: 'SF Mono', Monaco, monospace;
+            font-size: 0.9rem;
+            overflow-x: auto;
+        }
+
+        .code-comment {
+            color: #6c6c70;
+        }
+
+        /* レスポンシブ */
+        @media (max-width: 768px) {
+            .logo-container {
+                flex-direction: column;
+                gap: 20px;
+            }
+
+            .logo {
+                font-size: 2.5rem;
+            }
+
+            .scope-switch {
+                flex-direction: column;
+            }
+
+            .flow-diagram {
+                grid-template-columns: 1fr;
+            }
+
+            .cta-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .btn {
+                width: 100%;
+                max-width: 300px;
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- ヒーロー -->
+    <section class="hero">
+        <div class="hero-content">
+            <div class="logo-container">
+                <span class="logo logo-quicpair">QuicPair</span>
+                <span class="logo logo-x">×</span>
+                <span class="logo logo-quiver">QUIVer</span>
+            </div>
+            
+            <h1>Private first. Scale when you choose.</h1>
+            <p class="subtitle">
+                端末内で完結、必要な時だけ世界へ。
+            </p>
+
+            <!-- スコープスイッチデモ -->
+            <div class="scope-demo">
+                <h2 class="scope-title">ワンタップでスコープを切り替え</h2>
+                
+                <div class="scope-switch">
+                    <div class="scope-option active" onclick="switchScope('local')">
+                        🔒 Local Only
+                    </div>
+                    <div class="scope-option" onclick="switchScope('devices')">
+                        📱 My Devices
+                    </div>
+                    <div class="scope-option" onclick="switchScope('global')">
+                        🌍 Global (QUIVer)
+                    </div>
+                </div>
+                
+                <div class="scope-description" id="scopeDescription">
+                    このMac内のOllama/MLXで完全プライベート処理。データは外部に出ません。
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- フロー -->
+    <section class="flow-section">
+        <h2 class="flow-title">シームレスな体験フロー</h2>
+        
+        <div class="flow-diagram">
+            <div class="flow-step">
+                <div class="flow-icon">💻</div>
+                <h3>1. ローカルで開始</h3>
+                <p>QuicPairがMac内のLLMを自動検出。すぐに使い始められます。</p>
+            </div>
+            
+            <div class="flow-step">
+                <div class="flow-icon">📊</div>
+                <h3>2. リソース不足を検知</h3>
+                <p>大きなタスクで処理が重い？QuicPairが最適な処理先を提案。</p>
+            </div>
+            
+            <div class="flow-step">
+                <div class="flow-icon">🌐</div>
+                <h3>3. QUIVerへオフロード</h3>
+                <p>承認すると、QUIVerネットワークで高速処理。計算レシート付き。</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- 機能比較 -->
+    <section class="features-section">
+        <div class="features-container">
+            <h2 class="flow-title">QuicPairで変わること</h2>
+            
+            <div class="features-grid">
+                <div class="feature-card">
+                    <h3>🔒 完全プライベートモード</h3>
+                    <ul class="feature-list">
+                        <li>
+                            <span class="feature-check">✓</span>
+                            データは端末から出ない
+                        </li>
+                        <li>
+                            <span class="feature-check">✓</span>
+                            インターネット接続不要
+                        </li>
+                        <li>
+                            <span class="feature-check">✓</span>
+                            機密情報も安心して処理
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="feature-card">
+                    <h3>📱 デバイス間連携</h3>
+                    <ul class="feature-list">
+                        <li>
+                            <span class="feature-check">✓</span>
+                            Mac ↔ iPhone 直接通信
+                        </li>
+                        <li>
+                            <span class="feature-check">✓</span>
+                            E2E暗号化で安全
+                        </li>
+                        <li>
+                            <span class="feature-check">✓</span>
+                            オフライン環境でも動作
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="feature-card">
+                    <h3>🚀 必要時のみスケール</h3>
+                    <ul class="feature-list">
+                        <li>
+                            <span class="feature-check">✓</span>
+                            事前見積もりで料金確認
+                        </li>
+                        <li>
+                            <span class="feature-check">✓</span>
+                            計算レシートで検証可能
+                        </li>
+                        <li>
+                            <span class="feature-check">✓</span>
+                            上限設定で安心利用
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 統合説明 -->
+    <section class="integration-section">
+        <div class="integration-container">
+            <h2 class="flow-title">技術統合の仕組み</h2>
+            
+            <div class="integration-box">
+                <p style="margin-bottom: 30px; color: var(--gray);">
+                    QuicPairからQUIVerへの切り替えは、APIレベルで透過的に実装されています。
+                </p>
+                
+                <div class="code-example">
+                    <span class="code-comment">// QuicPair内での処理スコープ判定</span><br>
+                    <span style="color: #fc5fa3;">const</span> result = <span style="color: #fc5fa3;">await</span> quicpair.<span style="color: #67b7a4;">process</span>({<br>
+                    &nbsp;&nbsp;prompt: <span style="color: #fc6a5d;">"大規模な文書を要約して"</span>,<br>
+                    &nbsp;&nbsp;scope: <span style="color: #fc6a5d;">"auto"</span> <span class="code-comment">// 自動判定</span><br>
+                    });<br><br>
+                    
+                    <span class="code-comment">// 内部で自動的に：</span><br>
+                    <span class="code-comment">// 1. ローカルリソースをチェック</span><br>
+                    <span class="code-comment">// 2. 処理時間を見積もり</span><br>
+                    <span class="code-comment">// 3. 必要に応じてQUIVerを提案</span><br>
+                    <span class="code-comment">// 4. ユーザー承認後、透過的に実行</span>
+                </div>
+                
+                <p style="margin-top: 30px;">
+                    <strong>計算レシート</strong>は自動的に結果に添付され、<br>
+                    いつでも処理の正当性を検証できます。
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA -->
+    <section class="cta-section">
+        <h2 class="cta-title">今すぐ体験を始める</h2>
+        <p class="cta-subtitle">
+            QuicPairは無料でダウンロード。ローカル機能は永続無料です。
+        </p>
+        
+        <div class="cta-buttons">
+            <a href="https://quicpair.app/download" class="btn btn-primary">
+                QuicPairをダウンロード
+            </a>
+            <a href="/docs/integrations/quicpair" class="btn btn-secondary">
+                統合ドキュメント
+            </a>
+            <a href="/" class="btn btn-secondary">
+                QUIVerについて
+            </a>
+        </div>
+    </section>
+
+    <script>
+        // スコープスイッチのデモ
+        function switchScope(scope) {
+            const options = document.querySelectorAll('.scope-option');
+            const description = document.getElementById('scopeDescription');
+            
+            options.forEach(opt => opt.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            const descriptions = {
+                'local': 'このMac内のOllama/MLXで完全プライベート処理。データは外部に出ません。',
+                'devices': 'あなたのMacとiPhone間でE2E暗号化通信。iCloudも経由しません。',
+                'global': 'QUIVerネットワークで高速処理。事前見積もり＋計算レシート付きで安心。'
+            };
+            
+            description.style.opacity = '0';
+            setTimeout(() => {
+                description.textContent = descriptions[scope];
+                description.style.opacity = '1';
+            }, 200);
+        }
+    </script>
+</body>
+</html>

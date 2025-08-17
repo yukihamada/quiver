@@ -713,8 +713,9 @@
                 eventSource.close();
             }
             
-            // Try P2P first if available
+            // Try P2P first if available  
             if (p2pClient && p2pClient.isConnected()) {
+                console.log('Using P2P WebRTC connection for generation');
                 try {
                     streamingIndicator.style.display = 'flex';
                     const startTime = Date.now();
@@ -754,6 +755,7 @@
             
             // Try WebTransport next if available
             if (webTransport && webTransport.isConnected()) {
+                console.log('Using WebTransport connection for generation');
                 try {
                     streamingIndicator.style.display = 'flex';
                     const startTime = Date.now();
@@ -791,7 +793,8 @@
                 }
             }
             
-            // Try streaming endpoints
+            // Try streaming endpoints as final fallback
+            console.log('Falling back to HTTP streaming endpoints');
             let connected = false;
             console.log('Available endpoints:', STREAM_ENDPOINTS);
             
@@ -874,7 +877,7 @@
             
             if (!connected) {
                 outputArea.innerHTML = '<span class="output-placeholder">推論に失敗しました。しばらくしてから再度お試しください。</span>';
-                showError('現在サービスが利用できません。ローカルでQUIVerを起動してください。');
+                showError('P2P接続とゲートウェイ接続に失敗しました。ネットワーク接続を確認してください。');
                 streamingIndicator.style.display = 'none';
             }
             

@@ -5,8 +5,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"sync"
+	"time"
 
-	"github.com/libp2p/go-libp2p/core/peer"
 	"github.com/pion/webrtc/v4"
 	"github.com/quiver/gateway/pkg/p2p"
 	"github.com/sirupsen/logrus"
@@ -201,7 +201,7 @@ func (wt *WebRTCTransport) handleGenerateRequest(peerID, requestID string, paylo
 // sendResponse sends a response to a browser peer
 func (wt *WebRTCTransport) sendResponse(peerID, requestID, msgType string, payload interface{}) {
 	wt.mu.RLock()
-	pc, exists := wt.peerConnections[peerID]
+	_, exists := wt.peerConnections[peerID]
 	wt.mu.RUnlock()
 
 	if !exists {

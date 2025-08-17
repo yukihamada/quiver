@@ -1,0 +1,226 @@
+name: Test
+
+on:
+  push:
+    branches:
+      - main
+      - develop
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  test-go:
+    name: Test Go Components
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        component: [gateway, provider, aggregator]
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.23'
+          cache: true
+      
+      - name: Download dependencies
+        run: |
+          cd ${{ matrix.component }}
+          go mod download
+      
+      - name: Run tests
+        run: |
+          cd ${{ matrix.component }}
+          go test -v -race -coverprofile=coverage.txt -covermode=atomic ./...
+      
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v4
+        with:
+          file: ./${{ matrix.component }}/coverage.txt
+          flags: ${{ matrix.component }}
+          name: ${{ matrix.component }}-coverage
+          fail_ci_if_error: false
+
+  test-frontend:
+    name: Test Frontend
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Validate HTML
+        run: |
+          # Install html5validator
+          pip install html5validator
+          
+          # Validate all HTML files
+          html5validator --root docs/ --also-check-css --also-check-svg
+      
+      - name: Check links
+        run: |
+          # Install linkchecker
+          pip install linkchecker
+          
+          # Check internal links only (external links might be rate limited)
+          linkchecker docs/ --no-robots --recursion-level=2 --check-extern=0 || true
+
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.23'
+          cache: true
+      
+      - name: Run golangci-lint
+        uses: golangci/golangci-lint-action@v3
+        with:
+          version: latest
+          args: --timeout=5m
+          working-directory: ./
+      
+      - name: Check Go mod tidy
+        run: |
+          for dir in gateway provider aggregator; do
+            echo "Checking $dir..."
+            cd $dir
+            go mod tidy
+            if [ -n "$(git status --porcelain)" ]; then
+              echo "go mod tidy produced changes in $dir"
+              exit 1
+            fi
+            cd ..
+          done
+
+  security:
+    name: Security Scan
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Run Trivy vulnerability scanner
+        uses: aquasecurity/trivy-action@master
+        with:
+          scan-type: 'fs'
+          scan-ref: '.'
+          format: 'sarif'
+          output: 'trivy-results.sarif'
+          severity: 'CRITICAL,HIGH'
+      
+      - name: Upload Trivy scan results to GitHub Security tab
+        uses: github/codeql-action/upload-sarif@v3
+        if: always()
+        with:
+          sarif_file: 'trivy-results.sarif'
+      
+      - name: Run gosec Security Scanner
+        uses: securego/gosec@master
+        with:
+          args: '-no-fail -fmt sarif -out gosec-results.sarif ./...'
+      
+      - name: Upload gosec scan results
+        uses: github/codeql-action/upload-sarif@v3
+        if: always()
+        with:
+          sarif_file: 'gosec-results.sarif'
+
+  validate-dns:
+    name: Validate DNS Config
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      
+      - name: Install dependencies
+        run: |
+          pip install pyyaml jsonschema dnspython
+      
+      - name: Validate DNS records
+        run: |
+          python scripts/validate-dns.py
+
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    needs: [test-go, lint]
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.23'
+          cache: true
+      
+      - name: Build all components
+        run: |
+          make build-all || {
+            # Fallback if Makefile doesn't exist
+            for component in gateway provider aggregator; do
+              echo "Building $component..."
+              cd $component
+              go build -v ./cmd/...
+              cd ..
+            done
+          }
+      
+      - name: Build Docker images
+        run: |
+          for component in gateway provider aggregator; do
+            if [ -f "$component/Dockerfile" ]; then
+              echo "Building Docker image for $component..."
+              docker build -t quiver/$component:test $component/
+            fi
+          done
+
+  integration:
+    name: Integration Tests
+    runs-on: ubuntu-latest
+    needs: [build]
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.23'
+          cache: true
+      
+      - name: Start services
+        run: |
+          # Start mock services for integration testing
+          echo "Starting mock services..."
+          # Add integration test setup here
+      
+      - name: Run integration tests
+        run: |
+          # Run integration tests if they exist
+          if [ -d "tests/integration" ]; then
+            cd tests/integration
+            go test -v ./...
+          else
+            echo "No integration tests found"
+          fi

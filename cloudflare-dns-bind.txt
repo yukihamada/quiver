@@ -1,0 +1,18 @@
+; Cloudflare DNS Records for quiver.network
+; BIND format (RFC 1035)
+; Import this file in Cloudflare Dashboard: DNS > Advanced > Import DNS Records
+
+$ORIGIN quiver.network.
+$TTL 1 ; Auto TTL in Cloudflare
+
+; Root domain
+@           IN  CNAME   quiver-network.pages.dev.
+
+; Subdomains
+explorer    IN  CNAME   quiver-network.pages.dev.
+api         IN  CNAME   quiver-network.pages.dev.
+dashboard   IN  CNAME   quiver-network.pages.dev.
+security    IN  CNAME   quiver-network.pages.dev.
+quicpair    IN  CNAME   quiver-network.pages.dev.
+playground  IN  CNAME   quiver-network.pages.dev.
+www         IN  CNAME   quiver-network.pages.dev.

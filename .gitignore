@@ -67,3 +67,29 @@ hardhat-node.pid
 *.tfstate.backup
 tfplan
 
+# Cloudflare
+.wrangler/
+wrangler-*.log
+
+# Security - NEVER commit these
+setup-github-secrets.sh
+*-api-key*
+*-secret*
+*-token*
+credentials.json
+secrets.yaml
+secrets.md
+
+# Coverage
+coverage.txt
+coverage.out
+coverage.html
+*.coverprofile
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+.pytest_cache/
+

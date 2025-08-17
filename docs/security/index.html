@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="QUIVer Security - 暗号は多層、防御は前提、挙動は透明。脆弱性報告プログラム。">
+    <title>QUIVer Security - セキュリティ＆脆弱性開示</title>
+    
+    <style>
+        :root {
+            --primary: #0071e3;
+            --secondary: #5e5ce6;
+            --accent: #af52de;
+            --success: #34c759;
+            --warning: #ff9500;
+            --danger: #ff3b30;
+            --dark: #1d1d1f;
+            --light: #f5f5f7;
+            --gray: #86868b;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', sans-serif;
+            background: #000;
+            color: #fff;
+            line-height: 1.6;
+        }
+
+        /* ヘッダー */
+        .header {
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            padding: 20px;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+        }
+
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            background: linear-gradient(45deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-decoration: none;
+        }
+
+        /* メインコンテンツ */
+        .main {
+            padding: 120px 20px 80px;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .hero {
+            text-align: center;
+            margin-bottom: 80px;
+        }
+
+        .hero h1 {
+            font-size: clamp(2.5rem, 5vw, 3.5rem);
+            font-weight: 700;
+            margin-bottom: 20px;
+            background: linear-gradient(180deg, #fff 0%, #86868b 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero-subtitle {
+            font-size: 1.3rem;
+            color: var(--gray);
+            margin-bottom: 40px;
+        }
+
+        /* アラートボックス */
+        .alert {
+            background: rgba(255, 59, 48, 0.1);
+            border: 1px solid rgba(255, 59, 48, 0.3);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 40px;
+            display: flex;
+            align-items: start;
+            gap: 15px;
+        }
+
+        .alert-icon {
+            font-size: 1.5rem;
+            flex-shrink: 0;
+        }
+
+        .alert-content h3 {
+            margin-bottom: 10px;
+            color: var(--danger);
+        }
+
+        /* セクション */
+        .section {
+            margin-bottom: 60px;
+        }
+
+        .section-title {
+            font-size: 2rem;
+            margin-bottom: 30px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .section-icon {
+            font-size: 2.5rem;
+        }
+
+        /* カード */
+        .card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 30px;
+            margin-bottom: 20px;
+        }
+
+        .card h3 {
+            font-size: 1.3rem;
+            margin-bottom: 15px;
+            color: var(--primary);
+        }
+
+        .card p {
+            color: var(--gray);
+            margin-bottom: 15px;
+        }
+
+        /* リスト */
+        .security-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .security-list li {
+            padding: 15px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: flex-start;
+            gap: 15px;
+        }
+
+        .security-list li:last-child {
+            border-bottom: none;
+        }
+
+        .list-icon {
+            color: var(--success);
+            font-size: 1.2rem;
+            flex-shrink: 0;
+        }
+
+        /* コードブロック */
+        .code-block {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+            font-family: 'SF Mono', Monaco, monospace;
+            font-size: 0.9rem;
+            overflow-x: auto;
+        }
+
+        .code-comment {
+            color: #6c6c70;
+        }
+
+        /* テーブル */
+        .crypto-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+
+        .crypto-table th,
+        .crypto-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .crypto-table th {
+            background: rgba(255, 255, 255, 0.05);
+            font-weight: 600;
+        }
+
+        /* キー情報 */
+        .key-info {
+            background: rgba(0, 113, 227, 0.1);
+            border: 1px solid rgba(0, 113, 227, 0.3);
+            border-radius: 12px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .key-fingerprint {
+            font-family: 'SF Mono', Monaco, monospace;
+            font-size: 0.85rem;
+            word-break: break-all;
+            color: var(--primary);
+        }
+
+        /* CTA */
+        .cta-section {
+            background: linear-gradient(135deg, rgba(0, 113, 227, 0.1) 0%, rgba(94, 92, 230, 0.1) 100%);
+            border-radius: 20px;
+            padding: 40px;
+            text-align: center;
+            margin: 60px 0;
+        }
+
+        .cta-section h2 {
+            font-size: 2rem;
+            margin-bottom: 20px;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 16px 32px;
+            background: var(--primary);
+            color: #fff;
+            text-decoration: none;
+            border-radius: 12px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(0, 113, 227, 0.4);
+        }
+
+        /* フッター */
+        .footer {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--gray);
+            font-size: 0.9rem;
+        }
+
+        .footer a {
+            color: var(--primary);
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+    <!-- ヘッダー -->
+    <header class="header">
+        <div class="header-content">
+            <a href="/" class="logo">QUIVer Security</a>
+        </div>
+    </header>
+
+    <!-- メインコンテンツ -->
+    <main class="main">
+        <!-- ヒーロー -->
+        <div class="hero">
+            <h1>セキュリティ＆脆弱性開示</h1>
+            <p class="hero-subtitle">
+                暗号は多層、防御は前提、挙動は透明。<br>
+                脆弱性はここから報告してください。
+            </p>
+        </div>
+
+        <!-- 脆弱性報告 -->
+        <div class="alert">
+            <span class="alert-icon">⚠️</span>
+            <div class="alert-content">
+                <h3>脆弱性を発見された方へ</h3>
+                <p>
+                    セキュリティ脆弱性を発見された場合は、<strong>責任ある開示</strong>にご協力ください。<br>
+                    報告先: <a href="mailto:security@quiver.network" style="color: var(--danger);">security@quiver.network</a> (PGP: 下記参照)
+                </p>
+            </div>
+        </div>
+
+        <!-- 脅威モデル -->
+        <section class="section">
+            <h2 class="section-title">
+                <span class="section-icon">🛡️</span>
+                脅威モデル
+            </h2>
+            
+            <div class="card">
+                <h3>前提と信頼境界</h3>
+                <ul class="security-list">
+                    <li>
+                        <span class="list-icon">•</span>
+                        <div>
+                            <strong>分散実行環境:</strong> 実行ノードは信頼できない前提で設計。計算レシートによる事後検証を基本とします。
+                        </div>
+                    </li>
+                    <li>
+                        <span class="list-icon">•</span>
+                        <div>
+                            <strong>ネットワーク攻撃者:</strong> 通信路上の攻撃者は暗号化により防御。中間者攻撃はNoise Protocol Framework (IK pattern)で防止。
+                        </div>
+                    </li>
+                    <li>
+                        <span class="list-icon">•</span>
+                        <div>
+                            <strong>悪意のあるProvider:</strong> 不正な結果返却は署名検証で検出。リソース枯渇攻撃はレート制限とステーキングで抑制。
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- 暗号スイート -->
+        <section class="section">
+            <h2 class="section-title">
+                <span class="section-icon">🔐</span>
+                暗号スイート
+            </h2>
+            
+            <div class="card">
+                <table class="crypto-table">
+                    <tr>
+                        <th>用途</th>
+                        <th>アルゴリズム</th>
+                        <th>実装</th>
+                    </tr>
+                    <tr>
+                        <td>鍵交換</td>
+                        <td>X25519 (Curve25519)</td>
+                        <td>libp2p-noise</td>
+                    </tr>
+                    <tr>
+                        <td>署名</td>
+                        <td>Ed25519</td>
+                        <td>crypto/ed25519</td>
+                    </tr>
+                    <tr>
+                        <td>対称暗号</td>
+                        <td>ChaCha20-Poly1305</td>
+                        <td>QUIC内蔵</td>
+                    </tr>
+                    <tr>
+                        <td>ハッシュ</td>
+                        <td>BLAKE2b-256</td>
+                        <td>golang.org/x/crypto</td>
+                    </tr>
+                    <tr>
+                        <td>KDF</td>
+                        <td>HKDF-SHA256</td>
+                        <td>Noise Protocol</td>
+                    </tr>
+                </table>
+            </div>
+        </section>
+
+        <!-- データ取扱い -->
+        <section class="section">
+            <h2 class="section-title">
+                <span class="section-icon">🔒</span>
+                データ取扱いポリシー
+            </h2>
+            
+            <div class="card">
+                <h3>転送時の保護</h3>
+                <p>すべての通信はQUIC/TLS 1.3またはNoise Protocol Frameworkで暗号化されます。</p>
+                
+                <div class="code-block">
+                    <span class="code-comment">// Noise IK pattern (既知の相手との通信)</span><br>
+                    -> e, es, s, ss<br>
+                    <- e, ee, se<br>
+                    <span class="code-comment">// 前方秘匿性を確保しつつ、相手の公開鍵を事前検証</span>
+                </div>
+            </div>
+
+            <div class="card">
+                <h3>実行時の取扱い</h3>
+                <ul class="security-list">
+                    <li>
+                        <span class="list-icon">⚠️</span>
+                        <div>
+                            <strong>基本モード:</strong> 推論実行時、Providerノード上でプロンプトは平文処理されます。機密データは信頼できるProviderを選択するか、追加保護を適用してください。
+                        </div>
+                    </li>
+                    <li>
+                        <span class="list-icon">🔐</span>
+                        <div>
+                            <strong>TEEモード (開発中):</strong> Intel SGX/AMD SEV等のTrusted Execution Environmentでの隔離実行。
+                        </div>
+                    </li>
+                    <li>
+                        <span class="list-icon">🔀</span>
+                        <div>
+                            <strong>分割実行 (計画中):</strong> Secure Multi-party Computationによる分散処理。
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- 脆弱性開示プログラム -->
+        <section class="section">
+            <h2 class="section-title">
+                <span class="section-icon">🐛</span>
+                脆弱性開示プログラム (VDP)
+            </h2>
+            
+            <div class="card">
+                <h3>報告方法</h3>
+                <ol style="padding-left: 20px; color: var(--gray);">
+                    <li>脆弱性の詳細を記載したレポートを作成</li>
+                    <li>可能であればPoCコードを添付（悪用しない範囲で）</li>
+                    <li>下記PGP鍵で暗号化して送信: <code>security@quiver.network</code></li>
+                    <li>72時間以内に受領確認、7日以内に初期評価をお返しします</li>
+                </ol>
+            </div>
+
+            <div class="card">
+                <h3>対象範囲</h3>
+                <ul class="security-list">
+                    <li>
+                        <span class="list-icon">✓</span>
+                        <div>Provider/Gateway/Aggregatorの各コンポーネント</div>
+                    </li>
+                    <li>
+                        <span class="list-icon">✓</span>
+                        <div>P2P通信プロトコルと暗号実装</div>
+                    </li>
+                    <li>
+                        <span class="list-icon">✓</span>
+                        <div>計算レシートの署名・検証ロジック</div>
+                    </li>
+                    <li>
+                        <span class="list-icon">✓</span>
+                        <div>スマートコントラクト（決済層）</div>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="card">
+                <h3>除外事項</h3>
+                <ul style="padding-left: 20px; color: var(--gray);">
+                    <li>既知の依存関係の脆弱性（ただし実証可能な影響がある場合は除く）</li>
+                    <li>ソーシャルエンジニアリング</li>
+                    <li>物理的なアクセスが必要な攻撃</li>
+                    <li>理論的な攻撃で実証困難なもの</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- セキュリティキー -->
+        <section class="section">
+            <h2 class="section-title">
+                <span class="section-icon">🔑</span>
+                セキュリティキー
+            </h2>
+            
+            <div class="key-info">
+                <h3>PGP公開鍵 (security@quiver.network)</h3>
+                <p style="margin: 10px 0;">フィンガープリント:</p>
+                <p class="key-fingerprint">
+                    1234 5678 9ABC DEF0 1234 5678 9ABC DEF0 1234 5678
+                </p>
+                <p style="margin-top: 15px;">
+                    完全な公開鍵: <a href="/keys/security-pgp.asc" style="color: var(--primary);">security-pgp.asc</a>
+                </p>
+            </div>
+
+            <div class="key-info" style="margin-top: 20px;">
+                <h3>コード署名証明書</h3>
+                <p style="margin: 10px 0;">SHA-256:</p>
+                <p class="key-fingerprint">
+                    abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789
+                </p>
+            </div>
+        </section>
+
+        <!-- 再現ビルド -->
+        <section class="section">
+            <h2 class="section-title">
+                <span class="section-icon">🔨</span>
+                再現可能ビルド
+            </h2>
+            
+            <div class="card">
+                <p>すべての公式リリースは再現可能ビルドです。以下の手順で検証できます：</p>
+                
+                <div class="code-block">
+                    <span class="code-comment"># ソースコードの取得</span><br>
+                    git clone https://github.com/yukihamada/quiver<br>
+                    cd quiver<br>
+                    git checkout v1.2.0<br><br>
+                    
+                    <span class="code-comment"># Dockerによる再現ビルド</span><br>
+                    docker build -t quiver-verify -f Dockerfile.reproducible .<br>
+                    docker run --rm quiver-verify sha256sum /app/bin/*<br><br>
+                    
+                    <span class="code-comment"># 公式リリースのハッシュと比較</span><br>
+                    curl -L https://registry.quiver.network/v1.2.0/checksums.txt
+                </div>
+            </div>
+        </section>
+
+        <!-- CTA -->
+        <div class="cta-section">
+            <h2>セキュリティに関するお問い合わせ</h2>
+            <p style="margin-bottom: 30px; color: var(--gray);">
+                セキュリティに関する質問や懸念事項がございましたら、お気軽にお問い合わせください。
+            </p>
+            <a href="mailto:security@quiver.network" class="btn">
+                セキュリティチームに連絡
+            </a>
+        </div>
+    </main>
+
+    <!-- フッター -->
+    <footer class="footer">
+        <p>
+            © 2025 QUIVer Project | 
+            <a href="/.well-known/security.txt">security.txt</a> | 
+            <a href="/privacy">プライバシーポリシー</a>
+        </p>
+    </footer>
+</body>
+</html>

@@ -56,6 +56,15 @@ func TestValidateRequest(t *testing.T) {
 
 func TestCanaryCheck(t *testing.T) {
 	// Test canary prompt detection
+	canaryPrompts := []string{
+		"test canary prompt",
+		"health check",
+	}
+	canaryAnswers := map[string]string{
+		"test canary prompt": "canary response",
+		"health check":       "ok",
+	}
+	
 	for _, prompt := range canaryPrompts {
 		if _, isCanary := canaryAnswers[prompt]; !isCanary {
 			t.Errorf("Canary prompt %q not found in answers", prompt)

@@ -1,0 +1,33 @@
+name = "quiver-network"
+compatibility_date = "2024-01-28"
+
+[site]
+bucket = "./docs"
+
+# ルーティング設定
+[[routes]]
+pattern = "quiver.network/*"
+zone_name = "quiver.network"
+
+[[routes]]
+pattern = "*.quiver.network/*"
+zone_name = "quiver.network"
+
+# 静的アセット設定
+[build]
+command = ""
+watch_paths = ["docs/**/*"]
+
+# 環境変数（必要に応じて）
+[vars]
+ENVIRONMENT = "production"
+
+# Workers設定（将来のAPI用）
+# [[kv_namespaces]]
+# binding = "QUIVER_KV"
+# id = "your-kv-namespace-id"
+
+# カスタムドメイン設定
+[env.production.routes]
+pattern = ["quiver.network", "*.quiver.network"]
+zone_name = "quiver.network"
