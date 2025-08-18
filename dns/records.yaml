@@ -15,62 +15,62 @@ frontend:
     
   - name: www
     type: CNAME
-    content: quiver-network.pages.dev
+    content: quiver-network-dab.pages.dev
     proxied: true
     
   - name: explorer
     type: CNAME
-    content: quiver-network.pages.dev
+    content: quiver-network-dab.pages.dev
     proxied: true
     
   - name: api
     type: CNAME
-    content: quiver-network.pages.dev
+    content: quiver-network-dab.pages.dev
     proxied: true
     
   - name: dashboard
     type: CNAME
-    content: quiver-network.pages.dev
+    content: quiver-network-dab.pages.dev
     proxied: true
     
   - name: security
     type: CNAME
-    content: quiver-network.pages.dev
+    content: quiver-network-dab.pages.dev
     proxied: true
     
   - name: quicpair
     type: CNAME
-    content: quiver-network.pages.dev
+    content: quiver-network-dab.pages.dev
     proxied: true
     
   - name: playground
     type: CNAME
-    content: quiver-network.pages.dev
+    content: quiver-network-dab.pages.dev
     proxied: true
     
   - name: docs
     type: CNAME
-    content: quiver-network.pages.dev
+    content: quiver-network-dab.pages.dev
     proxied: true
     
   - name: status
     type: CNAME
-    content: quiver-network.pages.dev
+    content: quiver-network-dab.pages.dev
     proxied: true
     
   - name: blog
     type: CNAME
-    content: quiver-network.pages.dev
+    content: quiver-network-dab.pages.dev
     proxied: true
     
   - name: community
     type: CNAME
-    content: quiver-network.pages.dev
+    content: quiver-network-dab.pages.dev
     proxied: true
     
   - name: cdn
     type: CNAME
-    content: quiver-network.pages.dev
+    content: quiver-network-dab.pages.dev
     proxied: true
 
 # Backend services (to be updated when deployed)
@@ -78,7 +78,7 @@ backend:
   # Gateway API
   - name: gateway
     type: CNAME
-    content: quiver-network.pages.dev  # Placeholder until deployed
+    content: quiver-network-dab.pages.dev  # Placeholder until deployed
     proxied: true
     comment: "Gateway API - Update to actual IP when deployed"
     
@@ -95,7 +95,7 @@ backend:
   # WebRTC Signaling
   - name: signal
     type: CNAME
-    content: quiver-network.pages.dev  # Placeholder until deployed
+    content: quiver-network-dab.pages.dev  # Placeholder until deployed
     proxied: true
     comment: "WebRTC Signaling - Update to actual IP when deployed"
     
@@ -117,14 +117,14 @@ backend:
   # Registry Service
   - name: registry
     type: CNAME
-    content: quiver-network.pages.dev  # Placeholder until deployed
+    content: quiver-network-dab.pages.dev  # Placeholder until deployed
     proxied: true
     comment: "Provider Registry - Update when deployed"
   
   # Metrics
   - name: metrics
     type: CNAME
-    content: quiver-network.pages.dev  # Placeholder until deployed
+    content: quiver-network-dab.pages.dev  # Placeholder until deployed
     proxied: true
     comment: "Metrics Dashboard - Update when deployed"
     
