@@ -7,11 +7,8 @@ ttl: auto  # Cloudflare will manage TTL
 
 # Frontend records (Cloudflare Pages)
 frontend:
-  - name: "@"
-    type: A
-    content: 192.0.2.1  # Dummy IP for root domain - will be replaced by Cloudflare Pages
-    proxied: true
-    comment: "Root domain - managed by Cloudflare Pages"
+  # Root domain - Cloudflare Pages will handle this automatically when added as custom domain
+  # No DNS record needed for @ when using Cloudflare Pages
     
   - name: www
     type: CNAME
