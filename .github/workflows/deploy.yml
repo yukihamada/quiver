@@ -134,7 +134,7 @@ jobs:
           # Check if project exists
           if ! wrangler pages project list | grep -q "quiver-network"; then
             echo "Creating Cloudflare Pages project..."
-            wrangler pages project create quiver-network-v2 --production-branch=main || true
+            wrangler pages project create quiver --production-branch=main || true
           fi
       
       - name: Deploy to Cloudflare Pages
@@ -143,7 +143,7 @@ jobs:
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
         run: |
           wrangler pages deploy docs \
-            --project-name=quiver-network-v2 \
+            --project-name=quiver \
             --branch=main \
             --commit-dirty=true
 

@@ -44,7 +44,7 @@ jobs:
           
           # Deploy to Pages
           wrangler pages deploy docs \
-            --project-name=quiver-network-v2 \
+            --project-name=quiver \
             --branch=${{ github.ref_name }} \
             --commit-hash=${{ github.sha }} \
             --commit-message="${{ github.event.head_commit.message }}"
